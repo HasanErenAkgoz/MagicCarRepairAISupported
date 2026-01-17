@@ -1,6 +1,6 @@
-﻿using Core.Packages.Application.Common.Services.Auth;
+using MagicCarRepairAISupported.Application.Common.Services.Auth;
 
-namespace Core.Packages.Infrastructure.Services.Auth
+namespace MagicCarRepairAISupported.Infrastructure.Services.Auth
 {
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
@@ -49,7 +49,7 @@ namespace Core.Packages.Infrastructure.Services.Auth
             }
 
             return userClaims
-                .Where(c => c.Type == "Permission")  // JWT içindeki "Permission" claim'lerini alıyoruz
+                .Where(c => c.Type == "Permission")  // JWT i�indeki "Permission" claim'lerini al�yoruz
                 .Select(c => c.Value)
                 .ToList();
         }

@@ -1,7 +1,7 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 
-namespace Core.Packages.Application.Features.Files.Commands.Upload
+namespace MagicCarRepairAISupported.Application.Features.Files.Commands.Upload
 {
     public class FileUploadCommand : IRequest<string>
     {

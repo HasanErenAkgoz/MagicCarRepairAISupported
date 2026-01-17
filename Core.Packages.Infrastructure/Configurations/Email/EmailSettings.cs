@@ -1,4 +1,4 @@
-﻿namespace Core.Packages.Infrastructure.Configurations.Email
+namespace MagicCarRepairAISupported.Infrastructure.Configurations.Email
 {
     public class EmailSettings
     {

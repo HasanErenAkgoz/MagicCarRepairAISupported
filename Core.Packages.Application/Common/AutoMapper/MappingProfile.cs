@@ -1,7 +1,7 @@
-﻿using AutoMapper;
+using AutoMapper;
 using System.Reflection;
 
-namespace Core.Packages.Application.Common.AutoMapper
+namespace MagicCarRepairAISupported.Application.Common.AutoMapper
 {
     public class MappingProfile : Profile
     {

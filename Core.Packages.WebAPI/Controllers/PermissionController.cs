@@ -1,9 +1,9 @@
-﻿using Core.Packages.Application.Features.Permission.Queries.GetAll;
+using MagicCarRepairAISupported.Application.Features.Permission.Queries.GetAll;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Controllers;
 
-namespace Core.Packages.WebAPI.Controllers
+namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]

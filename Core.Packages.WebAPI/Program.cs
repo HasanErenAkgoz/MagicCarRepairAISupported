@@ -1,7 +1,10 @@
-﻿using Core.Packages.Application;
-using Core.Packages.Persistence;
-using Core.Packages.Persistence.Context;
-using Core.Packages.Persistence.Middlewares;
+using MagicCarRepairAISupported.Application;
+using MagicCarRepairAISupported.Infrastructure;
+using MagicCarRepairAISupported.Persistence;
+using MagicCarRepairAISupported.Persistence.Context;
+using MagicCarRepairAISupported.Persistence.Middlewares;
+using MagicCarRepairAISupported.WebAPI.Extensions;
+using MagicCarRepairAISupported.WebAPI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +26,17 @@ void ConfigureServices(WebApplicationBuilder builder)
 {
     builder.Services.AddControllers();
     builder.Services.AddHttpContextAccessor();
+    
+    // Swagger Configuration - AddEndpointsApiExplorer ekle (AddSwaggerServices içinde değil)
+    builder.Services.AddEndpointsApiExplorer();
+    
+    // SignalR
+    builder.Services.AddSignalR();
+    builder.Services.AddSignalRServices();
+    
     builder.Services.AddCoreApplicationServices();
     builder.Services.AddCoreInfrastructureServices(builder.Configuration);
+    // AddSwaggerServices burada çağrılıyor (AddCorePersistenceServices içinde)
     builder.Services.AddCorePersistenceServices<BaseDbContext>(builder.Configuration);
 
 }
@@ -51,6 +63,10 @@ void ConfigureMiddleware(WebApplication app)
     app.UseEndpoints(endpoints =>
     {
         endpoints.MapControllers();
+        endpoints.MapHub<NotificationHub>("/hubs/notifications");
+        endpoints.MapHub<WorkOrderHub>("/hubs/workorders");
+        endpoints.MapHub<ChatHub>("/hubs/chat");
+        endpoints.MapHub<DashboardHub>("/hubs/dashboard");
     });
 }
 

@@ -1,4 +1,4 @@
-﻿namespace Core.Packages.Application.Shared.Result
+namespace MagicCarRepairAISupported.Application.Shared.Result
 {
     public class ApiResult<T>
     {

@@ -1,12 +1,12 @@
-﻿using Core.Packages.Application.Common.Services.FileUpload;
-using Core.Packages.Domain.Entities;
-using Core.Packages.Domain.Enums;
-using Core.Packages.Domain.Repositories.EntityFrameworkCore;
+using MagicCarRepairAISupported.Application.Common.Services.FileUpload;
+using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Enums;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
-namespace Core.Packages.Infrastructure.Services.FileUpload
+namespace MagicCarRepairAISupported.Infrastructure.Services.FileUpload
 {
     public class LocalFileStorageService : IFileStorageService
     {
@@ -18,7 +18,7 @@ namespace Core.Packages.Infrastructure.Services.FileUpload
             // wwwroot/uploads dizinini ayarla
             _rootPath = Path.Combine(env.WebRootPath, "uploads");
 
-            // Eğer uploads klasörü yoksa oluştur
+            // E�er uploads klas�r� yoksa olu�tur
             if (!Directory.Exists(_rootPath))
                 Directory.CreateDirectory(_rootPath);
 
@@ -33,7 +33,7 @@ namespace Core.Packages.Infrastructure.Services.FileUpload
 
             string filePath = Path.Combine(folderPath, file.FileName);
 
-            // Dosyayı kaydet
+            // Dosyay� kaydet
             using var stream = new FileStream(filePath, FileMode.Create);
             await file.CopyToAsync(stream, cancellationToken);
 

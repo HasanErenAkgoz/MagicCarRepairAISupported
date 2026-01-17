@@ -1,7 +1,7 @@
-﻿using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Core.Packages.Infrastructure.Swagger
+namespace MagicCarRepairAISupported.Infrastructure.Swagger
 {
     public class AuthorizeCheckOperationFilter : IOperationFilter
     {

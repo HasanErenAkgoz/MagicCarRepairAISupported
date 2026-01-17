@@ -1,7 +1,7 @@
-﻿using Core.Packages.Application.Common.Models.NewFolder;
-using Core.Packages.Domain.Entities;
+using MagicCarRepairAISupported.Application.Common.Models.NewFolder;
+using MagicCarRepairAISupported.Domain.Entities;
 
-namespace Core.Packages.Application.Common.Services.JWT
+namespace MagicCarRepairAISupported.Application.Common.Services.JWT
 {
     public interface ITokenService
     {

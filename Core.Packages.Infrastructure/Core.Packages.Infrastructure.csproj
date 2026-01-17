@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -28,11 +28,14 @@
     <PackageReference Include="StackExchange.Redis" Version="2.8.24" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="7.2.0" />
     <PackageReference Include="Twilio" Version="7.8.4" />
+    <PackageReference Include="QuestPDF" Version="2024.10.1" />
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="ClosedXML" Version="0.104.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core.Packages.Application\Core.Packages.Application.csproj" />
-    <ProjectReference Include="..\Core.Packages.Domain\Core.Packages.Domain.csproj" />
+    <ProjectReference Include="..\Core.Packages.Application\MagicCarRepairAISupported.Application.csproj" />
+    <ProjectReference Include="..\Core.Packages.Domain\MagicCarRepairAISupported.Domain.csproj" />
   </ItemGroup>
 
 </Project>

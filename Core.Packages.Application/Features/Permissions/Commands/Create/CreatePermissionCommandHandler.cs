@@ -1,8 +1,8 @@
-﻿using Core.Packages.Application.Shared.Result;
-using Core.Packages.Domain.Repositories.EntityFrameworkCore;
+using MagicCarRepairAISupported.Application.Shared.Result;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MediatR;
 
-namespace Core.Packages.Application.Features.Permission.Commands.Create
+namespace MagicCarRepairAISupported.Application.Features.Permission.Commands.Create
 {
     public class CreatePermissionCommandHandler : IRequestHandler<CreatePermissionCommand, IResult>
     {
@@ -23,7 +23,7 @@ namespace Core.Packages.Application.Features.Permission.Commands.Create
                     return new ErrorResult("Permission already exists");
                 }
 
-                Core.Packages.Domain.Entities.Permission permission = new Core.Packages.Domain.Entities.Permission
+                MagicCarRepairAISupported.Domain.Entities.Permission permission = new MagicCarRepairAISupported.Domain.Entities.Permission
                 {
                     Name = request.Name,
                     Description = request.Description

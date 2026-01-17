@@ -1,12 +1,12 @@
-﻿using AutoMapper;
-using Core.Packages.Application.Common.Attributies;
-using Core.Packages.Application.Common.AutoMapper;
-namespace Core.Packages.Application.Features.Permission.Queries.GetAll
+using AutoMapper;
+using MagicCarRepairAISupported.Application.Common.Attributies;
+using MagicCarRepairAISupported.Application.Common.AutoMapper;
+namespace MagicCarRepairAISupported.Application.Features.Permission.Queries.GetAll
 {
-    public sealed class GetPermissionResponse : IMapFrom<Core.Packages.Domain.Entities.Permission>
+    public sealed class GetPermissionResponse : IMapFrom<MagicCarRepairAISupported.Domain.Entities.Permission>
     {
 
-        public GetPermissionResponse() { }  // 🔥 Default Constructor ekledik
+        public GetPermissionResponse() { }  // ?? Default Constructor ekledik
 
         [Translate]
         public string Name { get; set; }
@@ -15,7 +15,7 @@ namespace Core.Packages.Application.Features.Permission.Queries.GetAll
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<Core.Packages.Domain.Entities.Permission, GetPermissionResponse>();
+            profile.CreateMap<MagicCarRepairAISupported.Domain.Entities.Permission, GetPermissionResponse>();
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿using Core.Packages.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Core.Packages.Persistence.Configurations
+namespace MagicCarRepairAISupported.Persistence.Configurations
 {
     public sealed class UserConfiguration : IEntityTypeConfiguration<User>
     {
@@ -15,6 +16,14 @@ namespace Core.Packages.Persistence.Configurations
             builder.Property(x => x.LastName).IsRequired().HasMaxLength(50);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
+            // UserType
+            builder.Property(x => x.UserType)
+                .IsRequired()
+                .HasConversion<int>()
+                .HasDefaultValue(UserType.Employee);
+
+            // Indexes
+            builder.HasIndex(x => x.UserType);
         }
     }
 }

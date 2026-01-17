@@ -1,25 +1,24 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Security;
 using System.Text.Json;
-using Core.Packages.Domain.Exceptions;
-using Core.Packages.Application.Common.Services.Translation;
+using MagicCarRepairAISupported.Domain.Exceptions;
+using MagicCarRepairAISupported.Application.Common.Services.Translation;
 
-namespace Core.Packages.Persistence.Middlewares
+namespace MagicCarRepairAISupported.Persistence.Middlewares
 {
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionMiddleware> _logger;
-        private readonly ITranslationService _translationService;
 
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, ITranslationService translationService)
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
             _logger = logger;
-            _translationService = translationService;
         }
 
         public async Task InvokeAsync(HttpContext httpContext)
@@ -32,7 +31,7 @@ namespace Core.Packages.Persistence.Middlewares
             {
                 _logger.LogError($"Hata yakalandı: {e.Message}");
 
-                if (!httpContext.Response.HasStarted) // ✅ Yanıt başladı mı kontrol et
+                if (!httpContext.Response.HasStarted) // ? Yanıt başladı mı kontrol et
                 {
                     await HandleExceptionAsync(httpContext, e);
                 }
@@ -58,16 +57,19 @@ namespace Core.Packages.Persistence.Middlewares
                 _ => (int)HttpStatusCode.InternalServerError
             };
 
+            // Get scoped service from HttpContext.RequestServices
+            var translationService = httpContext.RequestServices.GetService<ITranslationService>();
+
             object response;
             if (e is DomainException domainEx)
             {
                 string message;
                 
-                if (domainEx.RequiresTranslation)
+                if (domainEx.RequiresTranslation && translationService != null)
                 {
                     try
                     {
-                        message = await _translationService.GetDomainExceptionMessageAsync(
+                        message = await translationService.GetDomainExceptionMessageAsync(
                             domainEx.ErrorCode!, 
                             domainEx.Parameters, 
                             domainEx.Language);
@@ -96,16 +98,19 @@ namespace Core.Packages.Persistence.Middlewares
             {
                 string message = e.Message ?? "Bilinmeyen bir hata oluştu.";
                 
-                try
+                if (translationService != null)
                 {
-                    var translatedMessage = await _translationService.GetTranslationAsync(
-                        $"Exception.{e.GetType().Name}", 
-                        message);
-                    message = translatedMessage;
-                }
-                catch
-                {
-                    // Çeviri hatası durumunda orijinal mesajı kullan
+                    try
+                    {
+                        var translatedMessage = await translationService.GetTranslationAsync(
+                            $"Exception.{e.GetType().Name}", 
+                            message);
+                        message = translatedMessage;
+                    }
+                    catch
+                    {
+                        // Çeviri hatası durumunda orijinal mesajı kullan
+                    }
                 }
 
                 response = new

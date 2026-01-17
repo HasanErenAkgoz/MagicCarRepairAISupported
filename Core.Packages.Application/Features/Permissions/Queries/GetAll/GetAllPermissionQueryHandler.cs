@@ -1,15 +1,15 @@
-﻿using AutoMapper;
-using Core.Packages.Application.Common.Attributies;
-using Core.Packages.Application.Shared.Result;
-using Core.Packages.Domain.Repositories.EntityFrameworkCore;
+using AutoMapper;
+using MagicCarRepairAISupported.Application.Common.Attributies;
+using MagicCarRepairAISupported.Application.Shared.Result;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MediatR;
 
-namespace Core.Packages.Application.Features.Permission.Queries.GetAll
+namespace MagicCarRepairAISupported.Application.Features.Permission.Queries.GetAll
 {
     public class GetAllPermissionQueryHandler : IRequestHandler<GetAllPermissionQuery, IDataResult<IEnumerable<GetPermissionResponse>>>
     {
         private readonly IPermissionRepository _permissionRepository;
-        private readonly IMapper _mapper; // 🔹 AutoMapper ekliyoruz!
+        private readonly IMapper _mapper; // ?? AutoMapper ekliyoruz!
 
         public GetAllPermissionQueryHandler(IPermissionRepository permissionRepository, IMapper mapper)
         {

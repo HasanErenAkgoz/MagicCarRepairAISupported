@@ -1,4 +1,4 @@
-﻿using Core.Packages.Application.Shared.Result;
+using MagicCarRepairAISupported.Application.Shared.Result;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Packages.Application.Features.Email.SendEmail
+namespace MagicCarRepairAISupported.Application.Features.Email.SendEmail
 {
     public class SendEmailCommand : IRequest<IResult>
     {

@@ -1,4 +1,4 @@
-﻿namespace Core.Packages.Application.Features.Auth.Login.Commands
+namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
 {
     public class LoginResponse
     {

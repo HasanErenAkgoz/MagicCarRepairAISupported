@@ -1,6 +1,6 @@
 using System;
 
-namespace Core.Packages.Domain.Exceptions
+namespace MagicCarRepairAISupported.Domain.Exceptions
 {
     /// <summary>
     /// Domain katmanında iş kuralları ihlal edildiğinde fırlatılan exception

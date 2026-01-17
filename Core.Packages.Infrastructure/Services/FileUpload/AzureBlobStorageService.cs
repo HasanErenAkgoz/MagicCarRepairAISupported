@@ -1,11 +1,11 @@
-﻿using Azure.Storage.Blobs;
-using Core.Packages.Application.Common.Services.FileUpload;
-using Core.Packages.Domain.Entities;
-using Core.Packages.Domain.Enums;
-using Core.Packages.Domain.Repositories.EntityFrameworkCore;
+using Azure.Storage.Blobs;
+using MagicCarRepairAISupported.Application.Common.Services.FileUpload;
+using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Enums;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 
-namespace Core.Packages.Infrastructure.Services.FileUpload
+namespace MagicCarRepairAISupported.Infrastructure.Services.FileUpload
 {
     public class AzureBlobStorageService : IFileStorageService
     {

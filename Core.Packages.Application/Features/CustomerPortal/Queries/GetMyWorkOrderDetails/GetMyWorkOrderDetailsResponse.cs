@@ -1,0 +1,89 @@
+namespace MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMyWorkOrderDetails
+{
+    public class GetMyWorkOrderDetailsResponse
+    {
+        public int Id { get; set; }
+        public string WorkOrderNumber { get; set; }
+        public int VehicleId { get; set; }
+        public string VehicleLicensePlate { get; set; }
+        public string VehicleBrand { get; set; }
+        public string VehicleModel { get; set; }
+        public int Year { get; set; }
+        public string Color { get; set; }
+        public long? Kilometers { get; set; }
+        public int? FuelLevel { get; set; }
+        public DateTime EntryDate { get; set; }
+        public DateTime? EstimatedDeliveryDate { get; set; }
+        public DateTime? ActualDeliveryDate { get; set; }
+        public string Status { get; set; }
+        public string StatusName { get; set; }
+        public string Priority { get; set; }
+        public string? CustomerComplaints { get; set; }
+        public string? SpecialRequests { get; set; }
+        public decimal SubTotal { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal TaxAmount { get; set; }
+        public decimal TotalAmount { get; set; }
+        public string PaymentStatus { get; set; }
+        public List<WorkOrderItemDto> Items { get; set; } = new();
+        public List<WorkOrderLaborDto> Labors { get; set; } = new();
+        public List<WorkOrderTimelineDto> Timeline { get; set; } = new();
+        public List<WorkOrderPhotoDto> Photos { get; set; } = new();
+    }
+
+    public class WorkOrderItemDto
+    {
+        public int Id { get; set; }
+        public string ItemType { get; set; }
+        public string ItemTypeName { get; set; }
+        public int? PartId { get; set; }
+        public string? PartName { get; set; }
+        public string? Description { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal TotalAmount { get; set; }
+        public string? BrandType { get; set; }
+    }
+
+    public class WorkOrderLaborDto
+    {
+        public int Id { get; set; }
+        public int? EmployeeId { get; set; }
+        public string? EmployeeName { get; set; }
+        public string OperationName { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
+        public decimal? DurationHours { get; set; }
+        public decimal HourlyRate { get; set; }
+        public decimal TotalAmount { get; set; }
+    }
+
+    public class WorkOrderTimelineDto
+    {
+        public int Id { get; set; }
+        public DateTime EventDate { get; set; }
+        public string? OldStatus { get; set; }
+        public string? NewStatus { get; set; }
+        public string? StatusChangeText { get; set; }
+        public int? EmployeeId { get; set; }
+        public string? EmployeeName { get; set; }
+        public string? Description { get; set; }
+        public string? EventType { get; set; }
+    }
+
+    public class WorkOrderPhotoDto
+    {
+        public int Id { get; set; }
+        public string FilePath { get; set; }
+        public string? Description { get; set; }
+        public string PhotoType { get; set; }
+        public string PhotoTypeName { get; set; }
+        public DateTime UploadDate { get; set; }
+    }
+}
+
+
+
+
+
+

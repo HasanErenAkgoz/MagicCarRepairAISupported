@@ -1,6 +1,6 @@
-﻿using MediatR;
+using MediatR;
 
-namespace Core.Packages.Application.Features.Files.Queries.Download
+namespace MagicCarRepairAISupported.Application.Features.Files.Queries.Download
 {
     public class FileDownloadQuery : IRequest<Stream?>
     {

@@ -1,7 +1,7 @@
-﻿using Core.Packages.Application.Shared.Result;
+using MagicCarRepairAISupported.Application.Shared.Result;
 using MediatR;
 
-namespace Core.Packages.Application.Features.Auth.ForgotPassword.Commands
+namespace MagicCarRepairAISupported.Application.Features.Auth.ForgotPassword.Commands
 {
     public class ForgotPasswordCommand : IRequest<IResult>
     {

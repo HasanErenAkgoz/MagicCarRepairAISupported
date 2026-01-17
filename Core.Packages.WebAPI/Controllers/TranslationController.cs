@@ -1,8 +1,8 @@
-using Core.Packages.Application.Common.Services.Translation;
+using MagicCarRepairAISupported.Application.Common.Services.Translation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Core.Packages.WebAPI.Controllers
+namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

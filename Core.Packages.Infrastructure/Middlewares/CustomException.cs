@@ -1,4 +1,4 @@
-﻿namespace Core.Packages.Infrastructure.Middlewares
+namespace MagicCarRepairAISupported.Infrastructure.Middlewares
 {
     public class CustomException : Exception
     {

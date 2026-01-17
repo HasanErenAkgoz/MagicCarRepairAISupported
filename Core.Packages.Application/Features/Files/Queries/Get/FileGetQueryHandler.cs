@@ -1,8 +1,8 @@
-﻿using Core.Packages.Domain.Entities;
-using Core.Packages.Domain.Repositories.EntityFrameworkCore;
+using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MediatR;
 
-namespace Core.Packages.Application.Features.Files.Queries.Get
+namespace MagicCarRepairAISupported.Application.Features.Files.Queries.Get
 {
     public class FileGetQueryHandler : IRequestHandler<FileGetQuery, UploadedFile?>
     {

@@ -1,4 +1,4 @@
-﻿namespace Core.Packages.Application.Common.Models.NewFolder
+namespace MagicCarRepairAISupported.Application.Common.Models.NewFolder
 {
     public interface IAccessToken
     {

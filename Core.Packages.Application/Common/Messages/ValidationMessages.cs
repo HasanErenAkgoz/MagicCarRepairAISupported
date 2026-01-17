@@ -1,21 +1,20 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Packages.Application.Common.Messages
+namespace MagicCarRepairAISupported.Application.Common.Messages
 {
     public static partial class Messages
     {
-        public static string NotEmpty = "{PropertyName} is required.";
-        public static string NotValidEmail = "Email is not valid";
-        public static string PasswordsDoNotMatch = "Passwords do not match";
-        public static string PasswordLength = "Password must be at least 6 characters.";
-        public static string PasswordUppercase = "Password must contain at least one uppercase letter.";
-        public static string PasswordDigit = "Password must contain at least one digit.";
-        public static string PasswordSpecialCharacter = "Password must contain at least one special character.";
-
+        // Error codes for validation messages
+        public static string NotEmpty = "VALIDATION_NOT_EMPTY";
+        public static string NotValidEmail = "VALIDATION_EMAIL_INVALID";
+        public static string PasswordsDoNotMatch = "VALIDATION_PASSWORDS_DO_NOT_MATCH";
+        public static string PasswordLength = "VALIDATION_PASSWORD_LENGTH";
+        public static string PasswordUppercase = "VALIDATION_PASSWORD_UPPERCASE";
+        public static string PasswordDigit = "VALIDATION_PASSWORD_DIGIT";
+        public static string PasswordSpecialCharacter = "VALIDATION_PASSWORD_SPECIAL_CHARACTER";
     }
-
 }

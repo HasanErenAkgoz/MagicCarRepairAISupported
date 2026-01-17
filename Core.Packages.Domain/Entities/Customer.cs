@@ -1,13 +1,14 @@
-﻿using Core.Packages.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Packages.Domain.Entities
+namespace MagicCarRepairAISupported.Domain.Entities
 {
-    public class Customer : BaseEntity<int>
+    public class Customer : BaseEntity<int>, IClientEntity
     {
         public string IdentityNo { get; set; }
         public string FirstName { get; set; }
@@ -18,7 +19,19 @@ namespace Core.Packages.Domain.Entities
         public string Address { get; set; }
         public DateTime DateTimeOfBirth { get; set; }
         public string Language { get; set; } = "tr";
+        
+        /// <summary>
+        /// Kullan�c� hesab� (nullable - hen�z kay�t olmam�� m��teriler i�in)
+        /// </summary>
+        public int? UserId { get; set; }
+        public virtual User? User { get; set; }
+        
+        // Multi-tenant support
+        public int ClientId { get; set; }
+        public virtual Client Client { get; set; }
+        
         public virtual ICollection<Vehicle> Vehicles { get; set; }
+        
         public int GetAge()
         {
             var today = DateTime.Today;

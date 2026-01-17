@@ -1,11 +1,11 @@
-﻿using Core.Packages.Application.Common.AutoMapper;
-using Core.Packages.Application.Common.Behaviors;
-using Core.Packages.Application.Common.Services.Translation;
+using MagicCarRepairAISupported.Application.Common.AutoMapper;
+using MagicCarRepairAISupported.Application.Common.Behaviors;
+using MagicCarRepairAISupported.Application.Common.Services.Translation;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection.Metadata;
-namespace Core.Packages.Application
+namespace MagicCarRepairAISupported.Application
 {
     public static class ServiceRegistration
     {

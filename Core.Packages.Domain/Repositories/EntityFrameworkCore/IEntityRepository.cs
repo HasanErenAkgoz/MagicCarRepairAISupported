@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Packages.Domain.Repositories.NewFolder
+namespace MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore
 {
     public interface IEntityRepository<T> where T : class
     {
@@ -22,5 +22,10 @@ namespace Core.Packages.Domain.Repositories.NewFolder
         Task<int> SaveChangesAsync();
         IQueryable<T> Query();
 
+    }
+    
+    public interface IEntityRepository<TEntity, TId> : IEntityRepository<TEntity> where TEntity : class
+    {
+        Task<TEntity?> GetByIdAsync(TId id);
     }
 }

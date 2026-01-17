@@ -1,8 +1,8 @@
-﻿using FluentValidation;
+using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
 
-namespace Core.Packages.Application.Common.Behaviors
+namespace MagicCarRepairAISupported.Application.Common.Behaviors
 {
     public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
      where TRequest : notnull

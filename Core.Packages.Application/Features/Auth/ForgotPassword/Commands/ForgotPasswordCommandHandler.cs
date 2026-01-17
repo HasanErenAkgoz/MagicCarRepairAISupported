@@ -1,11 +1,11 @@
-﻿using Core.Packages.Application.Common.Services.Email;
-using Core.Packages.Application.Shared.Result;
-using Core.Packages.Domain.Entities;
+using MagicCarRepairAISupported.Application.Common.Services.Email;
+using MagicCarRepairAISupported.Application.Shared.Result;
+using MagicCarRepairAISupported.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System.Net;
 
-namespace Core.Packages.Application.Features.Auth.ForgotPassword.Commands
+namespace MagicCarRepairAISupported.Application.Features.Auth.ForgotPassword.Commands
 {
     public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, IResult>
     {
@@ -22,18 +22,18 @@ namespace Core.Packages.Application.Features.Auth.ForgotPassword.Commands
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
-                return new ErrorResult("Bu email adresine sahip kullanıcı bulunamadı.");
+                return new ErrorResult("Bu email adresine sahip kullan�c� bulunamad�.");
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             var resetLink = $"https://localhost:7216/api/Auth/reset-password?email={request.Email}&token={WebUtility.UrlEncode(token)}";
 
-            var emailSent = await _emailService.SendEmailAsync(request.Email, "Şifre Sıfırlama", $"Şifrenizi sıfırlamak için <a href='{resetLink}'>buraya tıklayın</a>");
+            var emailSent = await _emailService.SendEmailAsync(request.Email, "�ifre S�f�rlama", $"�ifrenizi s�f�rlamak i�in <a href='{resetLink}'>buraya t�klay�n</a>");
 
             if (!emailSent)
-                return new ErrorResult("Şifre sıfırlama emaili gönderilemedi.");
+                return new ErrorResult("�ifre s�f�rlama emaili g�nderilemedi.");
 
-            return new SuccessResult("Şifre sıfırlama bağlantısı email adresinize gönderildi.");
+            return new SuccessResult("�ifre s�f�rlama ba�lant�s� email adresinize g�nderildi.");
         }
     }
 

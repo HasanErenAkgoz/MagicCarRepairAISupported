@@ -1,6 +1,6 @@
-﻿using Core.Packages.Application.Shared.Result;
+using MagicCarRepairAISupported.Application.Shared.Result;
 
-namespace Core.Packages.Application.Common.BusinessRules
+namespace MagicCarRepairAISupported.Application.Common.BusinessRules
 {
     public static class BusinessRules
     {

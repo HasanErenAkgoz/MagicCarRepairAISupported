@@ -1,10 +1,11 @@
-﻿using Core.Packages.Domain.Comman;
-using Core.Packages.Domain.Enums;
-using Core.Packages.Domain.Exceptions;
+using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Enums;
+using MagicCarRepairAISupported.Domain.Exceptions;
+using MagicCarRepairAISupported.Domain.Interfaces;
 
-namespace Core.Packages.Domain.Entities
+namespace MagicCarRepairAISupported.Domain.Entities
 {
-    public class Vehicle : BaseEntity<int>
+    public class Vehicle : BaseEntity<int>, IClientEntity
     {
         public int CustomerId { get; set; }
         public string LicensePlate { get; set; }
@@ -13,7 +14,12 @@ namespace Core.Packages.Domain.Entities
         public int Year { get; set; }
         public string Color { get; set; }
         public long Kilometers { get; private set; }
-        public VehicleStatus Status { get; set; }
+        public new VehicleStatus Status { get; set; }
+        
+        // Multi-tenant support
+        public int ClientId { get; set; }
+        public virtual Client Client { get; set; }
+        
         public Customer Customer { get; set; }
 
         public void UpdateKilometers(long newKilometers)

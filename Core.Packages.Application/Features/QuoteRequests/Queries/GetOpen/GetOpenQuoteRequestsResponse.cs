@@ -1,0 +1,19 @@
+using MagicCarRepairAISupported.Domain.Enums;
+
+namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.GetOpen
+{
+    public class GetOpenQuoteRequestsResponse
+    {
+        public int Id { get; set; }
+        public string RequestNumber { get; set; } = string.Empty;
+        public string? CustomerName { get; set; }
+        public string? VehicleInfo { get; set; }
+        public string ProblemDescription { get; set; } = string.Empty;
+        public QuoteRequestType RequestType { get; set; }
+        public UrgencyLevel UrgencyLevel { get; set; }
+        public DateTime QuoteDeadline { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public int DaysRemaining { get; set; }
+    }
+}
+

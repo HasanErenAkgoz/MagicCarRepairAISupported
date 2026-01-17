@@ -1,7 +1,7 @@
-﻿using Core.Packages.Application.Common.Services.FileUpload;
+using MagicCarRepairAISupported.Application.Common.Services.FileUpload;
 using MediatR;
 
-namespace Core.Packages.Application.Features.Files.Commands.Delete
+namespace MagicCarRepairAISupported.Application.Features.Files.Commands.Delete
 {
     public class FileDeleteCommand : IRequest<bool>
     {

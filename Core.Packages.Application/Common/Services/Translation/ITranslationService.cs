@@ -1,4 +1,4 @@
-namespace Core.Packages.Application.Common.Services.Translation
+namespace MagicCarRepairAISupported.Application.Common.Services.Translation
 {
     /// <summary>
     /// Çoklu dil desteği için translation servisi

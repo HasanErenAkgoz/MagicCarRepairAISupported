@@ -1,4 +1,4 @@
-﻿namespace Core.Packages.Application.Common.Services.Cache
+namespace MagicCarRepairAISupported.Application.Common.Services.Cache
 {
     public interface IRedisLockService
     {
