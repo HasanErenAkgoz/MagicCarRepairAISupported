@@ -1,8 +1,8 @@
-﻿using Core.Packages.Application.Features.Translate.Commands.Create;
+using MagicCarRepairAISupported.Application.Features.Translate.Commands.Create;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Controllers;
 
-namespace Core.Packages.WebAPI.Controllers
+namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

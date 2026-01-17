@@ -1,13 +1,13 @@
-﻿using Core.Packages.Application.Features.Auth.ForgotPassword.Commands;
-using Core.Packages.Application.Features.Auth.Login.Commands;
-using Core.Packages.Application.Features.Auth.Register.Commands;
-using Core.Packages.Application.Features.Auth.ResetPassword;
-using Core.Packages.Application.Features.Email.SendEmail;
+using MagicCarRepairAISupported.Application.Features.Auth.ForgotPassword.Commands;
+using MagicCarRepairAISupported.Application.Features.Auth.Login.Commands;
+using MagicCarRepairAISupported.Application.Features.Auth.Register.Commands;
+using MagicCarRepairAISupported.Application.Features.Auth.ResetPassword;
+using MagicCarRepairAISupported.Application.Features.Email.SendEmail;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Controllers;
 
-namespace Core.Packages.WebAPI.Controllers
+namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

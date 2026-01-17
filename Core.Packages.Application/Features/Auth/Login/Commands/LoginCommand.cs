@@ -1,10 +1,10 @@
-﻿using Core.Packages.Application.Common.Services.JWT;
-using Core.Packages.Application.Shared.Result;
-using Core.Packages.Domain.Entities;
+using MagicCarRepairAISupported.Application.Common.Services.JWT;
+using MagicCarRepairAISupported.Application.Shared.Result;
+using MagicCarRepairAISupported.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace Core.Packages.Application.Features.Auth.Login.Commands
+namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
 {
     public class LoginCommand : IRequest<IDataResult<AccessToken>>
     {

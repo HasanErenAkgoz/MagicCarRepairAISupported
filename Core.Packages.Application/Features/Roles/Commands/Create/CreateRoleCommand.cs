@@ -1,7 +1,7 @@
-﻿using Core.Packages.Application.Shared.Result;
+using MagicCarRepairAISupported.Application.Shared.Result;
 using MediatR;
 
-namespace Core.Packages.Application.Features.Roles.Commands.Create
+namespace MagicCarRepairAISupported.Application.Features.Roles.Commands.Create
 {
     public class CreateRoleCommand : IRequest<IDataResult<int>>
     {

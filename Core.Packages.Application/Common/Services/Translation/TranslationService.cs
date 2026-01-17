@@ -1,9 +1,9 @@
-using Core.Packages.Domain.Repositories.EntityFrameworkCore;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using System.Text.Json;
 
-namespace Core.Packages.Application.Common.Services.Translation
+namespace MagicCarRepairAISupported.Application.Common.Services.Translation
 {
     public class TranslationService : ITranslationService
     {
@@ -70,7 +70,7 @@ namespace Core.Packages.Application.Common.Services.Translation
                 return cachedLanguages ?? new List<string> { "tr" };
 
             var languages = await _translationRepository
-                .GetListAsync(t => t.Status == Domain.Enums.Status.Active);
+                .GetListAsync(CancellationToken.None, t => t.Status == Domain.Enums.Status.Active);
 
             var uniqueLanguages = languages
                 .Select(t => t.Language)
@@ -94,7 +94,7 @@ namespace Core.Packages.Application.Common.Services.Translation
                 return cachedTranslations ?? new Dictionary<string, string>();
 
             var translations = await _translationRepository
-                .GetListAsync(t => t.Language == language && t.Status == Domain.Enums.Status.Active);
+                .GetListAsync(CancellationToken.None, t => t.Language == language && t.Status == Domain.Enums.Status.Active);
 
             var result = translations.ToDictionary(t => t.Key, t => t.Value);
             

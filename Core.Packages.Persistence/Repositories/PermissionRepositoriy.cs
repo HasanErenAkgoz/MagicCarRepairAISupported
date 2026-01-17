@@ -1,10 +1,10 @@
-﻿using Core.Packages.Domain.Entities;
-using Core.Packages.Domain.Repositories.EntityFrameworkCore;
-using Core.Packages.Domain.UnitOfWork;
-using Core.Packages.Persistence.Context;
-using Core.Packages.Persistence.Repositories.EntitiyFrameworkCore;
+using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
+using MagicCarRepairAISupported.Domain.UnitOfWork;
+using MagicCarRepairAISupported.Persistence.Context;
+using MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCore;
 
-namespace Core.Packages.Persistence.Repositories
+namespace MagicCarRepairAISupported.Persistence.Repositories
 {
     public class PermissionRepositoriy : EfEntityRepository<Permission, BaseDbContext>, IPermissionRepository
     {

@@ -1,12 +1,16 @@
-using Core.Packages.Domain.Repositories.NewFolder;
-using Core.Packages.Domain.UnitOfWork;
+using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
+using MagicCarRepairAISupported.Domain.UnitOfWork;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Reflection;
 
-namespace Core.Packages.Persistence.Repositories.EntitiyFrameworkCore
+namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCore
 {
-    public class EfEntityRepository<TEntity, TContext> : IEntityRepository<TEntity> where TEntity : class where TContext : DbContext
+    public class EfEntityRepository<TEntity, TContext> : IEntityRepository<TEntity>, IEntityRepository<TEntity, int> 
+        where TEntity : class
+        where TContext : DbContext
     {
         protected TContext Context { get; }
         private readonly IUnitOfWork _unitOfWork;
@@ -25,8 +29,28 @@ namespace Core.Packages.Persistence.Repositories.EntitiyFrameworkCore
 
         public async Task<List<TEntity>> BulkAddAsync(List<TEntity> entities)
         {
-            await Context.BulkInsertAsync(entities);
-            await _unitOfWork.SaveChangesAsync();
+            if (entities == null || !entities.Any())
+                return entities ?? new List<TEntity>();
+
+            try
+            {
+                // Try using EFCore.BulkExtensions for better performance
+                var bulkConfig = new BulkConfig
+                {
+                    SetOutputIdentity = true,
+                    PreserveInsertOrder = true
+                };
+                
+                await Context.BulkInsertAsync(entities, bulkConfig);
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("DbServer") || ex.Message.Contains("Failed to create"))
+            {
+                // Fallback to standard EF Core AddRange if BulkExtensions fails
+                await Context.AddRangeAsync(entities);
+                await _unitOfWork.SaveChangesAsync();
+            }
+            
             return entities;
         }
 
@@ -96,6 +120,29 @@ namespace Core.Packages.Persistence.Repositories.EntitiyFrameworkCore
         public IQueryable<TEntity> Query()
         {
             return Context.Set<TEntity>();
+        }
+
+        // IEntityRepository<TEntity, TId> implementation
+        public async Task<TEntity?> GetByIdAsync(int id)
+        {
+            // Try to find entity by Id property using reflection
+            var entityType = typeof(TEntity);
+            var idProperty = entityType.GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
+            
+            if (idProperty != null)
+            {
+                // Use FindAsync if available (works for entities with Id property)
+                return await Context.Set<TEntity>().FindAsync(id);
+            }
+            
+            // Fallback: query by Id property
+            var parameter = Expression.Parameter(typeof(TEntity), "e");
+            var property = Expression.Property(parameter, "Id");
+            var constant = Expression.Constant(id);
+            var equal = Expression.Equal(property, constant);
+            var lambda = Expression.Lambda<Func<TEntity, bool>>(equal, parameter);
+            
+            return await Context.Set<TEntity>().FirstOrDefaultAsync(lambda);
         }
     }
 }

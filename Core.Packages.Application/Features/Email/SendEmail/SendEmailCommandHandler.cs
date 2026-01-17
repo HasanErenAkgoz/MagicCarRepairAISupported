@@ -1,10 +1,10 @@
-﻿using Core.Packages.Application.Common.Messages;
-using Core.Packages.Application.Common.Services.Auth;
-using Core.Packages.Application.Common.Services.Email;
-using Core.Packages.Application.Shared.Result;
+using MagicCarRepairAISupported.Application.Common.Messages;
+using MagicCarRepairAISupported.Application.Common.Services.Auth;
+using MagicCarRepairAISupported.Application.Common.Services.Email;
+using MagicCarRepairAISupported.Application.Shared.Result;
 using MediatR;
 
-namespace Core.Packages.Application.Features.Email.SendEmail
+namespace MagicCarRepairAISupported.Application.Features.Email.SendEmail
 {
     public class SendEmailCommandHandler : IRequestHandler<SendEmailCommand, IResult>
     {

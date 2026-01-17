@@ -1,5 +1,5 @@
-﻿using Core.Packages.Application.Common.Messages;
-using Core.Packages.Application.Features.Auth.Register.Commands;
+using MagicCarRepairAISupported.Application.Common.Messages;
+using MagicCarRepairAISupported.Application.Features.Auth.Register.Commands;
 using FluentValidation;
 
 

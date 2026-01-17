@@ -1,7 +1,7 @@
-﻿using Core.Packages.Application.Shared.Result;
+using MagicCarRepairAISupported.Application.Shared.Result;
 using MediatR;
 
-namespace Core.Packages.Application.Features.Permission.Commands.Create
+namespace MagicCarRepairAISupported.Application.Features.Permission.Commands.Create
 {
     public class CreatePermissionCommand : IRequest<IResult>
     {

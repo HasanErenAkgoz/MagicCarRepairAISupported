@@ -1,6 +1,6 @@
-﻿using MediatR;
+using MediatR;
 
-namespace Core.Packages.Application.Features.Permissions.Commands.ScanAndRegister
+namespace MagicCarRepairAISupported.Application.Features.Permissions.Commands.ScanAndRegister
 {
     public class ScanAndRegisterPermissionsCommand : IRequest<Unit>
     {

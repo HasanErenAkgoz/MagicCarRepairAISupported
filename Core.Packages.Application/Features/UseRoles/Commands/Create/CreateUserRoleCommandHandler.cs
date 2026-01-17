@@ -1,9 +1,9 @@
-﻿using Core.Packages.Application.Shared.Result;
-using Core.Packages.Domain.Entities;
+using MagicCarRepairAISupported.Application.Shared.Result;
+using MagicCarRepairAISupported.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace Core.Packages.Application.Features.UseRoles.Commands.Create
+namespace MagicCarRepairAISupported.Application.Features.UseRoles.Commands.Create
 {
     public class CreateUserRoleCommandHandler : IRequestHandler<CreateUserRoleCommand, IResult>
     {

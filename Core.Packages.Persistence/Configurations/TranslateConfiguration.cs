@@ -1,8 +1,8 @@
-﻿using Core.Packages.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Core.Packages.Persistence.Configurations
+namespace MagicCarRepairAISupported.Persistence.Configurations
 {
     public class TranslateConfiguration : IEntityTypeConfiguration<Domain.Entities.Translation>
     {

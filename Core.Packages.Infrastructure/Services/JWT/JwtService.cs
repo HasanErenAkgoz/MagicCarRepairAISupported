@@ -1,7 +1,7 @@
-﻿using Core.Packages.Application.Common.Models.NewFolder;
-using Core.Packages.Application.Common.Services.JWT;
-using Core.Packages.Domain.Entities;
-using Core.Packages.Domain.Repositories.EntityFrameworkCore;
+using MagicCarRepairAISupported.Application.Common.Models.NewFolder;
+using MagicCarRepairAISupported.Application.Common.Services.JWT;
+using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -10,9 +10,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using TokenOptions = Core.Packages.Infrastructure.Configurations.Token.TokenOptions;
+using TokenOptions = MagicCarRepairAISupported.Infrastructure.Configurations.Token.TokenOptions;
 
-namespace Core.Packages.Infrastructure.Services.JWT
+namespace MagicCarRepairAISupported.Infrastructure.Services.JWT
 {
     public class JwtService : ITokenService
     {

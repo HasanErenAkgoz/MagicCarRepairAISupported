@@ -1,7 +1,7 @@
-﻿using Core.Packages.Application.Common.Services.FileUpload;
+using MagicCarRepairAISupported.Application.Common.Services.FileUpload;
 using MediatR;
 
-namespace Core.Packages.Application.Features.Files.Queries.Download
+namespace MagicCarRepairAISupported.Application.Features.Files.Queries.Download
 {
     public class FileDownloadQueryHandler : IRequestHandler<FileDownloadQuery, Stream?>
     {

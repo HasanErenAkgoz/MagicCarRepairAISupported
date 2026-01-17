@@ -1,9 +1,9 @@
-﻿using Core.Packages.Application.Shared.Result;
-using Core.Packages.Domain.Entities;
+using MagicCarRepairAISupported.Application.Shared.Result;
+using MagicCarRepairAISupported.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace Core.Packages.Application.Features.Auth.ResetPassword
+namespace MagicCarRepairAISupported.Application.Features.Auth.ResetPassword
 {
     public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, IResult>
     {
@@ -18,7 +18,7 @@ namespace Core.Packages.Application.Features.Auth.ResetPassword
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
-                return new ErrorResult("Bu e-posta adresine sahip bir kullanıcı bulunamadı.");
+                return new ErrorResult("Bu e-posta adresine sahip bir kullan�c� bulunamad�.");
 
             if (request.NewPassword == request.ConfirmPassword)
             {
@@ -27,9 +27,9 @@ namespace Core.Packages.Application.Features.Auth.ResetPassword
                 if (!resetResult.Succeeded)
                     return new ErrorResult(string.Join(", ", resetResult.Errors.Select(e => e.Description)));
 
-                return new SuccessResult("Şifreniz başarıyla güncellendi.");
+                return new SuccessResult("�ifreniz ba�ar�yla g�ncellendi.");
             }
-            return new ErrorResult("Şifreler uyuşmuyor.");
+            return new ErrorResult("�ifreler uyu�muyor.");
 
         }
     }

@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+using MagicCarRepairAISupported.Domain.Enums;
+using MagicCarRepairAISupported.Domain.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
-namespace Core.Packages.Domain.Entities
+namespace MagicCarRepairAISupported.Domain.Entities
 {
-    public partial class User : IdentityUser<int>
+    public partial class User : IdentityUser<int>, IClientEntity
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -11,5 +13,8 @@ namespace Core.Packages.Domain.Entities
         public string Language { get; set; } = "tr";
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
+        public UserType UserType { get; set; }
+        public int ClientId { get; set; }
+        public virtual Client Client { get; set; }
     }
 }

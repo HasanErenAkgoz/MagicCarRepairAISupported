@@ -1,9 +1,9 @@
-﻿using Core.Packages.Application.Common.Attributies;
-using Core.Packages.Application.Common.Services.Cache;
+using MagicCarRepairAISupported.Application.Common.Attributies;
+using MagicCarRepairAISupported.Application.Common.Services.Cache;
 using MediatR;
 using System.Reflection;
 
-namespace Core.Packages.Application.Common.Behaviors
+namespace MagicCarRepairAISupported.Application.Common.Behaviors
 {
     public class LockPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {

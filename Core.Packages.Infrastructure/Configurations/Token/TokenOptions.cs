@@ -1,4 +1,4 @@
-﻿namespace Core.Packages.Infrastructure.Configurations.Token
+namespace MagicCarRepairAISupported.Infrastructure.Configurations.Token
 {
     public class TokenOptions
     {

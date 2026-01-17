@@ -1,9 +1,9 @@
-﻿using Core.Packages.Application.Common.Services.Cache;
+using MagicCarRepairAISupported.Application.Common.Services.Cache;
 using RedLockNet.SERedis;
 using RedLockNet.SERedis.Configuration;
 using StackExchange.Redis;
 
-namespace Core.Packages.Infrastructure.Services.Cache
+namespace MagicCarRepairAISupported.Infrastructure.Services.Cache
 {
    public class RedisLockService : IRedisLockService
 {
@@ -16,13 +16,13 @@ namespace Core.Packages.Infrastructure.Services.Cache
     }
 
     /// <summary>
-    /// Belirtilen anahtar için distributed lock alır ve gerçek sonucu döndürür.
+    /// Belirtilen anahtar i�in distributed lock al�r ve ger�ek sonucu d�nd�r�r.
     /// </summary>
     public async Task<TResponse> AcquireLockAsync<TResponse>(string resource, TimeSpan expiry, Func<Task<TResponse>> action)
     {
         using (var redLock = await _redLockFactory.CreateLockAsync(resource, expiry))
         {
-            if (!redLock.IsAcquired) throw new Exception($"Lock alınamadı: {resource}");
+            if (!redLock.IsAcquired) throw new Exception($"Lock al�namad�: {resource}");
 
             return await action();
         }

@@ -1,8 +1,7 @@
-﻿using Core.Packages.Domain.Entities;
-using Core.Packages.Domain.Repositories.NewFolder;
+using MagicCarRepairAISupported.Domain.Entities;
 
-namespace Core.Packages.Domain.Repositories.EntityFrameworkCore
+namespace MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore
 {
     public interface ITranslationRepository : IEntityRepository<Translation> { }
-   
+
 }

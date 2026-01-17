@@ -1,4 +1,4 @@
-using Core.Packages.Application.Shared.Result;
+using MagicCarRepairAISupported.Application.Shared.Result;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

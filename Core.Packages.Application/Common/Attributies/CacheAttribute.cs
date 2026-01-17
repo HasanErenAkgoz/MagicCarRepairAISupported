@@ -1,4 +1,4 @@
-﻿namespace Core.Packages.Application.Common.Attributies
+namespace MagicCarRepairAISupported.Application.Common.Attributies
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class CacheAttribute : Attribute

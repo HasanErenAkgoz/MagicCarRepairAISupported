@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Core.Packages.Persistence.Migrations
+namespace MagicCarRepairAISupported.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class first_migration : Migration

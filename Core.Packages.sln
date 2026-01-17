@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
@@ -8,15 +8,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D30E9AC0-DD4
 		..\..\..\..\Downloads\Readme.md = ..\..\..\..\Downloads\Readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Packages.Application", "Core.Packages.Application\Core.Packages.Application.csproj", "{ABF4828B-F9E6-4368-8012-DE4CE802525A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicCarRepairAISupported.Application", "Core.Packages.Application\MagicCarRepairAISupported.Application.csproj", "{ABF4828B-F9E6-4368-8012-DE4CE802525A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Packages.Domain", "Core.Packages.Domain\Core.Packages.Domain.csproj", "{4459BD63-CF5D-4BA0-8FD6-7A8D2EAA7F12}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicCarRepairAISupported.Domain", "Core.Packages.Domain\MagicCarRepairAISupported.Domain.csproj", "{4459BD63-CF5D-4BA0-8FD6-7A8D2EAA7F12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Packages.Infrastructure", "Core.Packages.Infrastructure\Core.Packages.Infrastructure.csproj", "{5E96578B-010B-4DCF-B513-0528624F3EF2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicCarRepairAISupported.Infrastructure", "Core.Packages.Infrastructure\MagicCarRepairAISupported.Infrastructure.csproj", "{5E96578B-010B-4DCF-B513-0528624F3EF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Packages.Persistence", "Core.Packages.Persistence\Core.Packages.Persistence.csproj", "{0EF81B1C-41D7-416F-AB03-E392ED6C8695}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicCarRepairAISupported.Persistence", "Core.Packages.Persistence\MagicCarRepairAISupported.Persistence.csproj", "{0EF81B1C-41D7-416F-AB03-E392ED6C8695}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Packages.WebAPI", "Core.Packages.WebAPI\Core.Packages.WebAPI.csproj", "{457ED0B1-32EE-4667-9B1F-842C1531ED54}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicCarRepairAISupported.WebAPI", "Core.Packages.WebAPI\MagicCarRepairAISupported.WebAPI.csproj", "{457ED0B1-32EE-4667-9B1F-842C1531ED54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
 
-namespace Core.Packages.Application.Common.AutoMapper
+namespace MagicCarRepairAISupported.Application.Common.AutoMapper
 {
     public interface IMapFrom<T>
     {

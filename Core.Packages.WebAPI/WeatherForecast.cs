@@ -1,4 +1,4 @@
-namespace Core.Packages.WebAPI
+namespace MagicCarRepairAISupported.WebAPI
 {
     public class WeatherForecast
     {

@@ -1,4 +1,4 @@
-﻿using Core.Packages.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Comman;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Packages.Persistence.Configurations
+namespace MagicCarRepairAISupported.Persistence.Configurations
 {
     public class BaseConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> where TEntity : BaseEntity<int>
     {

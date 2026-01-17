@@ -1,9 +1,9 @@
-﻿using AutoMapper;
-using Core.Packages.Application.Common.AutoMapper;
-using Core.Packages.Application.Shared.Result;
+using AutoMapper;
+using MagicCarRepairAISupported.Application.Common.AutoMapper;
+using MagicCarRepairAISupported.Application.Shared.Result;
 using MediatR;
 
-namespace Core.Packages.Application.Features.Translate.Commands.Create
+namespace MagicCarRepairAISupported.Application.Features.Translate.Commands.Create
 {
     public class CreateTranslateCommand : IRequest<IResult>,IMapFrom<Domain.Entities.Translation>
     {

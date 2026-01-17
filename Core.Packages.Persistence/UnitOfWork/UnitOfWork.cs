@@ -1,8 +1,8 @@
-﻿using Core.Packages.Domain.UnitOfWork;
-using Core.Packages.Persistence.Context;
+using MagicCarRepairAISupported.Domain.UnitOfWork;
+using MagicCarRepairAISupported.Persistence.Context;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Core.Packages.Persistence
+namespace MagicCarRepairAISupported.Persistence
 {
     public class UnitOfWork : IUnitOfWork
     {

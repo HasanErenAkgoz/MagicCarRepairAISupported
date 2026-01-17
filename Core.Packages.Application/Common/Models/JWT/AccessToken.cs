@@ -1,4 +1,4 @@
-﻿using Core.Packages.Application.Common.Models.NewFolder;
+using MagicCarRepairAISupported.Application.Common.Models.NewFolder;
 
 public class AccessToken : IAccessToken
     {

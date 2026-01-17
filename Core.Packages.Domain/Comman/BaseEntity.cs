@@ -1,6 +1,6 @@
-﻿using Core.Packages.Domain.Enums;
+using MagicCarRepairAISupported.Domain.Enums;
 
-namespace Core.Packages.Domain.Comman
+namespace MagicCarRepairAISupported.Domain.Comman
 {
     public abstract class BaseEntity<TId> where TId : struct
     {

@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 
-namespace Core.Packages.Domain.Entities
+namespace MagicCarRepairAISupported.Domain.Entities
 {
     public class UserRole : IdentityUserRole<int>
     {

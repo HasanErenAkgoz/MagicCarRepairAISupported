@@ -1,9 +1,9 @@
-﻿using Core.Packages.Application.Features.Roles.Commands.Create;
+using MagicCarRepairAISupported.Application.Features.Roles.Commands.Create;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Controllers;
 
-namespace Core.Packages.WebAPI.Controllers
+namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

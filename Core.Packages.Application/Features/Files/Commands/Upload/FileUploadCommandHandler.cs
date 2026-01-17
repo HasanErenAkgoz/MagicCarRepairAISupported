@@ -1,7 +1,7 @@
-﻿using Core.Packages.Application.Common.Services.FileUpload;
+using MagicCarRepairAISupported.Application.Common.Services.FileUpload;
 using MediatR;
 
-namespace Core.Packages.Application.Features.Files.Commands.Upload
+namespace MagicCarRepairAISupported.Application.Features.Files.Commands.Upload
 {
     public class FileUploadCommandHandler : IRequestHandler<FileUploadCommand, string>
     {

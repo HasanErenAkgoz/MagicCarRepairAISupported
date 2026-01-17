@@ -1,7 +1,7 @@
-﻿using Core.Packages.Domain.Comman;
-using Core.Packages.Domain.Enums;
+using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Enums;
 
-namespace Core.Packages.Domain.Entities
+namespace MagicCarRepairAISupported.Domain.Entities
 {
     public class UploadedFile : BaseEntity<int>
     {

@@ -1,11 +1,11 @@
-﻿using Core.Packages.Application.Common.Services.Email;
-using Core.Packages.Infrastructure.Configurations.Email;
+using MagicCarRepairAISupported.Application.Common.Services.Email;
+using MagicCarRepairAISupported.Infrastructure.Configurations.Email;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;
 using Twilio.TwiML.Messaging;
 
-namespace Core.Packages.Infrastructure.Services.Email
+namespace MagicCarRepairAISupported.Infrastructure.Services.Email
 {
     public class EmailService : IEmailService
     {
