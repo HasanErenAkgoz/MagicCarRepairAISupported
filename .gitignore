@@ -285,6 +285,26 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# React Native / Expo
+magic-car-repair-mobile/node_modules/
+magic-car-repair-mobile/.expo/
+magic-car-repair-mobile/.expo-shared/
+magic-car-repair-mobile/dist/
+magic-car-repair-mobile/.npm/
+magic-car-repair-mobile/.yarn/
+magic-car-repair-mobile/.yarn/cache
+magic-car-repair-mobile/.yarn/unplugged
+magic-car-repair-mobile/.yarn/build-state.yml
+magic-car-repair-mobile/.yarn/install-state.gz
+magic-car-repair-mobile/.pnp.*
+magic-car-repair-mobile/.env.local
+magic-car-repair-mobile/.env.development.local
+magic-car-repair-mobile/.env.test.local
+magic-car-repair-mobile/.env.production.local
+magic-car-repair-mobile/npm-debug.log*
+magic-car-repair-mobile/yarn-debug.log*
+magic-car-repair-mobile/yarn-error.log*
+
 # Visual Studio 6 build log
 *.plg
 
