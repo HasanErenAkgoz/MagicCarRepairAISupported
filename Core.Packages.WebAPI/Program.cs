@@ -10,10 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
+    // Tüm origin'lere izin ver (Development için)
+    // Not: AllowAnyOrigin() ile AllowCredentials() birlikte kullanılamaz
     options.AddPolicy("AllowAllOrigins", policy =>
         policy.AllowAnyOrigin()
               .AllowAnyMethod()
-              .AllowAnyHeader());
+              .AllowAnyHeader()
+              .WithExposedHeaders("*"));
 });
 
 
@@ -43,6 +46,9 @@ void ConfigureServices(WebApplicationBuilder builder)
 
 void ConfigureMiddleware(WebApplication app)
 {
+    // CORS'u EN BAŞTA kullan (tüm middleware'lerden önce)
+    app.UseCors("AllowAllOrigins");
+    
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -50,9 +56,14 @@ void ConfigureMiddleware(WebApplication app)
     }
 
     app.UseStaticFiles();
-    app.UseCors("AllowAllOrigins");
-
-    app.UseHttpsRedirection();
+    
+    // Development'ta HTTP isteklerine izin ver (HTTPS redirection'ı devre dışı bırak)
+    // Production'da HTTPS redirection aktif olacak
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseHttpsRedirection();
+    }
+    
     app.UseRouting(); 
 
     app.UseCustomMiddlewares();

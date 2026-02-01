@@ -1,0 +1,272 @@
+using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Enums;
+
+namespace MagicCarRepairAISupported.Persistence.Seeds
+{
+    public static class PartSeedData
+    {
+        public static List<Part> GetParts()
+        {
+            var now = DateTime.UtcNow;
+            
+            return new List<Part>
+            {
+                new Part
+                {
+                    Id = 1,
+                    PartCode = "FR-BRK-001",
+                    Name = "Fren Balata Seti (Ön)",
+                    Description = "Ön fren balata seti - Bosch marka",
+                    Category = PartCategory.BrakeSystem,
+                    BrandType = PartBrandType.Original,
+                    Brand = "Bosch",
+                    OEMNumber = "BOS-12345",
+                    Barcode = "8690123456789",
+                    PurchasePrice = 180m,
+                    SalePrice = 280m,
+                    TaxRate = 20m,
+                    MinimumStockLevel = 5,
+                    IsLowStockAlertEnabled = true,
+                    SupplierId = null,
+                    Unit = "Adet",
+                    WarrantyMonths = 12,
+                    Notes = "Yüksek kaliteli fren balata seti",
+                    ClientId = 1,
+                    Status = Status.Active,
+                    CreatedDate = now.AddMonths(-3),
+                    CreatedBy = 1
+                },
+                new Part
+                {
+                    Id = 2,
+                    PartCode = "FR-BRK-002",
+                    Name = "Fren Balata Seti (Arka)",
+                    Description = "Arka fren balata seti - Bosch marka",
+                    Category = PartCategory.BrakeSystem,
+                    BrandType = PartBrandType.Original,
+                    Brand = "Bosch",
+                    OEMNumber = "BOS-12346",
+                    Barcode = "8690123456790",
+                    PurchasePrice = 150m,
+                    SalePrice = 230m,
+                    TaxRate = 20m,
+                    MinimumStockLevel = 5,
+                    IsLowStockAlertEnabled = true,
+                    SupplierId = null,
+                    Unit = "Adet",
+                    WarrantyMonths = 12,
+                    Notes = null,
+                    ClientId = 1,
+                    Status = Status.Active,
+                    CreatedDate = now.AddMonths(-3),
+                    CreatedBy = 1
+                },
+                new Part
+                {
+                    Id = 3,
+                    PartCode = "FLT-AIR-001",
+                    Name = "Hava Filtresi",
+                    Description = "Standart hava filtresi",
+                    Category = PartCategory.Filters,
+                    BrandType = PartBrandType.Aftermarket,
+                    Brand = "Mann Filter",
+                    OEMNumber = "MF-12345",
+                    Barcode = "8690123456791",
+                    PurchasePrice = 45m,
+                    SalePrice = 75m,
+                    TaxRate = 20m,
+                    MinimumStockLevel = 10,
+                    IsLowStockAlertEnabled = true,
+                    SupplierId = null,
+                    Unit = "Adet",
+                    WarrantyMonths = 6,
+                    Notes = null,
+                    ClientId = 1,
+                    Status = Status.Active,
+                    CreatedDate = now.AddMonths(-2),
+                    CreatedBy = 1
+                },
+                new Part
+                {
+                    Id = 4,
+                    PartCode = "FLT-OIL-001",
+                    Name = "Yağ Filtresi",
+                    Description = "Motor yağ filtresi",
+                    Category = PartCategory.Filters,
+                    BrandType = PartBrandType.Original,
+                    Brand = "Bosch",
+                    OEMNumber = "BOS-23456",
+                    Barcode = "8690123456792",
+                    PurchasePrice = 35m,
+                    SalePrice = 60m,
+                    TaxRate = 20m,
+                    MinimumStockLevel = 15,
+                    IsLowStockAlertEnabled = true,
+                    SupplierId = null,
+                    Unit = "Adet",
+                    WarrantyMonths = 6,
+                    Notes = null,
+                    ClientId = 1,
+                    Status = Status.Active,
+                    CreatedDate = now.AddMonths(-2),
+                    CreatedBy = 1
+                },
+                new Part
+                {
+                    Id = 5,
+                    PartCode = "OIL-ENG-001",
+                    Name = "Motor Yağı 5W-30 (5L)",
+                    Description = "Sentetik motor yağı",
+                    Category = PartCategory.OilsAndFluids,
+                    BrandType = PartBrandType.Original,
+                    Brand = "Castrol",
+                    OEMNumber = "CAS-34567",
+                    Barcode = "8690123456793",
+                    PurchasePrice = 120m,
+                    SalePrice = 180m,
+                    TaxRate = 20m,
+                    MinimumStockLevel = 20,
+                    IsLowStockAlertEnabled = true,
+                    SupplierId = null,
+                    Unit = "Litre",
+                    WarrantyMonths = null,
+                    Notes = "Yüksek performanslı sentetik yağ",
+                    ClientId = 1,
+                    Status = Status.Active,
+                    CreatedDate = now.AddMonths(-2),
+                    CreatedBy = 1
+                },
+                new Part
+                {
+                    Id = 6,
+                    PartCode = "SUS-STR-001",
+                    Name = "Ön Amortisör",
+                    Description = "Ön amortisör - sol",
+                    Category = PartCategory.Suspension,
+                    BrandType = PartBrandType.Aftermarket,
+                    Brand = "Monroe",
+                    OEMNumber = "MON-45678",
+                    Barcode = "8690123456794",
+                    PurchasePrice = 450m,
+                    SalePrice = 680m,
+                    TaxRate = 20m,
+                    MinimumStockLevel = 2,
+                    IsLowStockAlertEnabled = true,
+                    SupplierId = null,
+                    Unit = "Adet",
+                    WarrantyMonths = 24,
+                    Notes = null,
+                    ClientId = 1,
+                    Status = Status.Active,
+                    CreatedDate = now.AddMonths(-1),
+                    CreatedBy = 1
+                },
+                new Part
+                {
+                    Id = 7,
+                    PartCode = "ELC-BAT-001",
+                    Name = "Akü 12V 70Ah",
+                    Description = "Otomotiv aküsü",
+                    Category = PartCategory.Electrical,
+                    BrandType = PartBrandType.Original,
+                    Brand = "Varta",
+                    OEMNumber = "VAR-56789",
+                    Barcode = "8690123456795",
+                    PurchasePrice = 650m,
+                    SalePrice = 950m,
+                    TaxRate = 20m,
+                    MinimumStockLevel = 3,
+                    IsLowStockAlertEnabled = true,
+                    SupplierId = null,
+                    Unit = "Adet",
+                    WarrantyMonths = 24,
+                    Notes = "Yüksek kapasiteli akü",
+                    ClientId = 1,
+                    Status = Status.Active,
+                    CreatedDate = now.AddMonths(-1),
+                    CreatedBy = 1
+                },
+                new Part
+                {
+                    Id = 8,
+                    PartCode = "LGT-BULB-001",
+                    Name = "Far Ampulü H7",
+                    Description = "Halojen far ampulü",
+                    Category = PartCategory.Lighting,
+                    BrandType = PartBrandType.Aftermarket,
+                    Brand = "Osram",
+                    OEMNumber = "OSR-67890",
+                    Barcode = "8690123456796",
+                    PurchasePrice = 25m,
+                    SalePrice = 45m,
+                    TaxRate = 20m,
+                    MinimumStockLevel = 10,
+                    IsLowStockAlertEnabled = true,
+                    SupplierId = null,
+                    Unit = "Adet",
+                    WarrantyMonths = 6,
+                    Notes = null,
+                    ClientId = 1,
+                    Status = Status.Active,
+                    CreatedDate = now.AddMonths(-1),
+                    CreatedBy = 1
+                },
+                new Part
+                {
+                    Id = 9,
+                    PartCode = "ENG-SPARK-001",
+                    Name = "Buji Seti (4'lü)",
+                    Description = "Iridium buji seti",
+                    Category = PartCategory.Engine,
+                    BrandType = PartBrandType.Original,
+                    Brand = "NGK",
+                    OEMNumber = "NGK-78901",
+                    Barcode = "8690123456797",
+                    PurchasePrice = 180m,
+                    SalePrice = 280m,
+                    TaxRate = 20m,
+                    MinimumStockLevel = 5,
+                    IsLowStockAlertEnabled = true,
+                    SupplierId = null,
+                    Unit = "Adet",
+                    WarrantyMonths = 12,
+                    Notes = "Uzun ömürlü iridium buji",
+                    ClientId = 1,
+                    Status = Status.Active,
+                    CreatedDate = now.AddDays(-30),
+                    CreatedBy = 1
+                },
+                new Part
+                {
+                    Id = 10,
+                    PartCode = "TIR-215-60-16",
+                    Name = "Lastik 215/60 R16",
+                    Description = "Yaz lastiği",
+                    Category = PartCategory.TiresAndWheels,
+                    BrandType = PartBrandType.Aftermarket,
+                    Brand = "Michelin",
+                    OEMNumber = "MIC-89012",
+                    Barcode = "8690123456798",
+                    PurchasePrice = 850m,
+                    SalePrice = 1250m,
+                    TaxRate = 20m,
+                    MinimumStockLevel = 4,
+                    IsLowStockAlertEnabled = true,
+                    SupplierId = null,
+                    Unit = "Adet",
+                    WarrantyMonths = 36,
+                    Notes = "Yüksek performanslı yaz lastiği",
+                    ClientId = 1,
+                    Status = Status.Active,
+                    CreatedDate = now.AddDays(-20),
+                    CreatedBy = 1
+                }
+            };
+        }
+
+        public static void SeedParts(this Microsoft.EntityFrameworkCore.ModelBuilder builder)
+        {
+            builder.Entity<Part>().HasData(GetParts());
+        }
+    }
+}

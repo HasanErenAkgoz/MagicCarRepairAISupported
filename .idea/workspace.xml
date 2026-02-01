@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b4cb2329-7bf3-4c07-bf4a-d847211b3976" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Core.Packages.WebAPI/Controllers/CustomerPortalController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.WebAPI/Controllers/CustomerPortalController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.WebAPI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.WebAPI/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.WebAPI/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.WebAPI/Properties/launchSettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/app.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/app/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/app/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/navigation/AppNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/navigation/AppNavigator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/AdminDashboardOverviewScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/AdminDashboardOverviewScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/AdminDashboardScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/AdminDashboardScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/BillingInvoicesScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/BillingInvoicesScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/BillingScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/BillingScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerDashboardScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerDashboardScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerDirectoryScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerDirectoryScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerListScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerListScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerPortalScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerPortalScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/DataSyncScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/DataSyncScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/GlobalSearchScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/GlobalSearchScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/InventoryScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/InventoryScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/LoginScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/LoginScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/MessagesScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/MessagesScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/MessagesSupportScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/MessagesSupportScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/NewWorkOrderScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/NewWorkOrderScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/PublicShopProfileScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/PublicShopProfileScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/ServiceCalendarScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/ServiceCalendarScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/ServiceScheduleScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/ServiceScheduleScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/StaffManagementScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/StaffManagementScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/VehicleProfileScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/VehicleProfileScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderDetailScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderDetailScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderListScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderListScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderManagementScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderManagementScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrdersEmptyScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrdersEmptyScreen.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="38j4v8AqZxg2NGITFa25t6ddXcg" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b4cb2329-7bf3-4c07-bf4a-d847211b3976" name="Changes" comment="" />
+      <created>1769299875032</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1769299875032</updated>
+    </task>
+    <servers />
+  </component>
+</project>

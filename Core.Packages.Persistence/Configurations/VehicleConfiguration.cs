@@ -27,6 +27,15 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
+            builder.Property(v => v.Vin)
+                .HasMaxLength(50);
+
+            builder.Property(v => v.ModelVariant)
+                .HasMaxLength(100);
+
+            builder.Property(v => v.Trim)
+                .HasMaxLength(100);
+
             builder.HasIndex(v => v.ClientId);
             builder.HasIndex(v => new { v.LicensePlate, v.ClientId });
 

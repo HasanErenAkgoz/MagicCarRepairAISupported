@@ -1,4 +1,4 @@
-using MagicCarRepairAISupported.Domain.Comman;
+﻿using MagicCarRepairAISupported.Domain.Comman;
 using MagicCarRepairAISupported.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,34 +16,17 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public string FullName => $"{FirstName} {LastName}";
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
+        public string? Avatar { get; set; }
         public string Address { get; set; }
         public DateTime DateTimeOfBirth { get; set; }
         public string Language { get; set; } = "tr";
-        
-        /// <summary>
-        /// Kullan�c� hesab� (nullable - hen�z kay�t olmam�� m��teriler i�in)
-        /// </summary>
+        public bool IsVip { get; set; } = false;
         public int? UserId { get; set; }
         public virtual User? User { get; set; }
-        
-        // Multi-tenant support
         public int ClientId { get; set; }
         public virtual Client Client { get; set; }
-        
         public virtual ICollection<Vehicle> Vehicles { get; set; }
-        
-        public int GetAge()
-        {
-            var today = DateTime.Today;
-            var age = today.Year - DateTimeOfBirth.Year;
-            if (DateTimeOfBirth.Date > today.AddYears(-age)) age--;
-            return age;
-        }
-
-        public bool IsBirthdayToday()
-        {
-            return DateTimeOfBirth.Month == DateTime.Today.Month &&
-                   DateTimeOfBirth.Day == DateTime.Today.Day;
-        }
+        public int GetAge() { var today = DateTime.Today; var age = today.Year - DateTimeOfBirth.Year; if (DateTimeOfBirth.Date > today.AddYears(-age)) age--; return age; }
+        public bool IsBirthdayToday() { return DateTimeOfBirth.Month == DateTime.Today.Month && DateTimeOfBirth.Day == DateTime.Today.Day; }
     }
 }

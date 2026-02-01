@@ -55,6 +55,7 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Commands.Crea
                 Address = request.Address,
                 DateTimeOfBirth = request.DateTimeOfBirth,
                 Language = request.Language,
+                IsVip = request.IsVip,
                 UserId = request.UserId,
                 ClientId = clientId
             };

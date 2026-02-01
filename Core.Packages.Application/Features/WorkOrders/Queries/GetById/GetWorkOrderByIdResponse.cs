@@ -7,11 +7,9 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
         public int Id { get; set; }
         public string WorkOrderNumber { get; set; }
         public int VehicleId { get; set; }
-        public string VehicleLicensePlate { get; set; }
-        public string VehicleBrand { get; set; }
-        public string VehicleModel { get; set; }
+        public VehicleDetailDto Vehicle { get; set; }
         public int CustomerId { get; set; }
-        public string CustomerName { get; set; }
+        public CustomerDetailDto Customer { get; set; }
         public DateTime EntryDate { get; set; }
         public DateTime? EstimatedDeliveryDate { get; set; }
         public DateTime? ActualDeliveryDate { get; set; }
@@ -27,6 +25,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
         public decimal DiscountAmount { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal? EstimatedCost { get; set; }
         public decimal PaidAmount { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
         public string PaymentStatusName { get; set; }
@@ -37,6 +36,39 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
         public List<WorkOrderLaborDto> Labors { get; set; } = new();
         public List<WorkOrderTimelineDto> Timeline { get; set; } = new();
         public List<WorkOrderPhotoDto> Photos { get; set; } = new();
+    }
+
+    public class CustomerDetailDto
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string FullName { get; set; }
+        public string Phone { get; set; }
+        public string? Avatar { get; set; }
+    }
+
+    public class VehicleDetailDto
+    {
+        public int Id { get; set; }
+        public string LicensePlate { get; set; }
+        public string Brand { get; set; }
+        public string Model { get; set; }
+        public int? Year { get; set; }
+        public string? Vin { get; set; }
+        public string? ModelVariant { get; set; }
+        public string? Trim { get; set; }
+        public List<VehiclePhotoDto> Photos { get; set; } = new List<VehiclePhotoDto>();
+    }
+
+    public class VehiclePhotoDto
+    {
+        public int Id { get; set; }
+        public string FilePath { get; set; }
+        public string? Description { get; set; }
+        public string? PhotoType { get; set; }
+        public DateTime UploadDate { get; set; }
+        public int DisplayOrder { get; set; }
     }
 
     public class WorkOrderItemDto

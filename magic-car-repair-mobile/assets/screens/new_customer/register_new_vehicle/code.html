@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register New Vehicle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3c83f6",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101722",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen font-display">
+<div class="max-w-[480px] mx-auto min-h-screen flex flex-col bg-background-light dark:bg-background-dark">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-10 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-center size-10 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+</div>
+<h2 class="text-lg font-bold flex-1 text-center pr-10">Register New Vehicle</h2>
+</header>
+<main class="flex-1 pb-24">
+<!-- Section: Vehicle Identity -->
+<div class="px-4 pt-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">directions_car</span>
+<h3 class="text-lg font-bold leading-tight tracking-tight">Araç Bilgileri</h3>
+</div>
+<!-- Plaka Field -->
+<div class="mb-4">
+<label class="flex flex-col w-full">
+<p class="text-sm font-medium leading-normal pb-1.5 px-1 opacity-80">Plaka</p>
+<input class="form-input flex w-full rounded-xl text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1b2027] focus:border-primary h-14 placeholder:text-slate-400 dark:placeholder:text-[#9ca7ba] p-4 text-base font-normal" placeholder="34 ABC 123" type="text"/>
+</label>
+</div>
+<!-- Marka & Model -->
+<div class="flex gap-4 mb-4">
+<label class="flex flex-col flex-1">
+<p class="text-sm font-medium leading-normal pb-1.5 px-1 opacity-80">Marka</p>
+<input class="form-input flex w-full rounded-xl text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1b2027] focus:border-primary h-14 placeholder:text-slate-400 dark:placeholder:text-[#9ca7ba] p-4 text-base font-normal" placeholder="Örn: BMW" type="text"/>
+</label>
+<label class="flex flex-col flex-1">
+<p class="text-sm font-medium leading-normal pb-1.5 px-1 opacity-80">Model</p>
+<input class="form-input flex w-full rounded-xl text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1b2027] focus:border-primary h-14 placeholder:text-slate-400 dark:placeholder:text-[#9ca7ba] p-4 text-base font-normal" placeholder="Örn: 320i" type="text"/>
+</label>
+</div>
+<!-- Yıl -->
+<div class="mb-4">
+<label class="flex flex-col w-full">
+<p class="text-sm font-medium leading-normal pb-1.5 px-1 opacity-80">Üretim Yılı</p>
+<input class="form-input flex w-full rounded-xl text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1b2027] focus:border-primary h-14 placeholder:text-slate-400 dark:placeholder:text-[#9ca7ba] p-4 text-base font-normal" placeholder="2023" type="number"/>
+</label>
+</div>
+</div>
+<!-- Section: Yakıt & Vites -->
+<div class="px-4 pt-4">
+<h3 class="text-sm font-medium leading-normal pb-3 px-1 opacity-80">Yakıt Tipi</h3>
+<div class="flex flex-wrap gap-2 mb-6">
+<button class="px-5 py-2.5 rounded-full bg-primary text-white text-sm font-semibold shadow-md shadow-primary/20">Benzin</button>
+<button class="px-5 py-2.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium border border-transparent hover:border-primary/30 transition-all">Dizel</button>
+<button class="px-5 py-2.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium border border-transparent hover:border-primary/30 transition-all">Hibrit</button>
+<button class="px-5 py-2.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium border border-transparent hover:border-primary/30 transition-all">Elektrik</button>
+</div>
+<h3 class="text-sm font-medium leading-normal pb-3 px-1 opacity-80">Vites Tipi</h3>
+<div class="flex flex-wrap gap-2 mb-6">
+<button class="px-5 py-2.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium border border-transparent hover:border-primary/30 transition-all">Manuel</button>
+<button class="px-5 py-2.5 rounded-full bg-primary text-white text-sm font-semibold shadow-md shadow-primary/20">Otomatik</button>
+</div>
+</div>
+<!-- Section: Technical IDs -->
+<div class="px-4 pt-4">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">description</span>
+<h3 class="text-lg font-bold leading-tight tracking-tight">Teknik Detaylar</h3>
+</div>
+<div class="mb-4">
+<label class="flex flex-col w-full">
+<p class="text-sm font-medium leading-normal pb-1.5 px-1 opacity-80">Şasi No (VIN)</p>
+<input class="form-input flex w-full rounded-xl text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1b2027] focus:border-primary h-14 placeholder:text-slate-400 dark:placeholder:text-[#9ca7ba] p-4 text-base font-normal" placeholder="17 haneli şasi numarası" type="text"/>
+</label>
+</div>
+<div class="mb-4">
+<label class="flex flex-col w-full">
+<p class="text-sm font-medium leading-normal pb-1.5 px-1 opacity-80">Motor No</p>
+<input class="form-input flex w-full rounded-xl text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1b2027] focus:border-primary h-14 placeholder:text-slate-400 dark:placeholder:text-[#9ca7ba] p-4 text-base font-normal" placeholder="Motor blok numarası" type="text"/>
+</label>
+</div>
+</div>
+</main>
+<!-- Fixed Footer CTA -->
+<footer class="fixed bottom-0 left-0 right-0 max-w-[480px] mx-auto p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">save</span>
+                Aracı Kaydet
+            </button>
+</footer>
+</div>
+</body></html>

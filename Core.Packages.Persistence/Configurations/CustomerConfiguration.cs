@@ -39,6 +39,10 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasMaxLength(10)
                 .HasDefaultValue("tr");
 
+            builder.Property(c => c.IsVip)
+                .IsRequired()
+                .HasDefaultValue(false);
+
             // User relationship (nullable)
             builder.HasIndex(c => c.UserId);
 

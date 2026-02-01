@@ -65,6 +65,8 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Commands.Upda
                 customer.DateTimeOfBirth = request.DateTimeOfBirth.Value;
             if (!string.IsNullOrEmpty(request.Language))
                 customer.Language = request.Language;
+            if (request.IsVip.HasValue)
+                customer.IsVip = request.IsVip.Value;
             if (request.UserId.HasValue)
                 customer.UserId = request.UserId;
 

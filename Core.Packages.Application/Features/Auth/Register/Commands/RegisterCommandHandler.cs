@@ -5,18 +5,19 @@ using MagicCarRepairAISupported.Application.Shared.Result;
 using MagicCarRepairAISupported.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using UserEntity = MagicCarRepairAISupported.Domain.Entities.User;
 
 namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
 {
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, IDataResult<int>>
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<UserEntity> _userManager;
         private readonly RoleManager<Role> _roleManager;
         private readonly IMediator _mediator;
         private readonly ITenantService _tenantService;
         
         public RegisterCommandHandler(
-            UserManager<User> userManager, 
+            UserManager<UserEntity> userManager, 
             RoleManager<Role> roleManager, 
             IMediator mediator,
             ITenantService tenantService)
@@ -30,7 +31,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
         public async Task<IDataResult<int>> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
 
-            User? existingUser = await _userManager.FindByEmailAsync(request.Email);
+            UserEntity? existingUser = await _userManager.FindByEmailAsync(request.Email);
             string baseRoleName = "System Admin";
 
             if (existingUser != null)
@@ -45,7 +46,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
             // Get current ClientId (default to 1 if not set, for system operations)
             var clientId = _tenantService.GetCurrentClientId() ?? 1;
 
-            User user = new User
+            UserEntity user = new UserEntity
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,

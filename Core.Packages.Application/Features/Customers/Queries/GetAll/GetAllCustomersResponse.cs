@@ -13,6 +13,7 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Queries.GetAl
         public DateTime DateTimeOfBirth { get; set; }
         public int Age { get; set; }
         public string Language { get; set; }
+        public bool IsVip { get; set; }
         public int? UserId { get; set; }
         public DateTime CreatedDate { get; set; }
     }

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Yeni İş Emri - Adım 2</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3c83f6",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101722",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display">
+<!-- Mobile Container -->
+<div class="relative flex h-screen max-w-md mx-auto flex-col bg-background-light dark:bg-background-dark overflow-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800">
+<div class="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">Yeni İş Emri</h2>
+</div>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto custom-scrollbar pb-32">
+<!-- PageIndicators -->
+<div class="flex w-full flex-row items-center justify-center gap-3 py-6">
+<div class="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+<div class="h-2 w-6 rounded-full bg-primary"></div>
+<div class="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+<div class="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+</div>
+<!-- Vehicle Stats Section -->
+<div class="px-4 space-y-4">
+<!-- TextField: Km Bilgisi -->
+<div class="flex flex-col gap-2">
+<label class="flex flex-col flex-1">
+<p class="text-slate-900 dark:text-white text-sm font-semibold leading-normal pb-1">Km Bilgisi</p>
+<input class="form-input flex w-full rounded-xl text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 focus:border-primary focus:ring-1 focus:ring-primary h-14 placeholder:text-slate-400 dark:placeholder:text-slate-500 p-4 text-base font-normal" placeholder="Kilometre giriniz" type="number" value="45200"/>
+</label>
+</div>
+<!-- Slider: Yakıt Seviyesi -->
+<div class="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<p class="text-slate-900 dark:text-white text-sm font-semibold leading-normal">Yakıt Seviyesi</p>
+<p class="text-primary text-sm font-bold leading-normal">75%</p>
+</div>
+<div class="relative flex h-6 w-full items-center">
+<div class="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+<div class="h-full w-3/4 bg-primary"></div>
+</div>
+<div class="absolute left-[75%] -translate-x-1/2 h-6 w-6 rounded-full bg-white border-4 border-primary shadow-lg"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- SectionHeader: Hizmet Türü -->
+<div class="px-4 pt-6 pb-2">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Hizmet Türü</h3>
+</div>
+<!-- Service Selection Chips -->
+<div class="flex gap-2 px-4 overflow-x-auto custom-scrollbar pb-2">
+<div class="flex h-10 shrink-0 items-center justify-center rounded-full bg-primary px-5 text-sm font-semibold text-white">
+                    Periyodik Bakım
+                </div>
+<div class="flex h-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 px-5 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                    Kaporta
+                </div>
+<div class="flex h-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 px-5 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                    Mekanik
+                </div>
+<div class="flex h-10 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 px-5 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                    Elektrik
+                </div>
+</div>
+<!-- SectionHeader: Müşteri Şikayeti -->
+<div class="px-4 pt-6 pb-2">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Müşteri Şikayeti</h3>
+</div>
+<!-- TextField Area -->
+<div class="px-4">
+<textarea class="form-textarea w-full rounded-xl text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 focus:border-primary focus:ring-1 focus:ring-primary min-h-[120px] placeholder:text-slate-400 dark:placeholder:text-slate-500 p-4 text-base font-normal resize-none" placeholder="Müşterinin belirttiği sorunları detaylandırınız..."></textarea>
+</div>
+<!-- SectionHeader: Öncelik -->
+<div class="px-4 pt-6 pb-2">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Öncelik Seviyesi</h3>
+</div>
+<!-- Priority Selector (Radio Buttons) -->
+<div class="px-4 flex flex-col gap-3">
+<label class="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 cursor-pointer">
+<span class="text-slate-700 dark:text-slate-200 font-medium">Düşük</span>
+<input class="h-5 w-5 text-primary border-slate-300 dark:border-slate-700 bg-transparent focus:ring-primary" name="priority" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border-2 border-primary bg-primary/5 cursor-pointer">
+<span class="text-slate-900 dark:text-white font-semibold">Normal</span>
+<input checked="" class="h-5 w-5 text-primary border-primary bg-transparent focus:ring-primary" name="priority" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 cursor-pointer">
+<span class="text-slate-700 dark:text-slate-200 font-medium">Yüksek</span>
+<input class="h-5 w-5 text-primary border-slate-300 dark:border-slate-700 bg-transparent focus:ring-primary" name="priority" type="radio"/>
+</label>
+</div>
+</div>
+<!-- Bottom Action Button -->
+<div class="absolute bottom-0 left-0 right-0 p-4 bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800">
+<button class="w-full h-14 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                Devam Et
+                <span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</body></html>

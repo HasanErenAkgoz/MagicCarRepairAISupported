@@ -548,14 +548,14 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             ContactEmail = "demo@example.com",
                             ContactPhone = "+90 555 123 4567",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 545, DateTimeKind.Utc).AddTicks(2609),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 723, DateTimeKind.Utc).AddTicks(1287),
                             Description = "Demo tenant for testing",
                             IsActive = true,
                             IsPublicProfileEnabled = false,
                             Name = "Demo Client",
                             Status = 1,
-                            SubscriptionEndDate = new DateTime(2027, 1, 11, 19, 13, 50, 545, DateTimeKind.Utc).AddTicks(2376),
-                            SubscriptionStartDate = new DateTime(2026, 1, 11, 19, 13, 50, 545, DateTimeKind.Utc).AddTicks(2120)
+                            SubscriptionEndDate = new DateTime(2027, 2, 1, 10, 26, 35, 723, DateTimeKind.Utc).AddTicks(1061),
+                            SubscriptionStartDate = new DateTime(2026, 2, 1, 10, 26, 35, 723, DateTimeKind.Utc).AddTicks(795)
                         },
                         new
                         {
@@ -564,14 +564,14 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             ContactEmail = "test@example.com",
                             ContactPhone = "+90 555 987 6543",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 545, DateTimeKind.Utc).AddTicks(2930),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 723, DateTimeKind.Utc).AddTicks(1711),
                             Description = "Test tenant for development",
                             IsActive = true,
                             IsPublicProfileEnabled = false,
                             Name = "Test Client",
                             Status = 1,
-                            SubscriptionEndDate = new DateTime(2027, 1, 11, 19, 13, 50, 545, DateTimeKind.Utc).AddTicks(2926),
-                            SubscriptionStartDate = new DateTime(2026, 1, 11, 19, 13, 50, 545, DateTimeKind.Utc).AddTicks(2926)
+                            SubscriptionEndDate = new DateTime(2027, 2, 1, 10, 26, 35, 723, DateTimeKind.Utc).AddTicks(1707),
+                            SubscriptionStartDate = new DateTime(2026, 2, 1, 10, 26, 35, 723, DateTimeKind.Utc).AddTicks(1706)
                         });
                 });
 
@@ -587,6 +587,9 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Avatar")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
@@ -614,6 +617,11 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(11)
                         .HasColumnType("nvarchar(11)");
+
+                    b.Property<bool>("IsVip")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Language")
                         .IsRequired()
@@ -653,6 +661,147 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                     b.HasIndex("IdentityNo", "ClientId");
 
                     b.ToTable("Customers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "İstanbul, Kadıköy, Bağdat Caddesi No:123",
+                            Avatar = "https://i.pravatar.cc/150?u=1",
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 8, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(9253),
+                            DateTimeOfBirth = new DateTime(1985, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "ahmet.yilmaz@example.com",
+                            FirstName = "Ahmet",
+                            IdentityNo = "11111111111",
+                            IsVip = false,
+                            Language = "tr",
+                            LastName = "Yılmaz",
+                            PhoneNumber = "+905321234567",
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "İstanbul, Beşiktaş, Barbaros Bulvarı No:45",
+                            Avatar = "https://i.pravatar.cc/150?u=2",
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 9, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(9253),
+                            DateTimeOfBirth = new DateTime(1990, 8, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "mehmet.demir@example.com",
+                            FirstName = "Mehmet",
+                            IdentityNo = "22222222222",
+                            IsVip = false,
+                            Language = "tr",
+                            LastName = "Demir",
+                            PhoneNumber = "+905331234568",
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Address = "İstanbul, Şişli, Halaskargazi Caddesi No:78",
+                            Avatar = "https://i.pravatar.cc/150?u=3",
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 10, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(9253),
+                            DateTimeOfBirth = new DateTime(1988, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "ayse.kaya@example.com",
+                            FirstName = "Ayşe",
+                            IdentityNo = "33333333333",
+                            IsVip = false,
+                            Language = "tr",
+                            LastName = "Kaya",
+                            PhoneNumber = "+905341234569",
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Address = "İstanbul, Üsküdar, Bağlarbaşı Caddesi No:12",
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 11, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(9253),
+                            DateTimeOfBirth = new DateTime(1992, 11, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "fatma.celik@example.com",
+                            FirstName = "Fatma",
+                            IdentityNo = "44444444444",
+                            IsVip = false,
+                            Language = "tr",
+                            LastName = "Çelik",
+                            PhoneNumber = "+905351234570",
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Address = "İstanbul, Bakırköy, Atatürk Caddesi No:234",
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 12, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(9253),
+                            DateTimeOfBirth = new DateTime(1987, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "ali.ozturk@example.com",
+                            FirstName = "Ali",
+                            IdentityNo = "55555555555",
+                            IsVip = false,
+                            Language = "tr",
+                            LastName = "Öztürk",
+                            PhoneNumber = "+905361234571",
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Address = "İstanbul, Maltepe, Bağdat Caddesi No:567",
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(9253),
+                            DateTimeOfBirth = new DateTime(1991, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "zeynep.arslan@example.com",
+                            FirstName = "Zeynep",
+                            IdentityNo = "66666666666",
+                            IsVip = false,
+                            Language = "tr",
+                            LastName = "Arslan",
+                            PhoneNumber = "+905371234572",
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Address = "İstanbul, Ataşehir, Barbaros Mahallesi No:89",
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 17, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(9253),
+                            DateTimeOfBirth = new DateTime(1989, 9, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "mustafa.sahin@example.com",
+                            FirstName = "Mustafa",
+                            IdentityNo = "77777777777",
+                            IsVip = false,
+                            Language = "tr",
+                            LastName = "Şahin",
+                            PhoneNumber = "+905381234573",
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Address = "İstanbul, Pendik, Ertuğrul Gazi Caddesi No:345",
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 25, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(9253),
+                            DateTimeOfBirth = new DateTime(1993, 4, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "elif.yildiz@example.com",
+                            FirstName = "Elif",
+                            IdentityNo = "88888888888",
+                            IsVip = false,
+                            Language = "tr",
+                            LastName = "Yıldız",
+                            PhoneNumber = "+905391234574",
+                            Status = 1
+                        });
                 });
 
             modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.Employee", b =>
@@ -791,7 +940,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             BloodType = "A+",
                             ClientId = 1,
                             CreatedBy = 1,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 561, DateTimeKind.Utc).AddTicks(4052),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(2718),
                             DisplayOrder = 0,
                             Email = "ahmet.yilmaz@democlient.com",
                             EmergencyContact = "Ayşe Yılmaz",
@@ -816,7 +965,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             BloodType = "0+",
                             ClientId = 1,
                             CreatedBy = 1,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 561, DateTimeKind.Utc).AddTicks(4560),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(3289),
                             DisplayOrder = 0,
                             Email = "mehmet.demir@democlient.com",
                             EmergencyContact = "Fatma Demir",
@@ -841,7 +990,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             BloodType = "B+",
                             ClientId = 1,
                             CreatedBy = 1,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 561, DateTimeKind.Utc).AddTicks(4586),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(3315),
                             DisplayOrder = 0,
                             Email = "ali.kaya@democlient.com",
                             EmergencyContact = "Zeynep Kaya",
@@ -866,7 +1015,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             BloodType = "A-",
                             ClientId = 1,
                             CreatedBy = 1,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 561, DateTimeKind.Utc).AddTicks(4601),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(3331),
                             DisplayOrder = 0,
                             Email = "mustafa.celik@democlient.com",
                             EmergencyContact = "Emine Çelik",
@@ -891,7 +1040,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             BloodType = "0-",
                             ClientId = 1,
                             CreatedBy = 1,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 561, DateTimeKind.Utc).AddTicks(4613),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(3344),
                             DisplayOrder = 0,
                             Email = "hasan.ozturk@democlient.com",
                             EmergencyContact = "Ayşe Öztürk",
@@ -916,7 +1065,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             BloodType = "AB+",
                             ClientId = 1,
                             CreatedBy = 1,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 561, DateTimeKind.Utc).AddTicks(4626),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(3356),
                             DisplayOrder = 0,
                             Email = "emre.yildiz@democlient.com",
                             EmergencyContact = "Seda Yıldız",
@@ -941,7 +1090,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             BloodType = "A+",
                             ClientId = 1,
                             CreatedBy = 1,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 561, DateTimeKind.Utc).AddTicks(4639),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(3368),
                             DisplayOrder = 0,
                             Email = "caner.arslan@democlient.com",
                             EmergencyContact = "Elif Arslan",
@@ -966,7 +1115,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             BloodType = "0+",
                             ClientId = 1,
                             CreatedBy = 1,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 561, DateTimeKind.Utc).AddTicks(4650),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(3379),
                             DisplayOrder = 0,
                             Email = "burak.sahin@democlient.com",
                             EmergencyContact = "Merve Şahin",
@@ -991,7 +1140,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             BloodType = "B+",
                             ClientId = 2,
                             CreatedBy = 1,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 561, DateTimeKind.Utc).AddTicks(4661),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 740, DateTimeKind.Utc).AddTicks(3390),
                             DisplayOrder = 0,
                             Email = "kemal.yalcin@testclient.com",
                             EmergencyContact = "Sevgi Yalçın",
@@ -1065,7 +1214,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3419),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2438),
                             ErrorCode = "ALREADY_EXISTS",
                             Language = "tr",
                             Message = "Zaten mevcut.",
@@ -1075,7 +1224,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3424),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2442),
                             ErrorCode = "ADDED_SUCCESSFULLY",
                             Language = "tr",
                             Message = "Başarıyla eklendi.",
@@ -1085,7 +1234,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 3,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3424),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2443),
                             ErrorCode = "UPDATED_SUCCESSFULLY",
                             Language = "tr",
                             Message = "Başarıyla güncellendi.",
@@ -1095,7 +1244,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 4,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3425),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2444),
                             ErrorCode = "DELETED_SUCCESSFULLY",
                             Language = "tr",
                             Message = "Başarıyla silindi.",
@@ -1105,7 +1254,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 5,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3426),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2445),
                             ErrorCode = "NOT_FOUND",
                             Language = "tr",
                             Message = "Bulunamadı.",
@@ -1115,7 +1264,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 6,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3426),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2445),
                             ErrorCode = "UNAUTHORIZED_ACCESS",
                             Language = "tr",
                             Message = "Yetkisiz erişim.",
@@ -1125,7 +1274,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 7,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3427),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2446),
                             ErrorCode = "INVALID_OPERATION",
                             Language = "tr",
                             Message = "Geçersiz işlem.",
@@ -1135,7 +1284,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 8,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3428),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2446),
                             ErrorCode = "SERVER_ERROR",
                             Language = "tr",
                             Message = "Sunucu hatası oluştu.",
@@ -1145,7 +1294,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 9,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3428),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2447),
                             ErrorCode = "VALIDATION_NOT_EMPTY",
                             Language = "tr",
                             Message = "{PropertyName} alanı zorunludur.",
@@ -1155,7 +1304,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 10,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3429),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2447),
                             ErrorCode = "VALIDATION_EMAIL_INVALID",
                             Language = "tr",
                             Message = "E-posta adresi geçerli değil.",
@@ -1165,7 +1314,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 11,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3430),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2448),
                             ErrorCode = "VALIDATION_PASSWORDS_DO_NOT_MATCH",
                             Language = "tr",
                             Message = "Şifreler eşleşmiyor.",
@@ -1175,7 +1324,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 12,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3430),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2449),
                             ErrorCode = "VALIDATION_PASSWORD_LENGTH",
                             Language = "tr",
                             Message = "Şifre en az 6 karakter olmalıdır.",
@@ -1185,7 +1334,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 13,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3431),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2449),
                             ErrorCode = "VALIDATION_PASSWORD_UPPERCASE",
                             Language = "tr",
                             Message = "Şifre en az bir büyük harf içermelidir.",
@@ -1195,7 +1344,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 14,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3431),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2450),
                             ErrorCode = "VALIDATION_PASSWORD_DIGIT",
                             Language = "tr",
                             Message = "Şifre en az bir rakam içermelidir.",
@@ -1205,7 +1354,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 15,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3432),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2451),
                             ErrorCode = "VALIDATION_PASSWORD_SPECIAL_CHARACTER",
                             Language = "tr",
                             Message = "Şifre en az bir özel karakter içermelidir.",
@@ -1215,7 +1364,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 16,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3432),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2451),
                             ErrorCode = "EMAIL_SENT_SUCCESSFULLY",
                             Language = "tr",
                             Message = "E-posta başarıyla gönderildi!",
@@ -1225,7 +1374,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 17,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3433),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2452),
                             ErrorCode = "EMAIL_SEND_FAILED",
                             Language = "tr",
                             Message = "E-posta gönderilemedi!",
@@ -1235,7 +1384,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 18,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3434),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2452),
                             ErrorCode = "CLIENT_CODE_EXISTS",
                             Language = "tr",
                             Message = "{Code} koduna sahip müşteri zaten mevcut.",
@@ -1245,7 +1394,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 19,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3434),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2453),
                             ErrorCode = "CLIENT_NOT_FOUND",
                             Language = "tr",
                             Message = "Müşteri bulunamadı.",
@@ -1255,7 +1404,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 20,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3435),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2453),
                             ErrorCode = "VEHICLE_KM_LOWER_THAN_CURRENT",
                             Language = "tr",
                             Message = "{LicensePlate} plakalı araç için yeni kilometre ({NewKilometers}) mevcut kilometreden ({CurrentKilometers}) düşük olamaz.",
@@ -1265,7 +1414,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 21,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3435),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2454),
                             ErrorCode = "VEHICLE_KM_NEGATIVE",
                             Language = "tr",
                             Message = "{LicensePlate} plakalı araç için kilometre negatif olamaz ({NewKilometers}).",
@@ -1275,7 +1424,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 22,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3436),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2454),
                             ErrorCode = "EMPLOYEE_NO_EXISTS",
                             Language = "tr",
                             Message = "{EmployeeNo} numaralı personel zaten mevcut.",
@@ -1285,7 +1434,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 23,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3436),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2455),
                             ErrorCode = "EMPLOYEE_NOT_FOUND",
                             Language = "tr",
                             Message = "Personel bulunamadı.",
@@ -1295,7 +1444,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 24,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3679),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2819),
                             ErrorCode = "ALREADY_EXISTS",
                             Language = "en",
                             Message = "Already exists.",
@@ -1305,7 +1454,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 25,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3680),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2819),
                             ErrorCode = "ADDED_SUCCESSFULLY",
                             Language = "en",
                             Message = "Added successfully.",
@@ -1315,7 +1464,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 26,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3681),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2820),
                             ErrorCode = "UPDATED_SUCCESSFULLY",
                             Language = "en",
                             Message = "Updated successfully.",
@@ -1325,7 +1474,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 27,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3681),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2821),
                             ErrorCode = "DELETED_SUCCESSFULLY",
                             Language = "en",
                             Message = "Deleted successfully.",
@@ -1335,7 +1484,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 28,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3682),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2821),
                             ErrorCode = "NOT_FOUND",
                             Language = "en",
                             Message = "Not found.",
@@ -1345,7 +1494,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 29,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3682),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2822),
                             ErrorCode = "UNAUTHORIZED_ACCESS",
                             Language = "en",
                             Message = "Unauthorized access.",
@@ -1355,7 +1504,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 30,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3683),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2822),
                             ErrorCode = "INVALID_OPERATION",
                             Language = "en",
                             Message = "Invalid operation.",
@@ -1365,7 +1514,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 31,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3683),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2823),
                             ErrorCode = "SERVER_ERROR",
                             Language = "en",
                             Message = "A server error occurred.",
@@ -1375,7 +1524,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 32,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3684),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2824),
                             ErrorCode = "VALIDATION_NOT_EMPTY",
                             Language = "en",
                             Message = "{PropertyName} is required.",
@@ -1385,7 +1534,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 33,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3684),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2824),
                             ErrorCode = "VALIDATION_EMAIL_INVALID",
                             Language = "en",
                             Message = "Email address is not valid.",
@@ -1395,7 +1544,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 34,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3685),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2825),
                             ErrorCode = "VALIDATION_PASSWORDS_DO_NOT_MATCH",
                             Language = "en",
                             Message = "Passwords do not match.",
@@ -1405,7 +1554,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 35,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3685),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2826),
                             ErrorCode = "VALIDATION_PASSWORD_LENGTH",
                             Language = "en",
                             Message = "Password must be at least 6 characters.",
@@ -1415,7 +1564,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 36,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3686),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2826),
                             ErrorCode = "VALIDATION_PASSWORD_UPPERCASE",
                             Language = "en",
                             Message = "Password must contain at least one uppercase letter.",
@@ -1425,7 +1574,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 37,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3687),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2827),
                             ErrorCode = "VALIDATION_PASSWORD_DIGIT",
                             Language = "en",
                             Message = "Password must contain at least one digit.",
@@ -1435,7 +1584,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 38,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3687),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2827),
                             ErrorCode = "VALIDATION_PASSWORD_SPECIAL_CHARACTER",
                             Language = "en",
                             Message = "Password must contain at least one special character.",
@@ -1445,7 +1594,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 39,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3688),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2828),
                             ErrorCode = "EMAIL_SENT_SUCCESSFULLY",
                             Language = "en",
                             Message = "Email sent successfully!",
@@ -1455,7 +1604,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 40,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3688),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2828),
                             ErrorCode = "EMAIL_SEND_FAILED",
                             Language = "en",
                             Message = "Failed to send email!",
@@ -1465,7 +1614,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 41,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3689),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2829),
                             ErrorCode = "CLIENT_CODE_EXISTS",
                             Language = "en",
                             Message = "A client with code {Code} already exists.",
@@ -1475,7 +1624,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 42,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3689),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2829),
                             ErrorCode = "CLIENT_NOT_FOUND",
                             Language = "en",
                             Message = "Client not found.",
@@ -1485,7 +1634,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 43,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3690),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2830),
                             ErrorCode = "VEHICLE_KM_LOWER_THAN_CURRENT",
                             Language = "en",
                             Message = "New kilometers ({NewKilometers}) for vehicle {LicensePlate} cannot be lower than current kilometers ({CurrentKilometers}).",
@@ -1495,7 +1644,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 44,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3690),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2830),
                             ErrorCode = "VEHICLE_KM_NEGATIVE",
                             Language = "en",
                             Message = "Kilometers cannot be negative ({NewKilometers}) for vehicle {LicensePlate}.",
@@ -1505,7 +1654,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 45,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3691),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2831),
                             ErrorCode = "EMPLOYEE_NO_EXISTS",
                             Language = "en",
                             Message = "Employee with number {EmployeeNo} already exists.",
@@ -1515,7 +1664,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 46,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3691),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2832),
                             ErrorCode = "EMPLOYEE_NOT_FOUND",
                             Language = "en",
                             Message = "Employee not found.",
@@ -1525,7 +1674,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 47,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3703),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2837),
                             ErrorCode = "ALREADY_EXISTS",
                             Language = "ar",
                             Message = "موجود بالفعل.",
@@ -1535,7 +1684,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 48,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3704),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2837),
                             ErrorCode = "ADDED_SUCCESSFULLY",
                             Language = "ar",
                             Message = "تمت الإضافة بنجاح.",
@@ -1545,7 +1694,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 49,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3705),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2838),
                             ErrorCode = "UPDATED_SUCCESSFULLY",
                             Language = "ar",
                             Message = "تم التحديث بنجاح.",
@@ -1555,7 +1704,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 50,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3705),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2838),
                             ErrorCode = "DELETED_SUCCESSFULLY",
                             Language = "ar",
                             Message = "تم الحذف بنجاح.",
@@ -1565,7 +1714,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 51,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3706),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2839),
                             ErrorCode = "NOT_FOUND",
                             Language = "ar",
                             Message = "غير موجود.",
@@ -1575,7 +1724,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 52,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3706),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2839),
                             ErrorCode = "UNAUTHORIZED_ACCESS",
                             Language = "ar",
                             Message = "وصول غير مصرح به.",
@@ -1585,7 +1734,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 53,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3707),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2840),
                             ErrorCode = "INVALID_OPERATION",
                             Language = "ar",
                             Message = "عملية غير صالحة.",
@@ -1595,7 +1744,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 54,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3707),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2840),
                             ErrorCode = "SERVER_ERROR",
                             Language = "ar",
                             Message = "حدث خطأ في الخادم.",
@@ -1605,7 +1754,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 55,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3708),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2841),
                             ErrorCode = "VALIDATION_NOT_EMPTY",
                             Language = "ar",
                             Message = "{PropertyName} مطلوب.",
@@ -1615,7 +1764,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 56,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3708),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2841),
                             ErrorCode = "VALIDATION_EMAIL_INVALID",
                             Language = "ar",
                             Message = "البريد الإلكتروني غير صالح.",
@@ -1625,7 +1774,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 57,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3709),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2842),
                             ErrorCode = "VALIDATION_PASSWORDS_DO_NOT_MATCH",
                             Language = "ar",
                             Message = "كلمات المرور غير متطابقة.",
@@ -1635,7 +1784,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 58,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3709),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2842),
                             ErrorCode = "VALIDATION_PASSWORD_LENGTH",
                             Language = "ar",
                             Message = "يجب أن تكون كلمة المرور 6 أحرف على الأقل.",
@@ -1645,7 +1794,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 59,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3710),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2843),
                             ErrorCode = "VALIDATION_PASSWORD_UPPERCASE",
                             Language = "ar",
                             Message = "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل.",
@@ -1655,7 +1804,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 60,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3710),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2843),
                             ErrorCode = "VALIDATION_PASSWORD_DIGIT",
                             Language = "ar",
                             Message = "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل.",
@@ -1665,7 +1814,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 61,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3711),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2844),
                             ErrorCode = "VALIDATION_PASSWORD_SPECIAL_CHARACTER",
                             Language = "ar",
                             Message = "يجب أن تحتوي كلمة المرور على حرف خاص واحد على الأقل.",
@@ -1675,7 +1824,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 62,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3711),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2845),
                             ErrorCode = "EMAIL_SENT_SUCCESSFULLY",
                             Language = "ar",
                             Message = "تم إرسال البريد الإلكتروني بنجاح!",
@@ -1685,7 +1834,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 63,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3712),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2845),
                             ErrorCode = "EMAIL_SEND_FAILED",
                             Language = "ar",
                             Message = "فشل إرسال البريد الإلكتروني!",
@@ -1695,7 +1844,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 64,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3713),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2846),
                             ErrorCode = "CLIENT_CODE_EXISTS",
                             Language = "ar",
                             Message = "العميل برمز {Code} موجود بالفعل.",
@@ -1705,7 +1854,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 65,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3713),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2846),
                             ErrorCode = "CLIENT_NOT_FOUND",
                             Language = "ar",
                             Message = "العميل غير موجود.",
@@ -1715,7 +1864,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 66,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3714),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2847),
                             ErrorCode = "VEHICLE_KM_LOWER_THAN_CURRENT",
                             Language = "ar",
                             Message = "الكيلومترات الجديدة ({NewKilometers}) للمركبة {LicensePlate} لا يمكن أن تكون أقل من الكيلومترات الحالية ({CurrentKilometers}).",
@@ -1725,7 +1874,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 67,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3714),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2847),
                             ErrorCode = "VEHICLE_KM_NEGATIVE",
                             Language = "ar",
                             Message = "لا يمكن أن تكون الكيلومترات سالبة ({NewKilometers}) للمركبة {LicensePlate}.",
@@ -1735,7 +1884,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 68,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3715),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2855),
                             ErrorCode = "EMPLOYEE_NO_EXISTS",
                             Language = "ar",
                             Message = "الموظف برقم {EmployeeNo} موجود بالفعل.",
@@ -1745,7 +1894,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 69,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(3715),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(2856),
                             ErrorCode = "EMPLOYEE_NOT_FOUND",
                             Language = "ar",
                             Message = "الموظف غير موجود.",
@@ -1820,6 +1969,157 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                     b.HasIndex("TransactionDate");
 
                     b.ToTable("Expenses", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Amount = 850m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 2, 1, 9, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Fren balata seti alımı",
+                            ExpenseType = 7,
+                            InvoiceNumber = "EXP-2024-001",
+                            PaymentMethod = 3,
+                            Status = 1,
+                            SupplierName = "Otomotiv Parça A.Ş.",
+                            TransactionDate = new DateTime(2026, 2, 1, 9, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Amount = 1200m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Aylık elektrik faturası",
+                            ExpenseType = 3,
+                            InvoiceNumber = "ELK-2024-001",
+                            PaymentMethod = 3,
+                            Status = 1,
+                            SupplierName = "TEDAŞ",
+                            TransactionDate = new DateTime(2026, 2, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Amount = 650m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 31, 11, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Motor yağı ve filtre alımı",
+                            ExpenseType = 7,
+                            InvoiceNumber = "EXP-2024-002",
+                            PaymentMethod = 1,
+                            Status = 1,
+                            SupplierName = "Yedek Parça Merkezi",
+                            TransactionDate = new DateTime(2026, 1, 31, 11, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Amount = 800m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 31, 14, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Araç yakıt gideri",
+                            ExpenseType = 8,
+                            InvoiceNumber = "FUEL-2024-001",
+                            PaymentMethod = 2,
+                            Status = 1,
+                            SupplierName = "BP Petrol",
+                            TransactionDate = new DateTime(2026, 1, 31, 14, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Amount = 5000m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 26, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Aylık kira ödemesi",
+                            ExpenseType = 2,
+                            InvoiceNumber = "RENT-2024-001",
+                            PaymentMethod = 3,
+                            Status = 1,
+                            SupplierName = "Emlak Sahibi",
+                            TransactionDate = new DateTime(2026, 1, 26, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Amount = 45000m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 27, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Aylık personel maaşları",
+                            ExpenseType = 1,
+                            PaymentMethod = 3,
+                            Status = 1,
+                            SupplierName = "Personel Maaşları",
+                            TransactionDate = new DateTime(2026, 1, 27, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Amount = 1200m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 28, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Süspansiyon parçaları",
+                            ExpenseType = 7,
+                            InvoiceNumber = "EXP-2024-003",
+                            PaymentMethod = 3,
+                            Status = 1,
+                            SupplierName = "Otomotiv Parça A.Ş.",
+                            TransactionDate = new DateTime(2026, 1, 28, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Amount = 350m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 29, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Aylık su faturası",
+                            ExpenseType = 4,
+                            InvoiceNumber = "WTR-2024-001",
+                            PaymentMethod = 3,
+                            Status = 1,
+                            SupplierName = "İSKİ",
+                            TransactionDate = new DateTime(2026, 1, 29, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Amount = 450m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 30, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Telefon ve internet faturası",
+                            ExpenseType = 6,
+                            InvoiceNumber = "TEL-2024-001",
+                            PaymentMethod = 3,
+                            Status = 1,
+                            SupplierName = "Türk Telekom",
+                            TransactionDate = new DateTime(2026, 1, 30, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Amount = 600m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 31, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Ekipman bakım onarım",
+                            ExpenseType = 11,
+                            InvoiceNumber = "MNT-2024-001",
+                            PaymentMethod = 1,
+                            Status = 1,
+                            SupplierName = "Teknik Servis",
+                            TransactionDate = new DateTime(2026, 1, 31, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.FacilityPhoto", b =>
@@ -1946,6 +2246,219 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                     b.HasIndex("WorkOrderId");
 
                     b.ToTable("Incomes", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Amount = 5130m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 6,
+                            Description = "BMW 3 Series tamir işlemi",
+                            IncomeType = 1,
+                            InvoiceNumber = "INV-2024-001",
+                            PaymentMethod = 2,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 2, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            WorkOrderId = 6
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Amount = 450m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 2, 1, 14, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 2,
+                            Description = "Parça satışı - Fren balata seti",
+                            IncomeType = 3,
+                            PaymentMethod = 1,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 2, 1, 14, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Amount = 320m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 2, 1, 16, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 3,
+                            Description = "Araç yıkama hizmeti",
+                            IncomeType = 4,
+                            PaymentMethod = 2,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 2, 1, 16, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Amount = 2596m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 31, 11, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 5,
+                            Description = "Hyundai Elantra bakım işlemi",
+                            IncomeType = 1,
+                            InvoiceNumber = "INV-2024-002",
+                            PaymentMethod = 3,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 1, 31, 11, 0, 0, 0, DateTimeKind.Utc),
+                            WorkOrderId = 5
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Amount = 1200m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 31, 15, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Dış satış - Motor yağı",
+                            IncomeType = 2,
+                            InvoiceNumber = "INV-2024-003",
+                            PaymentMethod = 2,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 1, 31, 15, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Amount = 1770m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 26, 9, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 4,
+                            Description = "Renault Megane bakım",
+                            IncomeType = 1,
+                            InvoiceNumber = "INV-2024-004",
+                            PaymentMethod = 1,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 1, 26, 9, 0, 0, 0, DateTimeKind.Utc),
+                            WorkOrderId = 4
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Amount = 280m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 27, 10, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 1,
+                            Description = "Parça satışı - Hava filtresi",
+                            IncomeType = 3,
+                            PaymentMethod = 1,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 1, 27, 10, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Amount = 3048m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 28, 11, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 3,
+                            Description = "Ford Focus tamir",
+                            IncomeType = 1,
+                            InvoiceNumber = "INV-2024-005",
+                            PaymentMethod = 2,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 1, 28, 11, 0, 0, 0, DateTimeKind.Utc),
+                            WorkOrderId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Amount = 150m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 29, 13, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 2,
+                            Description = "Rot balans hizmeti",
+                            IncomeType = 4,
+                            PaymentMethod = 1,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 1, 29, 13, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Amount = 2124m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 30, 14, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 2,
+                            Description = "Volkswagen Golf bakım",
+                            IncomeType = 1,
+                            InvoiceNumber = "INV-2024-006",
+                            PaymentMethod = 3,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 1, 30, 14, 0, 0, 0, DateTimeKind.Utc),
+                            WorkOrderId = 2
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Amount = 2950m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 31, 10, 0, 0, 0, DateTimeKind.Utc),
+                            CustomerId = 1,
+                            Description = "Toyota Corolla tamir",
+                            IncomeType = 1,
+                            InvoiceNumber = "INV-2024-007",
+                            PaymentMethod = 2,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 1, 31, 10, 0, 0, 0, DateTimeKind.Utc),
+                            WorkOrderId = 1
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Amount = 1800m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 17, 10, 26, 35, 750, DateTimeKind.Utc).AddTicks(8758),
+                            CustomerId = 1,
+                            Description = "Eski iş emri geliri",
+                            IncomeType = 1,
+                            InvoiceNumber = "INV-2024-008",
+                            PaymentMethod = 1,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 1, 17, 10, 26, 35, 750, DateTimeKind.Utc).AddTicks(8758)
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Amount = 2200m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 12, 10, 26, 35, 750, DateTimeKind.Utc).AddTicks(8758),
+                            CustomerId = 2,
+                            Description = "Eski iş emri geliri 2",
+                            IncomeType = 1,
+                            InvoiceNumber = "INV-2024-009",
+                            PaymentMethod = 2,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 1, 12, 10, 26, 35, 750, DateTimeKind.Utc).AddTicks(8758)
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Amount = 3500m,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 7, 10, 26, 35, 750, DateTimeKind.Utc).AddTicks(8758),
+                            CustomerId = 3,
+                            Description = "Eski iş emri geliri 3",
+                            IncomeType = 1,
+                            InvoiceNumber = "INV-2024-010",
+                            PaymentMethod = 3,
+                            Status = 1,
+                            TransactionDate = new DateTime(2026, 1, 7, 10, 26, 35, 750, DateTimeKind.Utc).AddTicks(8758)
+                        });
                 });
 
             modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.InsuranceClaim", b =>
@@ -2131,7 +2644,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             CompanyName = "Allianz Sigorta",
                             ContactPerson = "Genel Müdürlük",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 549, DateTimeKind.Utc).AddTicks(1319),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 727, DateTimeKind.Utc).AddTicks(1625),
                             Email = "info@allianz.com.tr",
                             IsActive = true,
                             Phone = "+90 850 222 0 100",
@@ -2147,7 +2660,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             CompanyName = "Anadolu Sigorta",
                             ContactPerson = "Genel Müdürlük",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 549, DateTimeKind.Utc).AddTicks(1334),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 727, DateTimeKind.Utc).AddTicks(1640),
                             Email = "info@anadolusigorta.com.tr",
                             IsActive = true,
                             Phone = "+90 850 222 0 200",
@@ -2163,7 +2676,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             CompanyName = "Axa Sigorta",
                             ContactPerson = "Genel Müdürlük",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 549, DateTimeKind.Utc).AddTicks(1336),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 727, DateTimeKind.Utc).AddTicks(1642),
                             Email = "info@axa-sigorta.com.tr",
                             IsActive = true,
                             Phone = "+90 850 222 0 300",
@@ -2179,7 +2692,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             CompanyName = "Groupama Sigorta",
                             ContactPerson = "Genel Müdürlük",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 549, DateTimeKind.Utc).AddTicks(1338),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 727, DateTimeKind.Utc).AddTicks(1644),
                             Email = "info@groupama.com.tr",
                             IsActive = true,
                             Phone = "+90 850 222 0 400",
@@ -2195,7 +2708,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             CompanyName = "HDI Sigorta",
                             ContactPerson = "Genel Müdürlük",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 549, DateTimeKind.Utc).AddTicks(1340),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 727, DateTimeKind.Utc).AddTicks(1646),
                             Email = "info@hdi-sigorta.com.tr",
                             IsActive = true,
                             Phone = "+90 850 222 0 500",
@@ -2211,7 +2724,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             CompanyName = "Mapfre Sigorta",
                             ContactPerson = "Genel Müdürlük",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 549, DateTimeKind.Utc).AddTicks(1352),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 727, DateTimeKind.Utc).AddTicks(1650),
                             Email = "info@mapfre.com.tr",
                             IsActive = true,
                             Phone = "+90 850 222 0 600",
@@ -2227,7 +2740,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             CompanyName = "Neova Sigorta",
                             ContactPerson = "Genel Müdürlük",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 549, DateTimeKind.Utc).AddTicks(1354),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 727, DateTimeKind.Utc).AddTicks(1652),
                             Email = "info@neova.com.tr",
                             IsActive = true,
                             Phone = "+90 850 222 0 700",
@@ -2243,7 +2756,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             CompanyName = "Ray Sigorta",
                             ContactPerson = "Genel Müdürlük",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 549, DateTimeKind.Utc).AddTicks(1355),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 727, DateTimeKind.Utc).AddTicks(1654),
                             Email = "info@ray.com.tr",
                             IsActive = true,
                             Phone = "+90 850 222 0 800",
@@ -2259,7 +2772,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             CompanyName = "Unico Sigorta",
                             ContactPerson = "Genel Müdürlük",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 549, DateTimeKind.Utc).AddTicks(1357),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 727, DateTimeKind.Utc).AddTicks(1655),
                             Email = "info@unico.com.tr",
                             IsActive = true,
                             Phone = "+90 850 222 0 900",
@@ -2275,7 +2788,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             CompanyName = "Ziraat Sigorta",
                             ContactPerson = "Genel Müdürlük",
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 549, DateTimeKind.Utc).AddTicks(1359),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 727, DateTimeKind.Utc).AddTicks(1657),
                             Email = "info@ziraat.com.tr",
                             IsActive = true,
                             Phone = "+90 850 222 0 000",
@@ -2817,6 +3330,242 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                     b.HasIndex("ClientId", "IsLowStockAlertEnabled", "Status");
 
                     b.ToTable("Parts", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Barcode = "8690123456789",
+                            Brand = "Bosch",
+                            BrandType = 1,
+                            Category = 2,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 11, 1, 10, 26, 35, 752, DateTimeKind.Utc).AddTicks(8152),
+                            Description = "Ön fren balata seti - Bosch marka",
+                            IsLowStockAlertEnabled = true,
+                            MinimumStockLevel = 5,
+                            Name = "Fren Balata Seti (Ön)",
+                            Notes = "Yüksek kaliteli fren balata seti",
+                            OEMNumber = "BOS-12345",
+                            PartCode = "FR-BRK-001",
+                            PurchasePrice = 180m,
+                            SalePrice = 280m,
+                            Status = 1,
+                            TaxRate = 20m,
+                            Unit = "Adet",
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Barcode = "8690123456790",
+                            Brand = "Bosch",
+                            BrandType = 1,
+                            Category = 2,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 11, 1, 10, 26, 35, 752, DateTimeKind.Utc).AddTicks(8152),
+                            Description = "Arka fren balata seti - Bosch marka",
+                            IsLowStockAlertEnabled = true,
+                            MinimumStockLevel = 5,
+                            Name = "Fren Balata Seti (Arka)",
+                            OEMNumber = "BOS-12346",
+                            PartCode = "FR-BRK-002",
+                            PurchasePrice = 150m,
+                            SalePrice = 230m,
+                            Status = 1,
+                            TaxRate = 20m,
+                            Unit = "Adet",
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Barcode = "8690123456791",
+                            Brand = "Mann Filter",
+                            BrandType = 2,
+                            Category = 8,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 12, 1, 10, 26, 35, 752, DateTimeKind.Utc).AddTicks(8152),
+                            Description = "Standart hava filtresi",
+                            IsLowStockAlertEnabled = true,
+                            MinimumStockLevel = 10,
+                            Name = "Hava Filtresi",
+                            OEMNumber = "MF-12345",
+                            PartCode = "FLT-AIR-001",
+                            PurchasePrice = 45m,
+                            SalePrice = 75m,
+                            Status = 1,
+                            TaxRate = 20m,
+                            Unit = "Adet",
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Barcode = "8690123456792",
+                            Brand = "Bosch",
+                            BrandType = 1,
+                            Category = 8,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 12, 1, 10, 26, 35, 752, DateTimeKind.Utc).AddTicks(8152),
+                            Description = "Motor yağ filtresi",
+                            IsLowStockAlertEnabled = true,
+                            MinimumStockLevel = 15,
+                            Name = "Yağ Filtresi",
+                            OEMNumber = "BOS-23456",
+                            PartCode = "FLT-OIL-001",
+                            PurchasePrice = 35m,
+                            SalePrice = 60m,
+                            Status = 1,
+                            TaxRate = 20m,
+                            Unit = "Adet",
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Barcode = "8690123456793",
+                            Brand = "Castrol",
+                            BrandType = 1,
+                            Category = 9,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 12, 1, 10, 26, 35, 752, DateTimeKind.Utc).AddTicks(8152),
+                            Description = "Sentetik motor yağı",
+                            IsLowStockAlertEnabled = true,
+                            MinimumStockLevel = 20,
+                            Name = "Motor Yağı 5W-30 (5L)",
+                            Notes = "Yüksek performanslı sentetik yağ",
+                            OEMNumber = "CAS-34567",
+                            PartCode = "OIL-ENG-001",
+                            PurchasePrice = 120m,
+                            SalePrice = 180m,
+                            Status = 1,
+                            TaxRate = 20m,
+                            Unit = "Litre"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Barcode = "8690123456794",
+                            Brand = "Monroe",
+                            BrandType = 2,
+                            Category = 3,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 1, 10, 26, 35, 752, DateTimeKind.Utc).AddTicks(8152),
+                            Description = "Ön amortisör - sol",
+                            IsLowStockAlertEnabled = true,
+                            MinimumStockLevel = 2,
+                            Name = "Ön Amortisör",
+                            OEMNumber = "MON-45678",
+                            PartCode = "SUS-STR-001",
+                            PurchasePrice = 450m,
+                            SalePrice = 680m,
+                            Status = 1,
+                            TaxRate = 20m,
+                            Unit = "Adet",
+                            WarrantyMonths = 24
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Barcode = "8690123456795",
+                            Brand = "Varta",
+                            BrandType = 1,
+                            Category = 4,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 1, 10, 26, 35, 752, DateTimeKind.Utc).AddTicks(8152),
+                            Description = "Otomotiv aküsü",
+                            IsLowStockAlertEnabled = true,
+                            MinimumStockLevel = 3,
+                            Name = "Akü 12V 70Ah",
+                            Notes = "Yüksek kapasiteli akü",
+                            OEMNumber = "VAR-56789",
+                            PartCode = "ELC-BAT-001",
+                            PurchasePrice = 650m,
+                            SalePrice = 950m,
+                            Status = 1,
+                            TaxRate = 20m,
+                            Unit = "Adet",
+                            WarrantyMonths = 24
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Barcode = "8690123456796",
+                            Brand = "Osram",
+                            BrandType = 2,
+                            Category = 11,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 1, 10, 26, 35, 752, DateTimeKind.Utc).AddTicks(8152),
+                            Description = "Halojen far ampulü",
+                            IsLowStockAlertEnabled = true,
+                            MinimumStockLevel = 10,
+                            Name = "Far Ampulü H7",
+                            OEMNumber = "OSR-67890",
+                            PartCode = "LGT-BULB-001",
+                            PurchasePrice = 25m,
+                            SalePrice = 45m,
+                            Status = 1,
+                            TaxRate = 20m,
+                            Unit = "Adet",
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Barcode = "8690123456797",
+                            Brand = "NGK",
+                            BrandType = 1,
+                            Category = 1,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 2, 10, 26, 35, 752, DateTimeKind.Utc).AddTicks(8152),
+                            Description = "Iridium buji seti",
+                            IsLowStockAlertEnabled = true,
+                            MinimumStockLevel = 5,
+                            Name = "Buji Seti (4'lü)",
+                            Notes = "Uzun ömürlü iridium buji",
+                            OEMNumber = "NGK-78901",
+                            PartCode = "ENG-SPARK-001",
+                            PurchasePrice = 180m,
+                            SalePrice = 280m,
+                            Status = 1,
+                            TaxRate = 20m,
+                            Unit = "Adet",
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Barcode = "8690123456798",
+                            Brand = "Michelin",
+                            BrandType = 2,
+                            Category = 10,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 12, 10, 26, 35, 752, DateTimeKind.Utc).AddTicks(8152),
+                            Description = "Yaz lastiği",
+                            IsLowStockAlertEnabled = true,
+                            MinimumStockLevel = 4,
+                            Name = "Lastik 215/60 R16",
+                            Notes = "Yüksek performanslı yaz lastiği",
+                            OEMNumber = "MIC-89012",
+                            PartCode = "TIR-215-60-16",
+                            PurchasePrice = 850m,
+                            SalePrice = 1250m,
+                            Status = 1,
+                            TaxRate = 20m,
+                            Unit = "Adet",
+                            WarrantyMonths = 36
+                        });
                 });
 
             modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.PartStock", b =>
@@ -2881,6 +3630,138 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                     b.HasIndex("ClientId", "Status", "Quantity");
 
                     b.ToTable("PartStocks", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 11, 1, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            LastUpdatedByEmployeeId = 3,
+                            LastUpdatedDate = new DateTime(2026, 1, 27, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            Location = "Raf A-01",
+                            PartId = 1,
+                            Quantity = 8,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 11, 1, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            LastUpdatedByEmployeeId = 3,
+                            LastUpdatedDate = new DateTime(2026, 1, 29, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            Location = "Raf A-02",
+                            PartId = 2,
+                            Quantity = 6,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 12, 1, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            LastUpdatedByEmployeeId = 3,
+                            LastUpdatedDate = new DateTime(2026, 1, 22, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            Location = "Raf B-01",
+                            PartId = 3,
+                            Quantity = 3,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 12, 1, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            LastUpdatedByEmployeeId = 3,
+                            LastUpdatedDate = new DateTime(2026, 1, 30, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            Location = "Raf B-02",
+                            PartId = 4,
+                            Quantity = 18,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 12, 1, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            LastUpdatedByEmployeeId = 3,
+                            LastUpdatedDate = new DateTime(2026, 1, 31, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            Location = "Raf C-01",
+                            PartId = 5,
+                            Quantity = 25,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 1, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            LastUpdatedByEmployeeId = 3,
+                            LastUpdatedDate = new DateTime(2026, 1, 17, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            Location = "Raf C-02",
+                            PartId = 6,
+                            Quantity = 1,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 1, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            LastUpdatedByEmployeeId = 3,
+                            LastUpdatedDate = new DateTime(2026, 1, 25, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            Location = "Raf D-01",
+                            PartId = 7,
+                            Quantity = 4,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 1, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            LastUpdatedByEmployeeId = 3,
+                            LastUpdatedDate = new DateTime(2026, 1, 27, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            Location = "Raf D-02",
+                            PartId = 8,
+                            Quantity = 12,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 2, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            LastUpdatedByEmployeeId = 3,
+                            LastUpdatedDate = new DateTime(2026, 1, 12, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            Location = "Raf E-01",
+                            PartId = 9,
+                            Quantity = 6,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 12, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            LastUpdatedByEmployeeId = 3,
+                            LastUpdatedDate = new DateTime(2026, 1, 7, 10, 26, 35, 753, DateTimeKind.Utc).AddTicks(6390),
+                            Location = "Depo-01",
+                            PartId = 10,
+                            Quantity = 0,
+                            Status = 1
+                        });
                 });
 
             modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.PartSupplier", b =>
@@ -3144,7 +4025,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8779),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8038),
                             Description = "View customers",
                             Name = "Customers.View",
                             Status = 1
@@ -3153,7 +4034,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8791),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8050),
                             Description = "Create customers",
                             Name = "Customers.Create",
                             Status = 1
@@ -3162,7 +4043,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 3,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8793),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8052),
                             Description = "Update customers",
                             Name = "Customers.Update",
                             Status = 1
@@ -3171,7 +4052,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 4,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8794),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8053),
                             Description = "Delete customers",
                             Name = "Customers.Delete",
                             Status = 1
@@ -3180,7 +4061,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 5,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8795),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8054),
                             Description = "View vehicles",
                             Name = "Vehicles.View",
                             Status = 1
@@ -3189,7 +4070,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 6,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8799),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8057),
                             Description = "Create vehicles",
                             Name = "Vehicles.Create",
                             Status = 1
@@ -3198,7 +4079,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 7,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8800),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8058),
                             Description = "Update vehicles",
                             Name = "Vehicles.Update",
                             Status = 1
@@ -3207,7 +4088,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 8,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8801),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8059),
                             Description = "Delete vehicles",
                             Name = "Vehicles.Delete",
                             Status = 1
@@ -3216,7 +4097,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 9,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8802),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8060),
                             Description = "View users",
                             Name = "Users.View",
                             Status = 1
@@ -3225,7 +4106,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 10,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8803),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8062),
                             Description = "Create users",
                             Name = "Users.Create",
                             Status = 1
@@ -3234,7 +4115,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 11,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8804),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8063),
                             Description = "Update users",
                             Name = "Users.Update",
                             Status = 1
@@ -3243,7 +4124,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 12,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8805),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8064),
                             Description = "Delete users",
                             Name = "Users.Delete",
                             Status = 1
@@ -3252,7 +4133,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 13,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8806),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8065),
                             Description = "View roles",
                             Name = "Roles.View",
                             Status = 1
@@ -3261,7 +4142,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 14,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8807),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8066),
                             Description = "Create roles",
                             Name = "Roles.Create",
                             Status = 1
@@ -3270,7 +4151,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 15,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8809),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8067),
                             Description = "Update roles",
                             Name = "Roles.Update",
                             Status = 1
@@ -3279,7 +4160,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 16,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 546, DateTimeKind.Utc).AddTicks(8810),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 724, DateTimeKind.Utc).AddTicks(8068),
                             Description = "Delete roles",
                             Name = "Roles.Delete",
                             Status = 1
@@ -3625,7 +4506,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 1,
                             ClientId = 1,
-                            ConcurrencyStamp = "9fb729a9-72d7-4706-8481-8b382097e0d9",
+                            ConcurrencyStamp = "6a909a37-d0c9-4dce-b9bc-8134bfbade42",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
@@ -3633,7 +4514,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 2,
                             ClientId = 1,
-                            ConcurrencyStamp = "679323dd-511e-487f-a24c-06615de92130",
+                            ConcurrencyStamp = "7a89cac8-dbf5-4403-b4cc-b7e380fb49b6",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         },
@@ -3641,7 +4522,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 3,
                             ClientId = 1,
-                            ConcurrencyStamp = "daa03f02-4417-48f0-aa25-d9aace64b4cd",
+                            ConcurrencyStamp = "46d1ca03-8b05-44f9-9ec5-d493df30a90c",
                             Name = "Technician",
                             NormalizedName = "TECHNICIAN"
                         },
@@ -3649,7 +4530,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 4,
                             ClientId = 1,
-                            ConcurrencyStamp = "570ea2bd-b969-4b0d-8bd7-d5ec9cdd6014",
+                            ConcurrencyStamp = "f00a81cf-b7ce-4c01-8db6-6fcc6f876c4a",
                             Name = "Receptionist",
                             NormalizedName = "RECEPTIONIST"
                         },
@@ -3657,7 +4538,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 5,
                             ClientId = 2,
-                            ConcurrencyStamp = "1ae7c737-a283-48d8-be3c-0dcb02af8840",
+                            ConcurrencyStamp = "ffbd0959-e02e-4f13-8d7a-7565a55fa442",
                             Name = "Owner",
                             NormalizedName = "OWNER"
                         },
@@ -3665,7 +4546,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 6,
                             ClientId = 2,
-                            ConcurrencyStamp = "1559913b-3760-4d67-bca9-e8dda72908b4",
+                            ConcurrencyStamp = "563ec330-7fb5-4ee9-aa36-23d093e65eed",
                             Name = "ServiceAdvisor",
                             NormalizedName = "SERVICEADVISOR"
                         },
@@ -3673,7 +4554,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         {
                             Id = 7,
                             ClientId = 2,
-                            ConcurrencyStamp = "da22adb7-f911-4188-9c02-68381b7d57d6",
+                            ConcurrencyStamp = "a91cc050-4048-4a90-b9eb-7581fcdd26eb",
                             Name = "Mechanic",
                             NormalizedName = "MECHANIC"
                         });
@@ -3728,7 +4609,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 1,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3438),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3431),
                             PermissionId = 1,
                             RoleId = 1,
                             Status = 1
@@ -3738,7 +4619,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 2,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3451),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3446),
                             PermissionId = 2,
                             RoleId = 1,
                             Status = 1
@@ -3748,7 +4629,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 3,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3452),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3447),
                             PermissionId = 3,
                             RoleId = 1,
                             Status = 1
@@ -3758,7 +4639,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 4,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3453),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3448),
                             PermissionId = 4,
                             RoleId = 1,
                             Status = 1
@@ -3768,7 +4649,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 5,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3454),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3448),
                             PermissionId = 5,
                             RoleId = 1,
                             Status = 1
@@ -3778,7 +4659,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 6,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3456),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3451),
                             PermissionId = 6,
                             RoleId = 1,
                             Status = 1
@@ -3788,7 +4669,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 7,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3457),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3452),
                             PermissionId = 7,
                             RoleId = 1,
                             Status = 1
@@ -3798,7 +4679,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 8,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3458),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3452),
                             PermissionId = 8,
                             RoleId = 1,
                             Status = 1
@@ -3808,7 +4689,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 9,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3458),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3453),
                             PermissionId = 9,
                             RoleId = 1,
                             Status = 1
@@ -3818,7 +4699,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 10,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3459),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3454),
                             PermissionId = 10,
                             RoleId = 1,
                             Status = 1
@@ -3828,7 +4709,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 11,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3460),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3455),
                             PermissionId = 11,
                             RoleId = 1,
                             Status = 1
@@ -3838,7 +4719,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 12,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3460),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3455),
                             PermissionId = 12,
                             RoleId = 1,
                             Status = 1
@@ -3848,7 +4729,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 13,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3461),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3456),
                             PermissionId = 13,
                             RoleId = 1,
                             Status = 1
@@ -3858,7 +4739,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 14,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3462),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3456),
                             PermissionId = 14,
                             RoleId = 1,
                             Status = 1
@@ -3868,7 +4749,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 15,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3462),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3457),
                             PermissionId = 15,
                             RoleId = 1,
                             Status = 1
@@ -3878,7 +4759,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 16,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3463),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3457),
                             PermissionId = 16,
                             RoleId = 1,
                             Status = 1
@@ -3888,7 +4769,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 17,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3545),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3546),
                             PermissionId = 1,
                             RoleId = 2,
                             Status = 1
@@ -3898,7 +4779,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 18,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3547),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3548),
                             PermissionId = 2,
                             RoleId = 2,
                             Status = 1
@@ -3908,7 +4789,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 19,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3547),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3548),
                             PermissionId = 3,
                             RoleId = 2,
                             Status = 1
@@ -3918,7 +4799,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 20,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3548),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3549),
                             PermissionId = 5,
                             RoleId = 2,
                             Status = 1
@@ -3928,7 +4809,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 21,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3549),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3550),
                             PermissionId = 6,
                             RoleId = 2,
                             Status = 1
@@ -3938,7 +4819,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 22,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3549),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3550),
                             PermissionId = 7,
                             RoleId = 2,
                             Status = 1
@@ -3948,7 +4829,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 23,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3550),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3551),
                             PermissionId = 9,
                             RoleId = 2,
                             Status = 1
@@ -3958,7 +4839,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 24,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3550),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3552),
                             PermissionId = 10,
                             RoleId = 2,
                             Status = 1
@@ -3968,7 +4849,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 25,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3551),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3552),
                             PermissionId = 11,
                             RoleId = 2,
                             Status = 1
@@ -3978,7 +4859,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 26,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3551),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3553),
                             PermissionId = 13,
                             RoleId = 2,
                             Status = 1
@@ -3988,7 +4869,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 27,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3552),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3553),
                             PermissionId = 14,
                             RoleId = 2,
                             Status = 1
@@ -3998,7 +4879,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 28,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3552),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3554),
                             PermissionId = 15,
                             RoleId = 2,
                             Status = 1
@@ -4008,7 +4889,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 29,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3556),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3559),
                             PermissionId = 1,
                             RoleId = 3,
                             Status = 1
@@ -4018,7 +4899,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 30,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3557),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3560),
                             PermissionId = 5,
                             RoleId = 3,
                             Status = 1
@@ -4028,7 +4909,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 31,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3557),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3560),
                             PermissionId = 6,
                             RoleId = 3,
                             Status = 1
@@ -4038,7 +4919,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 32,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3558),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3561),
                             PermissionId = 7,
                             RoleId = 3,
                             Status = 1
@@ -4048,7 +4929,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 33,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3558),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3561),
                             PermissionId = 8,
                             RoleId = 3,
                             Status = 1
@@ -4058,7 +4939,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 34,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3559),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3562),
                             PermissionId = 9,
                             RoleId = 3,
                             Status = 1
@@ -4068,7 +4949,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 35,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3562),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3565),
                             PermissionId = 1,
                             RoleId = 4,
                             Status = 1
@@ -4078,7 +4959,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 36,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3563),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3566),
                             PermissionId = 2,
                             RoleId = 4,
                             Status = 1
@@ -4088,7 +4969,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 37,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3563),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3566),
                             PermissionId = 3,
                             RoleId = 4,
                             Status = 1
@@ -4098,7 +4979,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 38,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3564),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3567),
                             PermissionId = 5,
                             RoleId = 4,
                             Status = 1
@@ -4108,7 +4989,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 39,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3571),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3567),
                             PermissionId = 6,
                             RoleId = 4,
                             Status = 1
@@ -4118,7 +4999,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 40,
                             ClientId = 1,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(3572),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(3568),
                             PermissionId = 7,
                             RoleId = 4,
                             Status = 1
@@ -4128,7 +5009,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 100,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5677),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5666),
                             PermissionId = 1,
                             RoleId = 5,
                             Status = 1
@@ -4138,7 +5019,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 101,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5682),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5671),
                             PermissionId = 2,
                             RoleId = 5,
                             Status = 1
@@ -4148,7 +5029,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 102,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5682),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5672),
                             PermissionId = 3,
                             RoleId = 5,
                             Status = 1
@@ -4158,7 +5039,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 103,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5683),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5672),
                             PermissionId = 4,
                             RoleId = 5,
                             Status = 1
@@ -4168,7 +5049,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 104,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5684),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5673),
                             PermissionId = 5,
                             RoleId = 5,
                             Status = 1
@@ -4178,7 +5059,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 105,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5686),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5684),
                             PermissionId = 6,
                             RoleId = 5,
                             Status = 1
@@ -4188,7 +5069,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 106,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5686),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5685),
                             PermissionId = 7,
                             RoleId = 5,
                             Status = 1
@@ -4198,7 +5079,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 107,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5687),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5686),
                             PermissionId = 8,
                             RoleId = 5,
                             Status = 1
@@ -4208,7 +5089,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 108,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5688),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5686),
                             PermissionId = 9,
                             RoleId = 5,
                             Status = 1
@@ -4218,7 +5099,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 109,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5689),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5687),
                             PermissionId = 10,
                             RoleId = 5,
                             Status = 1
@@ -4228,7 +5109,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 110,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5689),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5688),
                             PermissionId = 11,
                             RoleId = 5,
                             Status = 1
@@ -4238,7 +5119,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 111,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5690),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5688),
                             PermissionId = 12,
                             RoleId = 5,
                             Status = 1
@@ -4248,7 +5129,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 112,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5690),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5689),
                             PermissionId = 13,
                             RoleId = 5,
                             Status = 1
@@ -4258,7 +5139,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 113,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5691),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5689),
                             PermissionId = 14,
                             RoleId = 5,
                             Status = 1
@@ -4268,7 +5149,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 114,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5691),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5690),
                             PermissionId = 15,
                             RoleId = 5,
                             Status = 1
@@ -4278,7 +5159,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 115,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5692),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5690),
                             PermissionId = 16,
                             RoleId = 5,
                             Status = 1
@@ -4288,7 +5169,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 116,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5703),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5701),
                             PermissionId = 1,
                             RoleId = 6,
                             Status = 1
@@ -4298,7 +5179,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 117,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5704),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5703),
                             PermissionId = 2,
                             RoleId = 6,
                             Status = 1
@@ -4308,7 +5189,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 118,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5704),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5703),
                             PermissionId = 3,
                             RoleId = 6,
                             Status = 1
@@ -4318,7 +5199,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 119,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5705),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5704),
                             PermissionId = 4,
                             RoleId = 6,
                             Status = 1
@@ -4328,7 +5209,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 120,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5705),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5704),
                             PermissionId = 5,
                             RoleId = 6,
                             Status = 1
@@ -4338,7 +5219,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 121,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5706),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5705),
                             PermissionId = 6,
                             RoleId = 6,
                             Status = 1
@@ -4348,7 +5229,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 122,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5706),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5705),
                             PermissionId = 7,
                             RoleId = 6,
                             Status = 1
@@ -4358,7 +5239,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 123,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5707),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5706),
                             PermissionId = 8,
                             RoleId = 6,
                             Status = 1
@@ -4368,7 +5249,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 124,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5710),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5710),
                             PermissionId = 1,
                             RoleId = 7,
                             Status = 1
@@ -4378,7 +5259,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 125,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5711),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5711),
                             PermissionId = 5,
                             RoleId = 7,
                             Status = 1
@@ -4388,7 +5269,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 126,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5711),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5711),
                             PermissionId = 6,
                             RoleId = 7,
                             Status = 1
@@ -4398,7 +5279,7 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                             Id = 127,
                             ClientId = 2,
                             CreatedBy = 0,
-                            CreatedDate = new DateTime(2026, 1, 11, 19, 13, 50, 548, DateTimeKind.Utc).AddTicks(5712),
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 726, DateTimeKind.Utc).AddTicks(5712),
                             PermissionId = 7,
                             RoleId = 7,
                             Status = 1
@@ -5169,6 +6050,10 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("ModelVariant")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int?>("ModifiedBy")
                         .HasColumnType("int");
 
@@ -5177,6 +6062,14 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("Trim")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Vin")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
@@ -5190,6 +6083,275 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                     b.HasIndex("LicensePlate", "ClientId");
 
                     b.ToTable("Vehicles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Brand = "Toyota",
+                            ClientId = 1,
+                            Color = "Beyaz",
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 8, 1, 10, 26, 35, 741, DateTimeKind.Utc).AddTicks(9391),
+                            CustomerId = 1,
+                            Kilometers = 0L,
+                            LicensePlate = "34ABC123",
+                            Model = "Corolla",
+                            ModelVariant = "XLI",
+                            Status = 1,
+                            Trim = "Comfort",
+                            Vin = "JT2BF28K504123456",
+                            Year = 2020
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Brand = "Honda",
+                            ClientId = 1,
+                            Color = "Siyah",
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 9, 1, 10, 26, 35, 741, DateTimeKind.Utc).AddTicks(9411),
+                            CustomerId = 1,
+                            Kilometers = 0L,
+                            LicensePlate = "34DEF456",
+                            Model = "Civic",
+                            ModelVariant = "Sedan",
+                            Status = 1,
+                            Trim = "EX",
+                            Vin = "19XFC2F59KE123456",
+                            Year = 2019
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Brand = "Volkswagen",
+                            ClientId = 1,
+                            Color = "Gri",
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 9, 1, 10, 26, 35, 741, DateTimeKind.Utc).AddTicks(9414),
+                            CustomerId = 2,
+                            Kilometers = 0L,
+                            LicensePlate = "34GHI789",
+                            Model = "Golf",
+                            ModelVariant = "Hatchback",
+                            Status = 1,
+                            Trim = "Highline",
+                            Vin = "WVWZZZ1KZBW123456",
+                            Year = 2021
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Brand = "Ford",
+                            ClientId = 1,
+                            Color = "Kırmızı",
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 10, 1, 10, 26, 35, 741, DateTimeKind.Utc).AddTicks(9416),
+                            CustomerId = 3,
+                            Kilometers = 0L,
+                            LicensePlate = "34JKL012",
+                            Model = "Focus",
+                            ModelVariant = "Hatchback",
+                            Status = 1,
+                            Trim = "Titanium",
+                            Vin = "WF0AXXWPW8H123456",
+                            Year = 2018
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Brand = "Renault",
+                            ClientId = 1,
+                            Color = "Mavi",
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 11, 1, 10, 26, 35, 741, DateTimeKind.Utc).AddTicks(9418),
+                            CustomerId = 4,
+                            Kilometers = 0L,
+                            LicensePlate = "34MNO345",
+                            Model = "Megane",
+                            ModelVariant = "Sedan",
+                            Status = 1,
+                            Trim = "Zen",
+                            Vin = "VF1RZ0H0Y12345678",
+                            Year = 2020
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Brand = "Hyundai",
+                            ClientId = 1,
+                            Color = "Beyaz",
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 12, 1, 10, 26, 35, 741, DateTimeKind.Utc).AddTicks(9423),
+                            CustomerId = 5,
+                            Kilometers = 0L,
+                            LicensePlate = "34PQR678",
+                            Model = "Elantra",
+                            ModelVariant = "Sedan",
+                            Status = 1,
+                            Trim = "Premium",
+                            Vin = "KMHDN45D5KU123456",
+                            Year = 2019
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Brand = "BMW",
+                            ClientId = 1,
+                            Color = "Siyah",
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 1, 10, 26, 35, 741, DateTimeKind.Utc).AddTicks(9436),
+                            CustomerId = 6,
+                            Kilometers = 0L,
+                            LicensePlate = "34STU901",
+                            Model = "3 Series",
+                            ModelVariant = "Sedan",
+                            Status = 1,
+                            Trim = "320i",
+                            Vin = "WBA3A5C59EK123456",
+                            Year = 2021
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Brand = "Mercedes-Benz",
+                            ClientId = 1,
+                            Color = "Gümüş",
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 17, 10, 26, 35, 741, DateTimeKind.Utc).AddTicks(9438),
+                            CustomerId = 7,
+                            Kilometers = 0L,
+                            LicensePlate = "34VWX234",
+                            Model = "C-Class",
+                            ModelVariant = "Sedan",
+                            Status = 1,
+                            Trim = "C200",
+                            Vin = "WDDWF4KB5LR123456",
+                            Year = 2020
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Brand = "Audi",
+                            ClientId = 1,
+                            Color = "Beyaz",
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 25, 10, 26, 35, 741, DateTimeKind.Utc).AddTicks(9441),
+                            CustomerId = 8,
+                            Kilometers = 0L,
+                            LicensePlate = "34YZA567",
+                            Model = "A4",
+                            ModelVariant = "Sedan",
+                            Status = 1,
+                            Trim = "Premium",
+                            Vin = "WAUZZZ8K9KA123456",
+                            Year = 2019
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Brand = "Opel",
+                            ClientId = 1,
+                            Color = "Gri",
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 10, 1, 10, 26, 35, 741, DateTimeKind.Utc).AddTicks(9444),
+                            CustomerId = 2,
+                            Kilometers = 0L,
+                            LicensePlate = "34BCD890",
+                            Model = "Astra",
+                            ModelVariant = "Hatchback",
+                            Status = 1,
+                            Trim = "Elegance",
+                            Vin = "W0L0ZCF5812345678",
+                            Year = 2017
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Brand = "Peugeot",
+                            ClientId = 1,
+                            Color = "Beyaz",
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 11, 1, 10, 26, 35, 741, DateTimeKind.Utc).AddTicks(9446),
+                            CustomerId = 3,
+                            Kilometers = 0L,
+                            LicensePlate = "34EFG123",
+                            Model = "308",
+                            ModelVariant = "Hatchback",
+                            Status = 1,
+                            Trim = "Allure",
+                            Vin = "VF3XXXXXXXXX123456",
+                            Year = 2018
+                        });
+                });
+
+            modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.VehiclePhoto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("ModifiedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PhotoType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UploadedByEmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UploadedFileId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("UploadedByEmployeeId");
+
+                    b.HasIndex("UploadedFileId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("VehiclePhotos", (string)null);
                 });
 
             modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.WorkOrder", b =>
@@ -5242,6 +6404,9 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
 
                     b.Property<DateTime>("EntryDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("EstimatedCost")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("EstimatedDeliveryDate")
                         .HasColumnType("datetime2");
@@ -5341,6 +6506,436 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                     b.HasIndex("ClientId", "Priority", "Status");
 
                     b.ToTable("WorkOrders", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ActualDeliveryDate = new DateTime(2026, 1, 4, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 2, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 3, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 1,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 2, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedCost = 3000m,
+                            EstimatedDeliveryDate = new DateTime(2026, 1, 4, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 75,
+                            Kilometers = 45000L,
+                            PaidAmount = 2950m,
+                            PaymentStatus = 3,
+                            Priority = 2,
+                            Status = 10,
+                            SubTotal = 2500m,
+                            TaxAmount = 450m,
+                            TotalAmount = 2950m,
+                            VehicleId = 1,
+                            WorkOrderNumber = "WO-20260102-0001"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ActualDeliveryDate = new DateTime(2026, 1, 9, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 7, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 8, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 2,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 7, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedCost = 2200m,
+                            EstimatedDeliveryDate = new DateTime(2026, 1, 9, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 80,
+                            Kilometers = 28000L,
+                            PaidAmount = 2124m,
+                            PaymentStatus = 3,
+                            Priority = 2,
+                            Status = 10,
+                            SubTotal = 1800m,
+                            TaxAmount = 324m,
+                            TotalAmount = 2124m,
+                            VehicleId = 3,
+                            WorkOrderNumber = "WO-20260107-0002"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ActualDeliveryDate = new DateTime(2026, 1, 14, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 12, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 13, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 3,
+                            DiscountAmount = 160m,
+                            DiscountPercentage = 5m,
+                            EntryDate = new DateTime(2026, 1, 12, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 1, 14, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 60,
+                            Kilometers = 67000L,
+                            PaidAmount = 3048m,
+                            PaymentStatus = 3,
+                            Priority = 3,
+                            Status = 10,
+                            SubTotal = 3200m,
+                            TaxAmount = 608m,
+                            TotalAmount = 3048m,
+                            VehicleId = 4,
+                            WorkOrderNumber = "WO-20260112-0003"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ActualDeliveryDate = new DateTime(2026, 1, 19, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 17, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 18, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 4,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 17, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 1, 19, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 70,
+                            Kilometers = 38000L,
+                            PaidAmount = 1770m,
+                            PaymentStatus = 3,
+                            Priority = 2,
+                            Status = 10,
+                            SubTotal = 1500m,
+                            TaxAmount = 270m,
+                            TotalAmount = 1770m,
+                            VehicleId = 5,
+                            WorkOrderNumber = "WO-20260117-0004"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ActualDeliveryDate = new DateTime(2026, 1, 24, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 22, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 23, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 5,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 22, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 1, 24, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 65,
+                            Kilometers = 55000L,
+                            PaidAmount = 2596m,
+                            PaymentStatus = 3,
+                            Priority = 2,
+                            Status = 10,
+                            SubTotal = 2200m,
+                            TaxAmount = 396m,
+                            TotalAmount = 2596m,
+                            VehicleId = 6,
+                            WorkOrderNumber = "WO-20260122-0005"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ActualDeliveryDate = new DateTime(2026, 1, 29, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 27, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 28, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 6,
+                            DiscountAmount = 225m,
+                            DiscountPercentage = 5m,
+                            EntryDate = new DateTime(2026, 1, 27, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 1, 29, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 85,
+                            Kilometers = 25000L,
+                            PaidAmount = 5130m,
+                            PaymentStatus = 3,
+                            Priority = 3,
+                            Status = 10,
+                            SubTotal = 4500m,
+                            TaxAmount = 855m,
+                            TotalAmount = 5130m,
+                            VehicleId = 7,
+                            WorkOrderNumber = "WO-20260127-0006"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 25, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 26, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 7,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 25, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 1, 30, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 50,
+                            Kilometers = 42000L,
+                            PaidAmount = 0m,
+                            PaymentStatus = 1,
+                            Priority = 2,
+                            Status = 5,
+                            SubTotal = 1800m,
+                            TaxAmount = 324m,
+                            TotalAmount = 2124m,
+                            VehicleId = 8,
+                            WorkOrderNumber = "WO-20260125-0007"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 26, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 27, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 8,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 26, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 1, 31, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 55,
+                            Kilometers = 48000L,
+                            PaidAmount = 0m,
+                            PaymentStatus = 1,
+                            Priority = 3,
+                            Status = 6,
+                            SubTotal = 2800m,
+                            TaxAmount = 504m,
+                            TotalAmount = 3304m,
+                            VehicleId = 9,
+                            WorkOrderNumber = "WO-20260126-0008"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 28, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 29, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 2,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 28, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 2, 2, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 40,
+                            Kilometers = 89000L,
+                            PaidAmount = 0m,
+                            PaymentStatus = 1,
+                            Priority = 2,
+                            Status = 3,
+                            SubTotal = 1200m,
+                            TaxAmount = 216m,
+                            TotalAmount = 1416m,
+                            VehicleId = 10,
+                            WorkOrderNumber = "WO-20260128-0009"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 29, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 30, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 3,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 29, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 2, 3, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 45,
+                            Kilometers = 72000L,
+                            PaidAmount = 0m,
+                            PaymentStatus = 1,
+                            Priority = 2,
+                            Status = 7,
+                            SubTotal = 2100m,
+                            TaxAmount = 378m,
+                            TotalAmount = 2478m,
+                            VehicleId = 11,
+                            WorkOrderNumber = "WO-20260129-0010"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 30, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 31, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 1,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 30, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 2, 4, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 70,
+                            Kilometers = 45500L,
+                            PaidAmount = 0m,
+                            PaymentStatus = 1,
+                            Priority = 2,
+                            Status = 8,
+                            SubTotal = 800m,
+                            TaxAmount = 144m,
+                            TotalAmount = 944m,
+                            VehicleId = 1,
+                            WorkOrderNumber = "WO-20260130-0011"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 31, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 31, 22, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 3,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 31, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 2, 5, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 60,
+                            Kilometers = 67200L,
+                            PaidAmount = 0m,
+                            PaymentStatus = 1,
+                            Priority = 3,
+                            Status = 5,
+                            SubTotal = 3500m,
+                            TaxAmount = 630m,
+                            TotalAmount = 4130m,
+                            VehicleId = 4,
+                            WorkOrderNumber = "WO-20260131-0012"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 2, 1, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerId = 1,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 2, 1, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedCost = 1200m,
+                            EstimatedDeliveryDate = new DateTime(2026, 2, 6, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 65,
+                            Kilometers = 52500L,
+                            PaidAmount = 0m,
+                            PaymentStatus = 1,
+                            Priority = 2,
+                            Status = 2,
+                            SubTotal = 0m,
+                            TaxAmount = 0m,
+                            TotalAmount = 0m,
+                            VehicleId = 2,
+                            WorkOrderNumber = "WO-20260201-0013"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 2, 2, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerId = 4,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 2, 2, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 2, 7, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 75,
+                            Kilometers = 38200L,
+                            PaidAmount = 0m,
+                            PaymentStatus = 1,
+                            Priority = 2,
+                            Status = 1,
+                            SubTotal = 0m,
+                            TaxAmount = 0m,
+                            TotalAmount = 0m,
+                            VehicleId = 5,
+                            WorkOrderNumber = "WO-20260202-0014"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 24, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 1, 25, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 5,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 24, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 1, 27, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 50,
+                            Kilometers = 55200L,
+                            PaidAmount = 0m,
+                            PaymentStatus = 1,
+                            Priority = 2,
+                            Status = 4,
+                            SubTotal = 1900m,
+                            TaxAmount = 342m,
+                            TotalAmount = 2242m,
+                            VehicleId = 6,
+                            WorkOrderNumber = "WO-20260124-0015"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 1, 31, 22, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalDate = new DateTime(2026, 2, 1, 0, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerApprovalStatus = 2,
+                            CustomerId = 6,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 1, 31, 22, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 2, 2, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 80,
+                            Kilometers = 25100L,
+                            PaidAmount = 0m,
+                            PaymentStatus = 1,
+                            Priority = 2,
+                            Status = 9,
+                            SubTotal = 1600m,
+                            TaxAmount = 288m,
+                            TotalAmount = 1888m,
+                            VehicleId = 7,
+                            WorkOrderNumber = "WO-20260131-0016"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            ClientId = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2026, 2, 1, 4, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            CustomerId = 7,
+                            DiscountAmount = 0m,
+                            DiscountPercentage = 0m,
+                            EntryDate = new DateTime(2026, 2, 1, 4, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            EstimatedDeliveryDate = new DateTime(2026, 2, 3, 10, 26, 35, 744, DateTimeKind.Utc).AddTicks(2136),
+                            FuelLevel = 55,
+                            Kilometers = 42100L,
+                            PaidAmount = 0m,
+                            PaymentStatus = 1,
+                            Priority = 2,
+                            Status = 2,
+                            SubTotal = 0m,
+                            TaxAmount = 0m,
+                            TotalAmount = 0m,
+                            VehicleId = 8,
+                            WorkOrderNumber = "WO-20260201-0017"
+                        });
                 });
 
             modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.WorkOrderItem", b =>
@@ -6418,6 +8013,39 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.VehiclePhoto", b =>
+                {
+                    b.HasOne("MagicCarRepairAISupported.Domain.Entities.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MagicCarRepairAISupported.Domain.Entities.Employee", "UploadedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("UploadedByEmployeeId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("MagicCarRepairAISupported.Domain.Entities.UploadedFile", "UploadedFile")
+                        .WithMany()
+                        .HasForeignKey("UploadedFileId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("MagicCarRepairAISupported.Domain.Entities.Vehicle", "Vehicle")
+                        .WithMany("Photos")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("UploadedByEmployee");
+
+                    b.Navigation("UploadedFile");
+
+                    b.Navigation("Vehicle");
+                });
+
             modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.WorkOrder", b =>
                 {
                     b.HasOne("MagicCarRepairAISupported.Domain.Entities.Employee", "AssignedEmployee")
@@ -6633,6 +8261,11 @@ namespace MagicCarRepairAISupported.Persistence.Migrations
             modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.Role", b =>
                 {
                     b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.Vehicle", b =>
+                {
+                    b.Navigation("Photos");
                 });
 
             modelBuilder.Entity("MagicCarRepairAISupported.Domain.Entities.WorkOrder", b =>

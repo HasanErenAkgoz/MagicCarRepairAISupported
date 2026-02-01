@@ -39,6 +39,27 @@ namespace MagicCarRepairAISupported.Persistence.Extensions
 
             // Seed Employees
             modelBuilder.SeedEmployees();
+
+            // Seed Customers
+            modelBuilder.SeedCustomers();
+
+            // Seed Vehicles
+            modelBuilder.SeedVehicles();
+
+            // Seed Work Orders
+            modelBuilder.SeedWorkOrders();
+
+            // Seed Incomes
+            modelBuilder.SeedIncomes();
+
+            // Seed Expenses
+            modelBuilder.SeedExpenses();
+
+            // Seed Parts
+            modelBuilder.SeedParts();
+
+            // Seed Part Stocks
+            modelBuilder.SeedPartStocks();
         }
     }
 }

@@ -1,5 +1,6 @@
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Commands.UpdateMyProfile;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMaintenanceHistory;
+using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMyProfile;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMyVehicles;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMyWorkOrderDetails;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMyWorkOrders;
@@ -83,6 +84,16 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         public async Task<IActionResult> GetMaintenanceHistory([FromQuery] int? vehicleId = null)
         {
             var result = await _mediator.Send(new GetMaintenanceHistoryQuery { VehicleId = vehicleId });
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Müşterinin profil bilgilerini getirir
+        /// </summary>
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var result = await _mediator.Send(new GetMyProfileQuery());
             return Ok(result);
         }
 
