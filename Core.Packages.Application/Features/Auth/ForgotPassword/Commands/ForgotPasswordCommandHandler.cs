@@ -4,15 +4,16 @@ using MagicCarRepairAISupported.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System.Net;
+using UserEntity = MagicCarRepairAISupported.Domain.Entities.User;
 
 namespace MagicCarRepairAISupported.Application.Features.Auth.ForgotPassword.Commands
 {
     public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, IResult>
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<UserEntity> _userManager;
         private readonly IEmailService _emailService;
 
-        public ForgotPasswordCommandHandler(UserManager<User> userManager, IEmailService emailService)
+        public ForgotPasswordCommandHandler(UserManager<UserEntity> userManager, IEmailService emailService)
         {
             _userManager = userManager;
             _emailService = emailService;

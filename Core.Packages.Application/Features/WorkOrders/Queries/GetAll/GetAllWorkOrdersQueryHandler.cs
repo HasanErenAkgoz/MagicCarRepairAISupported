@@ -45,9 +45,8 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetA
             }
             else
             {
-                // Tüm work order'ları getir (pagination eklenebilir)
-                var allWorkOrders = await _workOrderRepository.GetListAsync(cancellationToken);
-                workOrders = allWorkOrders.ToList();
+                // Tüm work order'ları getir (filtre yoksa)
+                workOrders = await _workOrderRepository.GetAllWithDetailsAsync(cancellationToken);
             }
 
             // Tarih filtresi
@@ -64,17 +63,31 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetA
                 Id = wo.Id,
                 WorkOrderNumber = wo.WorkOrderNumber,
                 VehicleId = wo.VehicleId,
-                VehicleLicensePlate = wo.Vehicle?.LicensePlate ?? "",
-                VehicleBrand = wo.Vehicle?.Brand ?? "",
-                VehicleModel = wo.Vehicle?.Model ?? "",
+                Vehicle = wo.Vehicle != null ? new VehicleDto
+                {
+                    Id = wo.Vehicle.Id,
+                    LicensePlate = wo.Vehicle.LicensePlate,
+                    Brand = wo.Vehicle.Brand,
+                    Model = wo.Vehicle.Model,
+                    Year = wo.Vehicle.Year
+                } : null,
                 CustomerId = wo.CustomerId,
-                CustomerName = wo.Customer?.FullName ?? "",
+                Customer = wo.Customer != null ? new CustomerDto
+                {
+                    Id = wo.Customer.Id,
+                    FirstName = wo.Customer.FirstName,
+                    LastName = wo.Customer.LastName,
+                    FullName = wo.Customer.FullName,
+                    Phone = wo.Customer.PhoneNumber,
+                    Avatar = wo.Customer.Avatar
+                } : null,
                 EntryDate = wo.EntryDate,
                 EstimatedDeliveryDate = wo.EstimatedDeliveryDate,
                 Status = wo.Status,
                 StatusName = wo.Status.ToString(),
                 Priority = wo.Priority,
                 TotalAmount = wo.TotalAmount,
+                EstimatedCost = wo.EstimatedCost,
                 PaymentStatus = wo.PaymentStatus,
                 PaymentStatusName = wo.PaymentStatus.ToString(),
                 AssignedEmployeeId = wo.AssignedEmployeeId,

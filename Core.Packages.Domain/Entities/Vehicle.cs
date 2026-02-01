@@ -13,6 +13,9 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public string Model { get; set; }
         public int Year { get; set; }
         public string Color { get; set; }
+        public string? Vin { get; set; }
+        public string? ModelVariant { get; set; }
+        public string? Trim { get; set; }
         public long Kilometers { get; private set; }
         public new VehicleStatus Status { get; set; }
         
@@ -21,6 +24,11 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public virtual Client Client { get; set; }
         
         public Customer Customer { get; set; }
+        
+        /// <summary>
+        /// Araç fotoğrafları
+        /// </summary>
+        public virtual ICollection<VehiclePhoto> Photos { get; set; } = new List<VehiclePhoto>();
 
         public void UpdateKilometers(long newKilometers)
         {

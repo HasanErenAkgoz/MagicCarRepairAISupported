@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Integrated Admin Management Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3B82F6",
+                        "primary-dark": "#2563EB",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0f172a",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card-active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.05) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-white font-display antialiased selection:bg-primary selection:text-white">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-hidden">
+<header class="pt-12 pb-2 px-6 flex items-center justify-between z-10 shrink-0">
+<div class="flex items-center gap-4">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-12 ring-2 ring-white/10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBo-cSRo0W4CS10xYmippWvnMbbpw4g27rLHQDaCysObf6r9pm7YgXTVy-FtvoafsX9bdWioIT5HieaPiuCbu-CKvqE30KYAcRAE8OrrAI5YFr0mkS-1q3NouKAfNNnzFVyxfyvFHRDarSBFL1ikkHwlzUvmnUV4w3Q2VN9VNNcpBc_d6DmJJQSJR2IpHYL0XXtut-ZvbDVI5SYzpCFPTZF_8p2y_PLXgRrOa0eJWD-GYN6s2scWsYwCJMmPE2slgQNkmdW_Ppqq8Cp");'></div>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-background-dark"></div>
+</div>
+<div class="flex flex-col">
+<h2 class="text-white/60 text-xs font-medium tracking-wider uppercase">Welcome back</h2>
+<h1 class="text-white text-xl font-bold leading-tight">Good Morning, Alex</h1>
+</div>
+</div>
+<button class="relative flex size-10 items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">notifications</span>
+<span class="absolute top-2 right-2.5 size-2 bg-primary rounded-full"></span>
+</button>
+</header>
+<div class="px-6 mb-4 shrink-0">
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+<span class="text-emerald-400 text-xs font-semibold tracking-wide uppercase">Shop Floor Operational</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto no-scrollbar pb-32">
+<div class="w-full overflow-x-auto no-scrollbar pb-6 snap-x snap-mandatory pl-6 pr-2">
+<div class="flex gap-4 w-max">
+<div class="snap-start glass-panel min-w-[160px] w-[160px] flex flex-col justify-between rounded-2xl p-5 hover:bg-white/5 transition-colors duration-300">
+<div class="flex items-start justify-between">
+<div class="p-2 rounded-lg bg-blue-500/20 text-blue-400">
+<span class="material-symbols-outlined block" style="font-size: 24px;">assignment</span>
+</div>
+<span class="text-white/40 text-xs font-medium">Total</span>
+</div>
+<div class="mt-4">
+<p class="text-white text-3xl font-bold tracking-tight">142</p>
+<p class="text-white/50 text-xs font-medium mt-1">Work Orders</p>
+</div>
+</div>
+<div class="snap-start glass-panel glass-card-active min-w-[160px] w-[160px] flex flex-col justify-between rounded-2xl p-5 relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-20 h-20 bg-primary/20 blur-2xl rounded-full"></div>
+<div class="flex items-start justify-between relative z-10">
+<div class="p-2 rounded-lg bg-primary/20 text-primary">
+<span class="material-symbols-outlined block" style="font-size: 24px;">build_circle</span>
+</div>
+<span class="text-primary/60 text-xs font-bold">Active</span>
+</div>
+<div class="mt-4 relative z-10">
+<p class="text-white text-3xl font-bold tracking-tight">18</p>
+<p class="text-primary/80 text-xs font-medium mt-1">In Progress</p>
+</div>
+</div>
+<div class="snap-start glass-panel min-w-[160px] w-[160px] flex flex-col justify-between rounded-2xl p-5">
+<div class="flex items-start justify-between">
+<div class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
+<span class="material-symbols-outlined block" style="font-size: 24px;">payments</span>
+</div>
+<div class="flex items-center gap-0.5 text-emerald-400">
+<span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span>
+<span class="text-[10px] font-bold">12%</span>
+</div>
+</div>
+<div class="mt-4">
+<p class="text-white text-3xl font-bold tracking-tight">$2.4k</p>
+<p class="text-white/50 text-xs font-medium mt-1">Today's Revenue</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-8 px-6">
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h3 class="text-lg font-bold text-white tracking-tight">Revenue Analytics</h3>
+<button class="text-primary text-sm font-medium hover:text-primary/80 transition-colors">View All</button>
+</div>
+<div class="glass-panel p-5 rounded-3xl w-full">
+<div class="flex justify-between items-end mb-6">
+<div>
+<p class="text-white/60 text-sm font-medium">Weekly Revenue</p>
+<h4 class="text-3xl font-bold text-white mt-1">$12,450</h4>
+</div>
+<div class="bg-primary/10 px-3 py-1 rounded-lg border border-primary/20">
+<p class="text-primary text-xs font-bold">+8.5%</p>
+</div>
+</div>
+<div class="w-full h-[160px] relative">
+<svg class="w-full h-full overflow-visible" viewBox="0 0 350 150">
+<defs>
+<linearGradient id="gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#3B82F6; stop-opacity:0.3"></stop>
+<stop offset="100%" style="stop-color:#3B82F6; stop-opacity:0"></stop>
+</linearGradient>
+</defs>
+<line stroke="rgba(255,255,255,0.05)" stroke-dasharray="4" x1="0" x2="350" y1="30" y2="30"></line>
+<line stroke="rgba(255,255,255,0.05)" stroke-dasharray="4" x1="0" x2="350" y1="75" y2="75"></line>
+<line stroke="rgba(255,255,255,0.05)" stroke-dasharray="4" x1="0" x2="350" y1="120" y2="120"></line>
+<path d="M0,120 Q50,110 80,60 T160,50 T240,80 T350,20 V150 H0 Z" fill="url(#gradient)"></path>
+<path d="M0,120 Q50,110 80,60 T160,50 T240,80 T350,20" fill="none" stroke="#3B82F6" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<circle cx="80" cy="60" fill="#0f172a" r="4" stroke="#3B82F6" stroke-width="2"></circle>
+<circle cx="160" cy="50" fill="#0f172a" r="4" stroke="#3B82F6" stroke-width="2"></circle>
+<circle cx="240" cy="80" fill="#0f172a" r="4" stroke="#3B82F6" stroke-width="2"></circle>
+<circle cx="350" cy="20" fill="#0f172a" r="4" stroke="#3B82F6" stroke-width="2"></circle>
+</svg>
+</div>
+<div class="flex justify-between mt-4 px-1 text-white/40 text-xs font-medium">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h3 class="text-lg font-bold text-white tracking-tight">Hızlı İşlemler</h3>
+<div class="grid grid-cols-2 gap-4">
+<button class="glass-panel p-5 rounded-3xl flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform">
+<div class="size-12 rounded-2xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" style="font-size: 28px;">add_task</span>
+</div>
+<span class="text-sm font-semibold text-white/90">Yeni İş Emri</span>
+</button>
+<button class="glass-panel p-5 rounded-3xl flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform">
+<div class="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-primary border border-white/10">
+<span class="material-symbols-outlined" style="font-size: 28px;">format_list_bulleted</span>
+</div>
+<span class="text-sm font-semibold text-white/90">İş Emirleri</span>
+</button>
+<button class="glass-panel p-5 rounded-3xl flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform">
+<div class="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-emerald-400 border border-white/10">
+<span class="material-symbols-outlined" style="font-size: 28px;">group</span>
+</div>
+<span class="text-sm font-semibold text-white/90">Müşteriler</span>
+</button>
+<button class="glass-panel p-5 rounded-3xl flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform">
+<div class="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-amber-400 border border-white/10">
+<span class="material-symbols-outlined" style="font-size: 28px;">inventory_2</span>
+</div>
+<span class="text-sm font-semibold text-white/90">Stok Takibi</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h3 class="text-lg font-bold text-white tracking-tight">Fleet Status</h3>
+<div class="glass-panel p-5 rounded-3xl flex items-center gap-6">
+<div class="relative size-32 shrink-0">
+<svg class="transform -rotate-90 w-full h-full" viewBox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="40" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
+<circle cx="50" cy="50" fill="none" r="40" stroke="#10b981" stroke-dasharray="100 251" stroke-dashoffset="0" stroke-linecap="round" stroke-width="12"></circle>
+<circle cx="50" cy="50" fill="none" r="40" stroke="#3B82F6" stroke-dasharray="80 251" stroke-dashoffset="-110" stroke-linecap="round" stroke-width="12"></circle>
+<circle cx="50" cy="50" fill="none" r="40" stroke="#6b7280" stroke-dasharray="40 251" stroke-dashoffset="-200" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center flex-col">
+<span class="text-2xl font-bold text-white">84%</span>
+<span class="text-[10px] text-white/40 uppercase font-bold">Eff.</span>
+</div>
+</div>
+<div class="flex flex-col gap-3 flex-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="size-2.5 rounded-full bg-primary"></span>
+<span class="text-sm text-white/80 font-medium">Repairing</span>
+</div>
+<span class="text-sm text-white font-bold">12</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="size-2.5 rounded-full bg-emerald-500"></span>
+<span class="text-sm text-white/80 font-medium">Completed</span>
+</div>
+<span class="text-sm text-white font-bold">24</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="size-2.5 rounded-full bg-gray-500"></span>
+<span class="text-sm text-white/80 font-medium">Waiting</span>
+</div>
+<span class="text-sm text-white font-bold">5</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<nav class="fixed bottom-0 left-0 right-0 z-50 glass-nav px-6 pb-8 pt-4">
+<div class="flex items-center justify-between max-w-lg mx-auto">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-1" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-white/40 hover:text-white/60 transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Orders</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-white/40 hover:text-white/60 transition-colors" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Customers</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-white/40 hover:text-white/60 transition-colors" href="#">
+<span class="material-symbols-outlined">inventory</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Inventory</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-white/40 hover:text-white/60 transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Profile</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>

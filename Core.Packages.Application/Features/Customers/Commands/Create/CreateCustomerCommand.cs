@@ -12,6 +12,7 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Commands.Crea
         public string? Address { get; set; }
         public DateTime DateTimeOfBirth { get; set; }
         public string Language { get; set; } = "tr";
+        public bool IsVip { get; set; } = false;
         public int? UserId { get; set; } // Opsiyonel: Eğer bu müşterinin bir User hesabı varsa
     }
 }

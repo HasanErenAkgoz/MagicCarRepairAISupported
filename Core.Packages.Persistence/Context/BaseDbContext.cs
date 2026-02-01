@@ -28,6 +28,7 @@ namespace MagicCarRepairAISupported.Persistence.Context
         public DbSet<Client> Clients { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
+        public DbSet<VehiclePhoto> VehiclePhotos { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }

@@ -1,10 +1,43 @@
 
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
+import { login as loginApi } from '../API/auth';
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const canSubmit = useMemo(() => {
+    return email.trim().length > 3 && password.length >= 1 && !loading;
+  }, [email, password, loading]);
+
+  const handleLogin = async () => {
+    setError(null);
+    const e = email.trim();
+    if (!e || !password) {
+      setError('Email ve şifre zorunlu.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await loginApi(e, password);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'AdminDashboard' }],
+      });
+    } catch (err) {
+      setError(err?.message || 'Login başarısız.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <LinearGradient
       colors={['#0f172a', '#1e3a8a', '#4f46e5']}
@@ -21,6 +54,12 @@ const LoginScreen = () => {
           <Text style={styles.title}>Welcome Back</Text>
           <Text style={styles.subtitle}>Sign in to manage your vehicle</Text>
 
+          {!!error && (
+            <View style={styles.errorBox}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          )}
+
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Email</Text>
             <View style={styles.inputContainer}>
@@ -30,6 +69,9 @@ const LoginScreen = () => {
                 placeholderTextColor="rgba(255, 255, 255, 0.4)"
                 keyboardType="email-address"
                 autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+                editable={!loading}
               />
               <Feather name="mail" size={20} color="rgba(255, 255, 255, 0.6)" style={styles.inputIcon} />
             </View>
@@ -43,18 +85,30 @@ const LoginScreen = () => {
                 placeholder="********"
                 placeholderTextColor="rgba(255, 255, 255, 0.4)"
                 secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+                editable={!loading}
               />
               <Feather name="lock" size={20} color="rgba(255, 255, 255, 0.6)" style={styles.inputIcon} />
             </View>
           </View>
 
-          <TouchableOpacity style={styles.loginButton}>
-            <Text style={styles.loginButtonText}>Login</Text>
+          <TouchableOpacity
+            style={[styles.loginButton, (!canSubmit || loading) && styles.loginButtonDisabled]}
+            onPress={handleLogin}
+            disabled={!canSubmit || loading}
+            activeOpacity={0.85}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.loginButtonText}>Login</Text>
+            )}
           </TouchableOpacity>
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
               <Text style={styles.signupText}>Sign Up</Text>
             </TouchableOpacity>
           </View>
@@ -104,6 +158,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 32,
   },
+  errorBox: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.35)',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: 'rgba(255, 255, 255, 0.92)',
+    fontSize: 13,
+    lineHeight: 18,
+  },
   inputGroup: {
     marginBottom: 20,
   },
@@ -144,6 +212,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 8,
     elevation: 5,
+  },
+  loginButtonDisabled: {
+    opacity: 0.65,
   },
   loginButtonText: {
     fontSize: 18,

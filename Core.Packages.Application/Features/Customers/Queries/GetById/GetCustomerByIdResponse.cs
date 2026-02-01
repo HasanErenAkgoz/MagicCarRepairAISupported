@@ -14,6 +14,7 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Queries.GetBy
         public int Age { get; set; }
         public bool IsBirthdayToday { get; set; }
         public string Language { get; set; }
+        public bool IsVip { get; set; }
         public int? UserId { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }

@@ -3,17 +3,21 @@ using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MagicCarRepairAISupported.Domain.UnitOfWork;
+using MagicCarRepairAISupported.Infrastructure.Configurations.Token;
 using MagicCarRepairAISupported.Infrastructure.Services.FileUpload;
 using MagicCarRepairAISupported.Persistence.Context;
 using MagicCarRepairAISupported.Persistence.Filters;
 using MagicCarRepairAISupported.Persistence.Repositories;
 using MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace MagicCarRepairAISupported.Persistence
 {
@@ -101,8 +105,10 @@ namespace MagicCarRepairAISupported.Persistence
             });
            
             services.AddIdentityCoreService(configuration);
+            services.AddJwtAuthentication(configuration);
             services.AddSwaggerServices(configuration);
             services.AddHostedService<Persistence.Startup.HostedServices.PermissionInitializerHostedService>();
+            services.AddHostedService<Persistence.Startup.HostedServices.DatabaseSeedHostedService>();
             services.AddHostedService<Persistence.Startup.HostedServices.StockAlertMonitoringHostedService>();
             services.AddHostedService<Infrastructure.Startup.HostedServices.AppointmentReminderHostedService>();
             services.AddHostedService<Infrastructure.Startup.HostedServices.InsuranceReminderHostedService>();
@@ -186,6 +192,64 @@ namespace MagicCarRepairAISupported.Persistence
                .AddSignInManager()
                .AddUserManager<UserManager<User>>()
                .AddRoleManager<RoleManager<Role>>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            var tokenOptions = configuration.GetSection("TokenOptions").Get<Infrastructure.Configurations.Token.TokenOptions>();
+            
+            if (tokenOptions == null || string.IsNullOrEmpty(tokenOptions.SecurityKey))
+            {
+                throw new InvalidOperationException("TokenOptions configuration is missing or invalid.");
+            }
+
+            if (tokenOptions.SecurityKey.Length < 32)
+            {
+                throw new InvalidOperationException("Security key must be at least 256 bits (32 characters) long.");
+            }
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenOptions.SecurityKey));
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = tokenOptions.Issuer,
+                    ValidAudience = tokenOptions.Audience,
+                    IssuerSigningKey = securityKey,
+                    ClockSkew = TimeSpan.Zero // Token expiration'ı tam olarak kontrol et
+                };
+
+                // Events for debugging
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        if (context.Exception != null)
+                        {
+                            // Log authentication failures for debugging
+                            Console.WriteLine($"JWT Authentication Failed: {context.Exception.Message}");
+                        }
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        // Token validated successfully
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
             return services;
         }

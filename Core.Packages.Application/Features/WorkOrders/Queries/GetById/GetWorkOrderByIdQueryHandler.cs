@@ -49,15 +49,40 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
             // Vehicle bilgileri
             if (workOrder.Vehicle != null)
             {
-                response.VehicleLicensePlate = workOrder.Vehicle.LicensePlate;
-                response.VehicleBrand = workOrder.Vehicle.Brand;
-                response.VehicleModel = workOrder.Vehicle.Model;
+                response.Vehicle = new VehicleDetailDto
+                {
+                    Id = workOrder.Vehicle.Id,
+                    LicensePlate = workOrder.Vehicle.LicensePlate,
+                    Brand = workOrder.Vehicle.Brand,
+                    Model = workOrder.Vehicle.Model,
+                    Year = workOrder.Vehicle.Year,
+                    Vin = workOrder.Vehicle.Vin,
+                    ModelVariant = workOrder.Vehicle.ModelVariant,
+                    Trim = workOrder.Vehicle.Trim,
+                    Photos = workOrder.Vehicle.Photos?.OrderBy(p => p.DisplayOrder).ThenBy(p => p.UploadDate).Select(p => new VehiclePhotoDto
+                    {
+                        Id = p.Id,
+                        FilePath = p.FilePath,
+                        Description = p.Description,
+                        PhotoType = p.PhotoType,
+                        UploadDate = p.UploadDate,
+                        DisplayOrder = p.DisplayOrder
+                    }).ToList() ?? new List<VehiclePhotoDto>()
+                };
             }
 
             // Customer bilgileri
             if (workOrder.Customer != null)
             {
-                response.CustomerName = workOrder.Customer.FullName;
+                response.Customer = new CustomerDetailDto
+                {
+                    Id = workOrder.Customer.Id,
+                    FirstName = workOrder.Customer.FirstName,
+                    LastName = workOrder.Customer.LastName,
+                    FullName = workOrder.Customer.FullName,
+                    Phone = workOrder.Customer.PhoneNumber,
+                    Avatar = workOrder.Customer.Avatar
+                };
             }
 
             // AssignedEmployee bilgileri

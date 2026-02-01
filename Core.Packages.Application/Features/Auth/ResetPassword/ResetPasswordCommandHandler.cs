@@ -2,14 +2,15 @@ using MagicCarRepairAISupported.Application.Shared.Result;
 using MagicCarRepairAISupported.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using UserEntity = MagicCarRepairAISupported.Domain.Entities.User;
 
 namespace MagicCarRepairAISupported.Application.Features.Auth.ResetPassword
 {
     public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, IResult>
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<UserEntity> _userManager;
 
-        public ResetPasswordCommandHandler(UserManager<User> userManager)
+        public ResetPasswordCommandHandler(UserManager<UserEntity> userManager)
         {
             _userManager = userManager;
         }

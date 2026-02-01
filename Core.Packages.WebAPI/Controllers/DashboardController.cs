@@ -1,6 +1,8 @@
 using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetDashboardStats;
+using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetFleetStatus;
 using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetIncomeExpenseChart;
 using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetRecentActivities;
+using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetTodayRevenue;
 using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetTopCustomers;
 using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetWorkOrderStatusChart;
 using MediatR;
@@ -68,6 +70,28 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         [HttpGet("top-customers")]
         public async Task<IActionResult> GetTopCustomers([FromQuery] GetTopCustomersQuery query)
         {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Bugünün gelir bilgilerini getirir (bugün, dün ve değişim yüzdesi)
+        /// </summary>
+        [HttpGet("today-revenue")]
+        public async Task<IActionResult> GetTodayRevenue()
+        {
+            var query = new GetTodayRevenueQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Fleet status bilgilerini getirir (Repairing, Completed, Waiting, Efficiency)
+        /// </summary>
+        [HttpGet("fleet-status")]
+        public async Task<IActionResult> GetFleetStatus()
+        {
+            var query = new GetFleetStatusQuery();
             var result = await _mediator.Send(query);
             return Ok(result);
         }

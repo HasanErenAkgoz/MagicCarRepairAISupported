@@ -5,6 +5,10 @@ using MagicCarRepairAISupported.Domain.UnitOfWork;
 using MagicCarRepairAISupported.Persistence.Context;
 using MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MagicCarRepairAISupported.Persistence.Repositories
 {
@@ -71,6 +75,16 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
                 .ToListAsync(cancellationToken);
         }
 
+        public async Task<List<WorkOrder>> GetAllWithDetailsAsync(CancellationToken cancellationToken = default)
+        {
+            return await Context.Set<WorkOrder>()
+                .Include(w => w.Vehicle)
+                .Include(w => w.Customer)
+                .Include(w => w.AssignedEmployee)
+                .OrderByDescending(w => w.EntryDate)
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<List<WorkOrder>> GetByEmployeeIdAsync(int employeeId, CancellationToken cancellationToken = default)
         {
             return await Context.Set<WorkOrder>()
@@ -85,6 +99,8 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         {
             return await Context.Set<WorkOrder>()
                 .Include(w => w.Vehicle)
+                .Include(w => w.Customer)
+                .Include(w => w.AssignedEmployee)
                 .Where(w => w.CustomerId == customerId)
                 .OrderByDescending(w => w.EntryDate)
                 .ToListAsync(cancellationToken);
@@ -94,6 +110,8 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         {
             return await Context.Set<WorkOrder>()
                 .Include(w => w.Customer)
+                .Include(w => w.Vehicle)
+                .Include(w => w.AssignedEmployee)
                 .Where(w => w.VehicleId == vehicleId)
                 .OrderByDescending(w => w.EntryDate)
                 .ToListAsync(cancellationToken);
@@ -104,6 +122,9 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
             return await Context.Set<WorkOrder>()
                 .Include(w => w.Vehicle)
                     .ThenInclude(v => v.Customer)
+                .Include(w => w.Vehicle)
+                    .ThenInclude(v => v.Photos)
+                        .ThenInclude(p => p.UploadedFile)
                 .Include(w => w.Customer)
                 .Include(w => w.AssignedEmployee)
                 .Include(w => w.Items)
@@ -125,4 +146,3 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         }
     }
 }
-

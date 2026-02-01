@@ -12,6 +12,7 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Commands.Crea
         public string? Address { get; set; }
         public DateTime DateTimeOfBirth { get; set; }
         public string Language { get; set; }
+        public bool IsVip { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 }
