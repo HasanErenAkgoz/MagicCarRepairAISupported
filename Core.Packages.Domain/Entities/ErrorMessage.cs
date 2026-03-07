@@ -1,4 +1,4 @@
-using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Common;
 
 namespace MagicCarRepairAISupported.Domain.Entities
 {

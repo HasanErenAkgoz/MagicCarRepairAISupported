@@ -95,7 +95,7 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetRe
             activities.AddRange(recentQuotes.Select(qr => new GetRecentActivitiesResponse
             {
                 ActivityType = "Quote",
-                Title = $"Yeni Teklif Talebi: {qr.RequestNumber}",
+                Title = $"Yeni Teklif Talebi: QR-{qr.Id}",
                 Description = $"Durum: {qr.Status}",
                 ActivityDate = qr.CreatedDate ?? DateTime.UtcNow,
                 RelatedEntityId = qr.Id,

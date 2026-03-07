@@ -18,6 +18,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
         public WorkOrderPriority Priority { get; set; }
         public string PriorityName { get; set; }
         public long? Kilometers { get; set; }
+        public long? ExitKilometers { get; set; }
         public int? FuelLevel { get; set; }
         public string? CustomerComplaints { get; set; }
         public string? SpecialRequests { get; set; }
@@ -32,6 +33,11 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
         public int? AssignedEmployeeId { get; set; }
         public string? AssignedEmployeeName { get; set; }
         public string? Notes { get; set; }
+        // Flat convenience properties
+        public string? VehicleLicensePlate => Vehicle?.LicensePlate;
+        public string? VehicleBrand => Vehicle?.Brand;
+        public string? VehicleModel => Vehicle?.Model;
+        public string? CustomerName => Customer?.FullName;
         public List<WorkOrderItemDto> Items { get; set; } = new();
         public List<WorkOrderLaborDto> Labors { get; set; } = new();
         public List<WorkOrderTimelineDto> Timeline { get; set; } = new();

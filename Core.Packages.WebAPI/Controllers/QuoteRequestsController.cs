@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/quote-requests")]
     [Authorize]
     public class QuoteRequestsController : ControllerBase
     {

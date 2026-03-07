@@ -17,6 +17,8 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
         private readonly IEmailService _emailService;
         private readonly ISmsService _smsService;
         private readonly IWhatsAppService _whatsAppService;
+        private readonly IFCMNotificationService _fcmService;
+        private readonly IUserDeviceTokenRepository _deviceTokenRepository;
         private readonly ITenantService _tenantService;
         private readonly ILogger<NotificationService> _logger;
 
@@ -25,6 +27,8 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
             IEmailService emailService,
             ISmsService smsService,
             IWhatsAppService whatsAppService,
+            IFCMNotificationService fcmService,
+            IUserDeviceTokenRepository deviceTokenRepository,
             ITenantService tenantService,
             ILogger<NotificationService> logger)
         {
@@ -32,6 +36,8 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
             _emailService = emailService;
             _smsService = smsService;
             _whatsAppService = whatsAppService;
+            _fcmService = fcmService;
+            _deviceTokenRepository = deviceTokenRepository;
             _tenantService = tenantService;
             _logger = logger;
         }
@@ -161,17 +167,42 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
 
                 await _notificationRepository.AddAsync(notification, CancellationToken.None);
 
-                // Push notification gönder (gelecekte Firebase/OneSignal entegrasyonu)
+                // Push notification gönder
                 notification.Status = NotificationStatus.Sending;
                 _notificationRepository.Update(notification);
 
-                // TODO: Push notification implementasyonu (Firebase Cloud Messaging, OneSignal, vb.)
-                // Şimdilik başarılı olarak işaretle
-                notification.MarkAsSent();
-                _notificationRepository.Update(notification);
+                // FCM servisi ile push notification gönder
+                var deviceTokens = await _deviceTokenRepository.GetActiveTokensByUserIdAsync(userId, CancellationToken.None);
+                
+                if (deviceTokens != null && deviceTokens.Count > 0)
+                {
+                    var tokens = deviceTokens.Select(t => t.Token).ToList();
+                    var notificationData = extraData ?? new Dictionary<string, object>();
+                    if (relatedEntityType != null) notificationData["relatedEntityType"] = relatedEntityType;
+                    if (relatedEntityId.HasValue) notificationData["relatedEntityId"] = relatedEntityId.Value;
 
-                _logger.LogInformation($"Push notification sent to user {userId}");
-                return true;
+                    var results = await _fcmService.SendToTokensAsync(tokens, title, content, notificationData);
+                    var successCount = results.Values.Count(r => r);
+
+                    if (successCount > 0)
+                    {
+                        notification.MarkAsSent();
+                        _logger.LogInformation($"Push notification sent to user {userId}. Success: {successCount}/{tokens.Count}");
+                    }
+                    else
+                    {
+                        notification.MarkAsFailed("FCM gönderimi başarısız");
+                        _logger.LogWarning($"Failed to send push notification to user {userId}");
+                    }
+                }
+                else
+                {
+                    notification.MarkAsFailed("Kullanıcının aktif cihaz token'ı yok");
+                    _logger.LogWarning($"No active device tokens found for user {userId}");
+                }
+
+                _notificationRepository.Update(notification);
+                return notification.Status == NotificationStatus.Sent;
             }
             catch (Exception ex)
             {

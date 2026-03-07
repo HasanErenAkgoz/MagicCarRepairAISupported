@@ -5,14 +5,14 @@ namespace MagicCarRepairAISupported.Persistence.Seeds
 {
     public static class WorkOrderSeedData
     {
-        public static List<WorkOrder> GetWorkOrders()
+        public static List<MagicCarRepairAISupported.Domain.Entities.WorkOrder> GetWorkOrders()
         {
             var now = DateTime.UtcNow;
             
-            return new List<WorkOrder>
+            return new List<MagicCarRepairAISupported.Domain.Entities.WorkOrder>
             {
                 // Completed Work Orders (Delivered)
-                new WorkOrder
+                new MagicCarRepairAISupported.Domain.Entities.WorkOrder
                 {
                     Id = 1,
                     WorkOrderNumber = $"WO-{now.AddDays(-30):yyyyMMdd}-0001",

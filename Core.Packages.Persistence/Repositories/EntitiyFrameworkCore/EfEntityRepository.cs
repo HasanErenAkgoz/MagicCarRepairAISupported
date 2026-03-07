@@ -1,4 +1,4 @@
-using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Common;
 using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MagicCarRepairAISupported.Domain.UnitOfWork;
 using EFCore.BulkExtensions;
@@ -123,7 +123,7 @@ namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCor
         }
 
         // IEntityRepository<TEntity, TId> implementation
-        public async Task<TEntity?> GetByIdAsync(int id)
+        public async Task<TEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             // Try to find entity by Id property using reflection
             var entityType = typeof(TEntity);
@@ -132,7 +132,7 @@ namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCor
             if (idProperty != null)
             {
                 // Use FindAsync if available (works for entities with Id property)
-                return await Context.Set<TEntity>().FindAsync(id);
+                return await Context.Set<TEntity>().FindAsync(new object[] { id }, cancellationToken);
             }
             
             // Fallback: query by Id property
@@ -142,7 +142,7 @@ namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCor
             var equal = Expression.Equal(property, constant);
             var lambda = Expression.Lambda<Func<TEntity, bool>>(equal, parameter);
             
-            return await Context.Set<TEntity>().FirstOrDefaultAsync(lambda);
+            return await Context.Set<TEntity>().FirstOrDefaultAsync(lambda, cancellationToken);
         }
     }
 }

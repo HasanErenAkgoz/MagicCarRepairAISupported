@@ -74,7 +74,7 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteResponses.Commands
                     DiscountRate = request.DiscountRate,
                     TaxRate = request.TaxRate,
                     WarrantyMonths = request.WarrantyMonths,
-                    Status = QuoteResponseStatus.Pending,
+                    Status = QuoteResponseStatus.Pending.ToString(),
                     QuoteDate = DateTime.UtcNow,
                     ValidUntilDate = request.ValidUntilDate ?? DateTime.UtcNow.AddDays(30),
                     Notes = request.Notes
@@ -98,7 +98,7 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteResponses.Commands
                 }
 
                 // Müşteriye bildirim gönder (Email/SMS)
-                if (quoteRequest.CustomerId.HasValue)
+                if (quoteRequest.CustomerId > 0)
                 {
                     var customer = quoteRequest.Customer;
                     if (customer != null)

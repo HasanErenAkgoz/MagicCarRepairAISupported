@@ -7,6 +7,7 @@ namespace MagicCarRepairAISupported.Persistence.Extensions
     {
         public static void SeedData(this ModelBuilder modelBuilder)
         {
+            /*
             // Seed Clients
             modelBuilder.Entity<Domain.Entities.Client>()
                 .HasData(ClientSeedData.GetClients());
@@ -60,6 +61,7 @@ namespace MagicCarRepairAISupported.Persistence.Extensions
 
             // Seed Part Stocks
             modelBuilder.SeedPartStocks();
+            */
         }
     }
 }

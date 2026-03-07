@@ -14,9 +14,9 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         {
         }
 
-        public new async Task<QuoteResponse?> GetByIdAsync(int id)
+        public new async Task<QuoteResponse?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await GetQuoteResponseDetailsAsync(id);
+            return await GetQuoteResponseDetailsAsync(id, cancellationToken);
         }
 
         public async Task<QuoteResponse?> GetQuoteResponseDetailsAsync(int id, CancellationToken cancellationToken = default)
@@ -27,7 +27,7 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
                 .Include(qres => qres.QuoteRequest)
                     .ThenInclude(qr => qr.Vehicle)
                 .Include(qres => qres.Client)
-                .FirstOrDefaultAsync(qres => qres.Id == id);
+                .FirstOrDefaultAsync(qres => qres.Id == id, cancellationToken);
         }
 
         public async Task<List<QuoteResponse>> GetQuoteResponsesByRequestAsync(int quoteRequestId, CancellationToken cancellationToken = default)
@@ -53,10 +53,11 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
 
         public async Task<List<QuoteResponse>> GetQuoteResponsesByStatusAsync(QuoteResponseStatus status, int? clientId = null, CancellationToken cancellationToken = default)
         {
+            var statusStr = status.ToString();
             var query = Context.Set<QuoteResponse>()
                 .Include(qres => qres.QuoteRequest)
                 .Include(qres => qres.Client)
-                .Where(qres => qres.Status == status);
+                .Where(qres => qres.Status == statusStr);
 
             if (clientId.HasValue)
             {
@@ -73,17 +74,16 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
             return await Context.Set<QuoteResponse>()
                 .Include(qres => qres.Client)
                 .Include(qres => qres.QuoteRequest)
-                .FirstOrDefaultAsync(qres => qres.QuoteRequestId == quoteRequestId && 
-                                             qres.Status == QuoteResponseStatus.Accepted);
+                .FirstOrDefaultAsync(qres => qres.QuoteRequestId == quoteRequestId &&
+                                             qres.Status == "Accepted", cancellationToken);
         }
 
         public async Task<List<QuoteResponse>> GetExpiredQuoteResponsesAsync(CancellationToken cancellationToken = default)
         {
             return await Context.Set<QuoteResponse>()
-                .Where(qres => qres.Status == QuoteResponseStatus.Pending && 
+                .Where(qres => qres.Status == "Pending" &&
                                qres.ValidUntilDate <= DateTime.UtcNow)
                 .ToListAsync(cancellationToken);
         }
     }
 }
-

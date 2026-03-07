@@ -1,5 +1,7 @@
+using MagicCarRepairAISupported.Application.Features.Vehicles.Commands.AddPhoto;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Create;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Delete;
+using MagicCarRepairAISupported.Application.Features.Vehicles.Commands.DeletePhoto;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Update;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetAll;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetById;
@@ -107,6 +109,30 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
             var query = new GenerateVehicleQrCodeQuery { VehicleId = id };
             var qrBytes = await _mediator.Send(query);
             return File(qrBytes, "image/png", $"Vehicle-{id}-QR.png");
+        }
+
+        /// <summary>
+        /// Araca fotoğraf ekle
+        /// </summary>
+        [HttpPost("{id}/photos")]
+        public async Task<IActionResult> AddPhoto(int id, [FromBody] AddVehiclePhotoCommand command)
+        {
+            command.VehicleId = id;
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Araç fotoğrafını sil
+        /// </summary>
+        [HttpDelete("{id}/photos/{photoId}")]
+        public async Task<IActionResult> DeletePhoto(int id, int photoId)
+        {
+            var command = new DeleteVehiclePhotoCommand { VehicleId = id, PhotoId = photoId };
+            var result = await _mediator.Send(command);
+            if (!result.Success)
+                return BadRequest(result);
+            return Ok(result);
         }
     }
 }

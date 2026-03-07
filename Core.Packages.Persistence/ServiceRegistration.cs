@@ -48,6 +48,7 @@ namespace MagicCarRepairAISupported.Persistence
             services.AddScoped<IQuoteRequestRepository, QuoteRequestRepository>();
             services.AddScoped<IQuoteResponseRepository, QuoteResponseRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<IUserDeviceTokenRepository, UserDeviceTokenRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IVehicleRepository, VehicleRepository>();
             services.AddScoped<IIncomeRepository, IncomeRepository>();
@@ -65,6 +66,10 @@ namespace MagicCarRepairAISupported.Persistence
             services.AddScoped<IServicePortfolioRepository, ServicePortfolioRepository>();
             services.AddScoped<ICertificateRepository, CertificateRepository>();
             services.AddScoped<IFacilityPhotoRepository, FacilityPhotoRepository>();
+            services.AddScoped<ILoyaltyPointRepository, LoyaltyPointRepository>();
+            services.AddScoped<IRewardRepository, RewardRepository>();
+            services.AddScoped<IHelpArticleRepository, HelpArticleRepository>();
+            services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             
             // Generic repositories for entities
             services.AddScoped(typeof(IEntityRepository<Vehicle, int>), typeof(EfEntityRepository<Vehicle, BaseDbContext>));
@@ -76,6 +81,7 @@ namespace MagicCarRepairAISupported.Persistence
             services.AddScoped(typeof(IEntityRepository<WorkOrderItem, int>), typeof(EfEntityRepository<WorkOrderItem, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<WorkOrderLabor, int>), typeof(EfEntityRepository<WorkOrderLabor, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<WorkOrderPhoto, int>), typeof(EfEntityRepository<WorkOrderPhoto, BaseDbContext>));
+            services.AddScoped(typeof(IEntityRepository<VehiclePhoto, int>), typeof(EfEntityRepository<VehiclePhoto, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<QuoteRequestPhoto, int>), typeof(EfEntityRepository<QuoteRequestPhoto, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<StockAlert, int>), typeof(EfEntityRepository<StockAlert, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<AutoOrder, int>), typeof(EfEntityRepository<AutoOrder, BaseDbContext>));
@@ -94,6 +100,10 @@ namespace MagicCarRepairAISupported.Persistence
             services.AddScoped(typeof(IEntityRepository<ServiceRating, int>), typeof(EfEntityRepository<ServiceRating, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<AuditLog, int>), typeof(EfEntityRepository<AuditLog, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<ChatMessage, int>), typeof(EfEntityRepository<ChatMessage, BaseDbContext>));
+            services.AddScoped(typeof(IEntityRepository<Subscription, int>), typeof(EfEntityRepository<Subscription, BaseDbContext>));
+            services.AddScoped(typeof(IEntityRepository<SubscriptionPayment, int>), typeof(EfEntityRepository<SubscriptionPayment, BaseDbContext>));
+            services.AddScoped(typeof(IEntityRepository<Reminder, int>), typeof(EfEntityRepository<Reminder, BaseDbContext>));
+            services.AddScoped(typeof(IEntityRepository<Commission, int>), typeof(EfEntityRepository<Commission, BaseDbContext>));
             services.AddScoped<IUserRepository, UserRepository>();
             
             services.AddDbContext<TContext>(options =>

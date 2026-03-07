@@ -56,7 +56,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((WorkOrder?)null);
 
             // Act & Assert
@@ -84,7 +84,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(workOrder);
 
             // Act & Assert
@@ -112,7 +112,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(workOrder);
 
             // Act & Assert
@@ -141,9 +141,9 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(workOrder);
-            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Employee?)null);
 
             // Act & Assert
@@ -172,7 +172,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(workOrder);
             _workOrderRepositoryMock.Setup(x => x.SaveChangesAsync())
                 .ReturnsAsync(1);
@@ -234,9 +234,9 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(workOrder);
-            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(employee);
             _workOrderRepositoryMock.Setup(x => x.SaveChangesAsync())
                 .ReturnsAsync(1);
@@ -262,3 +262,4 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
         }
     }
 }
+

@@ -28,17 +28,17 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.G
     public class QuoteResponseDto
     {
         public int Id { get; set; }
-        public string QuoteNumber { get; set; } = string.Empty;
+        public string? QuoteNumber { get; set; }
         public string ClientName { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public int EstimatedDays { get; set; }
+        public string? Description { get; set; }
+        public int? EstimatedDays { get; set; }
         public decimal QuoteAmount { get; set; }
         public decimal NetAmount { get; set; }
-        public int WarrantyMonths { get; set; }
-        public QuoteResponseStatus Status { get; set; }
+        public int? WarrantyMonths { get; set; }
+        public string Status { get; set; } = "Pending";
         public string StatusName { get; set; } = string.Empty;
         public DateTime QuoteDate { get; set; }
-        public DateTime ValidUntilDate { get; set; }
+        public DateTime? ValidUntilDate { get; set; }
     }
 
     public class QuoteRequestPhotoDto
@@ -46,8 +46,6 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.G
         public int Id { get; set; }
         public string FilePath { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public QuoteRequestPhotoType PhotoType { get; set; }
-        public string PhotoTypeName { get; set; } = string.Empty;
         public DateTime UploadDate { get; set; }
     }
 }

@@ -7,6 +7,7 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.CreatePa
         public int Id { get; set; }
         public string PartCode { get; set; }
         public string Name { get; set; }
+        public string? Description { get; set; }
         public PartCategory Category { get; set; }
         public PartBrandType BrandType { get; set; }
         public decimal SalePrice { get; set; }

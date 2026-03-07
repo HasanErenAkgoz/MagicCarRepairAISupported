@@ -1,48 +1,66 @@
-using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Common;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Interfaces;
 
 namespace MagicCarRepairAISupported.Domain.Entities
 {
     /// <summary>
-    /// Teklif talebi entity'si - Müşteriler servislerden teklif isteyebilir
+    /// Fiyat teklifi isteği entity'si
     /// </summary>
     public class QuoteRequest : BaseEntity<int>, IClientEntity
     {
         /// <summary>
-        /// Talep numarası (Otomatik oluşturulur: QR-YYYYMMDD-XXXX)
+        /// Talep numarası (benzersiz)
         /// </summary>
-        public string RequestNumber { get; set; }
+        public string RequestNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// Müşteri ID (Opsiyonel - misafir kullanıcılar için)
+        /// Müşteri ID
         /// </summary>
-        public int? CustomerId { get; set; }
-        public virtual Customer? Customer { get; set; }
+        public int CustomerId { get; set; }
+        public virtual Customer Customer { get; set; }
 
         /// <summary>
-        /// Araç ID (Opsiyonel - yeni araç için)
+        /// Müşteri adı (navigation olmadan erişim için)
+        /// </summary>
+        public string? CustomerName { get; set; }
+
+        /// <summary>
+        /// Araç ID (opsiyonel - müşteri henüz araç kaydetmemiş olabilir)
         /// </summary>
         public int? VehicleId { get; set; }
         public virtual Vehicle? Vehicle { get; set; }
 
         /// <summary>
-        /// Araç bilgileri (VehicleId yoksa kullanılır)
+        /// Araç bilgileri (navigation olmadan erişim için)
         /// </summary>
         public string? VehicleBrand { get; set; }
         public string? VehicleModel { get; set; }
-        public int? VehicleYear { get; set; }
         public string? VehicleLicensePlate { get; set; }
+
+        /// <summary>
+        /// Fotoğraf yolları (JSON array formatında)
+        /// </summary>
+        public string PhotoPaths { get; set; } = "[]";
 
         /// <summary>
         /// Sorun açıklaması
         /// </summary>
-        public string ProblemDescription { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
-        /// Talep tipi (Kaza, Arıza, Bakım, vb.)
+        /// Sorun açıklaması (alternatif property)
         /// </summary>
-        public QuoteRequestType RequestType { get; set; }
+        public string? ProblemDescription
+        {
+            get => Description;
+            set => Description = value;
+        }
+
+        /// <summary>
+        /// Talep tipi
+        /// </summary>
+        public QuoteRequestType RequestType { get; set; } = QuoteRequestType.Other;
 
         /// <summary>
         /// Aciliyet seviyesi
@@ -50,68 +68,56 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public UrgencyLevel UrgencyLevel { get; set; } = UrgencyLevel.Normal;
 
         /// <summary>
-        /// İstenen başlangıç tarihi
+        /// Teklif son tarihi
         /// </summary>
-        public DateTime? DesiredStartDate { get; set; }
-
-        /// <summary>
-        /// İstenen bitiş tarihi
-        /// </summary>
-        public DateTime? DesiredEndDate { get; set; }
+        public DateTime QuoteDeadline { get; set; } = DateTime.UtcNow.AddDays(7);
 
         /// <summary>
         /// Durum
         /// </summary>
-        public QuoteStatus Status { get; set; } = QuoteStatus.Open;
+        public new QuoteStatus Status { get; set; } = QuoteStatus.Open;
 
         /// <summary>
-        /// Seçilen teklif ID
+        /// AI tahmini maliyet (opsiyonel)
         /// </summary>
-        public int? SelectedQuoteResponseId { get; set; }
-        public virtual QuoteResponse? SelectedQuoteResponse { get; set; }
+        public decimal? EstimatedCost { get; set; }
 
         /// <summary>
-        /// Son teklif tarihi (Bu tarihten sonra teklif alınamaz)
+        /// AI tahmin açıklaması
         /// </summary>
-        public DateTime QuoteDeadline { get; set; }
+        public string? EstimatedDescription { get; set; }
 
         /// <summary>
-        /// Müşteri iletişim bilgileri (Misafir kullanıcılar için)
-        /// </summary>
-        public string? CustomerEmail { get; set; }
-        public string? CustomerPhone { get; set; }
-        public string? CustomerName { get; set; }
-
-        /// <summary>
-        /// Client ID (Multi-tenant)
+        /// Multi-tenant support
         /// </summary>
         public int ClientId { get; set; }
         public virtual Client Client { get; set; }
 
         /// <summary>
-        /// İlişkili teklifler
+        /// Teklifler (tamirhanelerin verdiği teklifler)
         /// </summary>
         public virtual ICollection<QuoteResponse> QuoteResponses { get; set; } = new List<QuoteResponse>();
 
         /// <summary>
-        /// Fotoğraflar
+        /// Müşteri email (misafir kullanıcı için)
         /// </summary>
-        public virtual ICollection<QuoteRequestPhoto> Photos { get; set; } = new List<QuoteRequestPhoto>();
+        public string? CustomerEmail { get; set; }
 
         /// <summary>
-        /// Talep numarası oluştur
+        /// Müşteri telefon (misafir kullanıcı için)
         /// </summary>
-        public void GenerateRequestNumber()
+        public string? CustomerPhone { get; set; }
+
+        /// <summary>
+        /// Teklif alabilir durumda mı?
+        /// </summary>
+        public bool CanAcceptQuotes()
         {
-            if (string.IsNullOrEmpty(RequestNumber))
-            {
-                var date = DateTime.UtcNow;
-                RequestNumber = $"QR-{date:yyyyMMdd}-{Id:D4}";
-            }
+            return Status == QuoteStatus.Open && QuoteDeadline > DateTime.UtcNow;
         }
 
         /// <summary>
-        /// Durum güncelle
+        /// Durumu günceller
         /// </summary>
         public void UpdateStatus(QuoteStatus newStatus)
         {
@@ -119,29 +125,11 @@ namespace MagicCarRepairAISupported.Domain.Entities
         }
 
         /// <summary>
-        /// Teklif seçildi
+        /// Teklif seçer ve durumu günceller
         /// </summary>
         public void SelectQuote(int quoteResponseId)
         {
-            SelectedQuoteResponseId = quoteResponseId;
             Status = QuoteStatus.QuoteSelected;
-        }
-
-        /// <summary>
-        /// Süresi doldu mu kontrol et
-        /// </summary>
-        public bool IsExpired()
-        {
-            return DateTime.UtcNow > QuoteDeadline && Status == QuoteStatus.Open;
-        }
-
-        /// <summary>
-        /// Teklif alınabilir mi kontrol et
-        /// </summary>
-        public bool CanAcceptQuotes()
-        {
-            return Status == QuoteStatus.Open && !IsExpired();
         }
     }
 }
-

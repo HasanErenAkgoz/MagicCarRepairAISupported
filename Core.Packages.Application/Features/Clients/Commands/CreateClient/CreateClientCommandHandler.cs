@@ -39,7 +39,8 @@ namespace MagicCarRepairAISupported.Application.Features.Clients.Commands.Create
             }
 
             var client = _mapper.Map<Client>(request);
-            client.IsActive = true;
+            // Yeni tamirhane varsayılan olarak inactive — admin onayı gereklidir
+            client.IsActive = false;
 
             await _clientRepository.AddAsync(client, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -26,6 +26,6 @@ namespace MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore
     
     public interface IEntityRepository<TEntity, TId> : IEntityRepository<TEntity> where TEntity : class
     {
-        Task<TEntity?> GetByIdAsync(TId id);
+        Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken = default);
     }
 }

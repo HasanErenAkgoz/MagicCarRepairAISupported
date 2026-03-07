@@ -1,4 +1,5 @@
 using MagicCarRepairAISupported.Application.Features.AI.Commands.Chat;
+using MagicCarRepairAISupported.Application.Features.AI.Commands.AnalyzeDamagePhotos;
 using MagicCarRepairAISupported.Application.Features.AI.Queries.OptimizeAppointments;
 using MagicCarRepairAISupported.Application.Features.AI.Queries.ForecastStock;
 using MagicCarRepairAISupported.Application.Features.AI.Queries.AnalyzeCustomers;
@@ -80,6 +81,21 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         {
             var result = await _mediator.Send(query);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// AI destekli hasar fotoğrafı analizi - Fotoğraflardan hasar tespiti ve maliyet tahmini
+        /// </summary>
+        [HttpPost("analyze-damage-photos")]
+        [AllowAnonymous]
+        public async Task<IActionResult> AnalyzeDamagePhotos([FromBody] AnalyzeDamagePhotosCommand command)
+        {
+            var result = await _mediator.Send(command);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using System.Collections.Generic;

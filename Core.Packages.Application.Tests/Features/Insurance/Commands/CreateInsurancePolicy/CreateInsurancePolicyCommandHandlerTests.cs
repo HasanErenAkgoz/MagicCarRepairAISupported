@@ -90,7 +90,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Insurance.Command
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
             _insurancePolicyRepositoryMock.Setup(x => x.GetByPolicyNumberAsync("POL-001", It.IsAny<CancellationToken>()))
                 .ReturnsAsync((InsurancePolicy?)null);
-            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Vehicle?)null);
 
             // Act & Assert
@@ -120,9 +120,9 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Insurance.Command
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
             _insurancePolicyRepositoryMock.Setup(x => x.GetByPolicyNumberAsync("POL-001", It.IsAny<CancellationToken>()))
                 .ReturnsAsync((InsurancePolicy?)null);
-            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(vehicle);
-            _customerRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _customerRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Customer?)null);
 
             // Act & Assert
@@ -160,11 +160,11 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Insurance.Command
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
             _insurancePolicyRepositoryMock.Setup(x => x.GetByPolicyNumberAsync("POL-001", It.IsAny<CancellationToken>()))
                 .ReturnsAsync((InsurancePolicy?)null);
-            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(vehicle);
-            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(customer);
-            _insuranceCompanyRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _insuranceCompanyRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((InsuranceCompany?)null);
 
             // Act & Assert
@@ -211,11 +211,11 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Insurance.Command
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
             _insurancePolicyRepositoryMock.Setup(x => x.GetByPolicyNumberAsync("POL-001", It.IsAny<CancellationToken>()))
                 .ReturnsAsync((InsurancePolicy?)null);
-            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(vehicle);
-            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(customer);
-            _insuranceCompanyRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _insuranceCompanyRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(insuranceCompany);
 
             // Act & Assert
@@ -267,11 +267,11 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Insurance.Command
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
             _insurancePolicyRepositoryMock.Setup(x => x.GetByPolicyNumberAsync("POL-001", It.IsAny<CancellationToken>()))
                 .ReturnsAsync((InsurancePolicy?)null);
-            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(vehicle);
-            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(customer);
-            _insuranceCompanyRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _insuranceCompanyRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(insuranceCompany);
             _insurancePolicyRepositoryMock.Setup(x => x.AddAsync(It.IsAny<InsurancePolicy>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((InsurancePolicy entity, CancellationToken ct) =>
@@ -300,3 +300,4 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Insurance.Command
         }
     }
 }
+

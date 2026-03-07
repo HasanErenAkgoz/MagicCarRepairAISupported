@@ -1,5 +1,6 @@
 using AutoMapper;
 using FluentAssertions;
+using MagicCarRepairAISupported.Application.Common.Services.Cache;
 using MagicCarRepairAISupported.Application.Features.Parts.Commands.CreatePart;
 using MagicCarRepairAISupported.Application.Features.Parts.Profiles;
 using MagicCarRepairAISupported.Domain.Entities;
@@ -16,6 +17,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Cr
         private readonly Mock<IPartRepository> _partRepositoryMock;
         private readonly Mock<IPartStockRepository> _partStockRepositoryMock;
         private readonly Mock<IPartSupplierRepository> _partSupplierRepositoryMock;
+        private readonly Mock<ICacheInvalidationService> _cacheInvalidationServiceMock;
         private readonly IMapper _mapper;
         private readonly CreatePartCommandHandler _handler;
 
@@ -24,6 +26,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Cr
             _partRepositoryMock = new Mock<IPartRepository>();
             _partStockRepositoryMock = new Mock<IPartStockRepository>();
             _partSupplierRepositoryMock = new Mock<IPartSupplierRepository>();
+            _cacheInvalidationServiceMock = new Mock<ICacheInvalidationService>();
 
             var mapperConfig = new MapperConfiguration(cfg =>
             {
@@ -35,7 +38,8 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Cr
                 _partRepositoryMock.Object,
                 _partStockRepositoryMock.Object,
                 _partSupplierRepositoryMock.Object,
-                _mapper);
+                _mapper,
+                _cacheInvalidationServiceMock.Object);
         }
 
         [Fact]
@@ -81,7 +85,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Cr
             _partRepositoryMock.Setup(x => x.GetByPartCodeAsync("PART-001", It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Part?)null);
 
-            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((PartSupplier?)null);
 
             // Act & Assert
@@ -170,4 +174,5 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Cr
         }
     }
 }
+
 

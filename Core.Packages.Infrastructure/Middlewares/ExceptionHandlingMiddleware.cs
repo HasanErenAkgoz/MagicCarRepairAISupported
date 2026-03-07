@@ -1,5 +1,7 @@
 using MagicCarRepairAISupported.Application.Common.Services;
+using MagicCarRepairAISupported.Application.Common.Exceptions;
 using MagicCarRepairAISupported.Domain.Exceptions;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
@@ -33,6 +35,16 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
             {
                 // Custom exception with localized message support
                 await HandleCustomExceptionAsync(context, ex, errorMessageService, tenantService);
+            }
+            catch (UserFriendlyException ex)
+            {
+                // User-friendly exception with category
+                await HandleUserFriendlyExceptionAsync(context, ex, errorMessageService, tenantService);
+            }
+            catch (FluentValidation.ValidationException ex)
+            {
+                // FluentValidation exception
+                await HandleValidationExceptionAsync(context, ex, errorMessageService, tenantService);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -82,6 +94,68 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
             { 
                 success = false,
                 message = localizedMessage
+            });
+            
+            await context.Response.WriteAsync(result);
+        }
+
+        private async Task HandleUserFriendlyExceptionAsync(HttpContext context, UserFriendlyException ex, IErrorMessageService errorMessageService, ITenantService tenantService)
+        {
+            _logger.LogWarning(ex, "User-friendly exception: {Category} - {Message}", ex.Category, ex.Message);
+            
+            var language = tenantService.GetCurrentLanguage();
+            var localizedMessage = ex.ErrorCode != null 
+                ? await errorMessageService.GetMessageAsync(ex.ErrorCode, language, ex.AdditionalData)
+                : ex.Message;
+
+            context.Response.ContentType = "application/json";
+            
+            // Set status code based on category
+            context.Response.StatusCode = ex.Category switch
+            {
+                ErrorCategory.Validation => (int)HttpStatusCode.BadRequest,
+                ErrorCategory.Business => (int)HttpStatusCode.BadRequest,
+                ErrorCategory.Authentication => (int)HttpStatusCode.Unauthorized,
+                ErrorCategory.Authorization => (int)HttpStatusCode.Forbidden,
+                ErrorCategory.System => (int)HttpStatusCode.InternalServerError,
+                _ => (int)HttpStatusCode.BadRequest
+            };
+
+            var result = JsonSerializer.Serialize(new 
+            { 
+                success = false,
+                errorCode = ex.ErrorCode,
+                category = ex.Category.ToString(),
+                message = localizedMessage,
+                additionalData = ex.AdditionalData
+            });
+            
+            await context.Response.WriteAsync(result);
+        }
+
+        private async Task HandleValidationExceptionAsync(HttpContext context, FluentValidation.ValidationException ex, IErrorMessageService errorMessageService, ITenantService tenantService)
+        {
+            _logger.LogWarning(ex, "Validation exception occurred");
+            
+            var language = tenantService.GetCurrentLanguage();
+            
+            // Group errors by property name
+            var errors = ex.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(e => e.ErrorMessage).ToArray()
+                );
+
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+            var result = JsonSerializer.Serialize(new 
+            { 
+                success = false,
+                errorCode = "VALIDATION_ERROR",
+                message = "Validation failed",
+                errors = errors
             });
             
             await context.Response.WriteAsync(result);

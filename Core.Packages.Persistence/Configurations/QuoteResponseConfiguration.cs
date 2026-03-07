@@ -1,5 +1,4 @@
 using MagicCarRepairAISupported.Domain.Entities;
-using MagicCarRepairAISupported.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,53 +13,41 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
             builder.HasKey(qres => qres.Id);
 
             builder.Property(qres => qres.QuoteNumber)
-                .IsRequired()
                 .HasMaxLength(50);
 
             builder.Property(qres => qres.Description)
-                .IsRequired()
                 .HasMaxLength(2000);
 
             builder.Property(qres => qres.QuoteAmount)
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
-            builder.Property(qres => qres.DiscountRate)
-                .HasColumnType("decimal(5,2)")
-                .HasDefaultValue(0);
+            builder.Property(qres => qres.Amount)
+                .HasColumnType("decimal(18,2)");
 
-            builder.Property(qres => qres.DiscountAmount)
-                .HasColumnType("decimal(18,2)")
-                .HasDefaultValue(0);
+            builder.Property(qres => qres.DiscountRate)
+                .HasColumnType("decimal(5,2)");
 
             builder.Property(qres => qres.TaxRate)
-                .HasColumnType("decimal(5,2)")
-                .HasDefaultValue(20);
-
-            builder.Property(qres => qres.TaxAmount)
-                .HasColumnType("decimal(18,2)")
-                .HasDefaultValue(0);
-
-            builder.Property(qres => qres.NetAmount)
-                .HasColumnType("decimal(18,2)")
-                .HasDefaultValue(0);
+                .HasColumnType("decimal(5,2)");
 
             builder.Property(qres => qres.Notes)
                 .HasMaxLength(1000);
 
-            builder.Property(qres => qres.RejectionReason)
-                .HasMaxLength(500);
-
             builder.Property(qres => qres.Status)
-                .HasConversion<int>()
+                .HasMaxLength(50)
                 .IsRequired()
-                .HasDefaultValue(QuoteResponseStatus.Pending);
+                .HasDefaultValue("Pending");
+
+            // Computed properties - ignore them to avoid mapping issues
+            builder.Ignore(qres => qres.DiscountAmount);
+            builder.Ignore(qres => qres.NetAmount);
 
             // Relationships
             builder.HasOne(qres => qres.QuoteRequest)
                 .WithMany(qr => qr.QuoteResponses)
                 .HasForeignKey(qres => qres.QuoteRequestId)
-                .OnDelete(DeleteBehavior.Restrict); // QuoteRequest silinirse QuoteResponse'lar da silinmemeli
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(qres => qres.Client)
                 .WithMany()
@@ -68,12 +55,6 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Indexes
-            builder.HasIndex(qres => qres.QuoteNumber)
-                .IsUnique();
-
-            builder.HasIndex(qres => new { qres.QuoteNumber, qres.ClientId })
-                .IsUnique();
-
             builder.HasIndex(qres => qres.QuoteRequestId);
             builder.HasIndex(qres => qres.ClientId);
             builder.HasIndex(qres => qres.Status);
@@ -85,4 +66,3 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
         }
     }
 }
-

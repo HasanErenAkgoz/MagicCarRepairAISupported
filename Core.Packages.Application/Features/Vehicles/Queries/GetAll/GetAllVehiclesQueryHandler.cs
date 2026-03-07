@@ -59,6 +59,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetAll
             {
                 var vehicle = vehicles.First(v => v.Id == item.Id);
                 item.StatusName = vehicle.Status.ToString();
+                item.VehicleTypeName = vehicle.VehicleType.ToString();
                 item.CustomerName = vehicle.Customer?.FullName ?? "Unknown";
             }
 

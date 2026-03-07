@@ -49,8 +49,12 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Updat
                 vehicle.Year = request.Year.Value;
             if (!string.IsNullOrEmpty(request.Color))
                 vehicle.Color = request.Color;
+            if (!string.IsNullOrEmpty(request.LicensePlate))
+                vehicle.LicensePlate = request.LicensePlate;
             if (request.Status.HasValue)
                 vehicle.Status = request.Status.Value;
+            if (request.VehicleType.HasValue)
+                vehicle.VehicleType = request.VehicleType.Value;
             if (request.Kilometers.HasValue)
             {
                 vehicle.UpdateKilometers(request.Kilometers.Value);
@@ -62,6 +66,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Updat
             // Response
             var response = _mapper.Map<UpdateVehicleResponse>(vehicle);
             response.StatusName = vehicle.Status.ToString();
+            response.VehicleTypeName = vehicle.VehicleType.ToString();
             return response;
         }
     }

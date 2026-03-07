@@ -18,7 +18,9 @@ namespace MagicCarRepairAISupported.Application
             services.AddTransient<IMediator, Mediator>();
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-            //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachePipelineBehavior<,>));
+            // Cache Pipeline Behavior - Uncomment when cache strategy is implemented
+            // TODO: Implement cache invalidation strategy before enabling
+            // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachePipelineBehavior<,>));
 
             // Translation Service
             services.AddScoped<ITranslationService, TranslationService>();

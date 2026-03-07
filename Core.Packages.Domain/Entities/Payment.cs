@@ -1,4 +1,4 @@
-using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Common;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Interfaces;
 
@@ -127,9 +127,22 @@ namespace MagicCarRepairAISupported.Domain.Entities
         /// </summary>
         public string? GatewayRefundId { get; set; }
 
+        /// <summary>
+        /// Komisyon tutarı (platform komisyonu)
+        /// </summary>
+        public decimal? CommissionAmount { get; set; }
+
+        /// <summary>
+        /// Komisyon oranı (%)
+        /// </summary>
+        public decimal? CommissionRate { get; set; }
+
         // Multi-tenant support
         public int ClientId { get; set; }
         public virtual Client Client { get; set; }
+
+        // Navigation properties
+        public virtual ICollection<Commission> Commissions { get; set; } = new List<Commission>();
 
         /// <summary>
         /// Ödeme numarası oluşturur

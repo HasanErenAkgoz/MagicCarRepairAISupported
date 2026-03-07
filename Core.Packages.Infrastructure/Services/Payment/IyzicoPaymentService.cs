@@ -1,4 +1,5 @@
 using MagicCarRepairAISupported.Application.Common.Services;
+using MagicCarRepairAISupported.Application.Common.Services.Commission;
 using MagicCarRepairAISupported.Application.Common.Services.Payment;
 using MagicCarRepairAISupported.Application.Common.Services.Payment.Dtos;
 using MagicCarRepairAISupported.Domain.Entities;
@@ -23,6 +24,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Payment
         private readonly IEntityRepository<Domain.Entities.Payment, int> _paymentRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ITenantService _tenantService;
+        private readonly ICommissionService _commissionService;
         private readonly ILogger<IyzicoPaymentService> _logger;
         private readonly HttpClient _httpClient;
         private readonly IyzicoOptions _options;
@@ -31,6 +33,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Payment
             IEntityRepository<Domain.Entities.Payment, int> paymentRepository,
             IUnitOfWork unitOfWork,
             ITenantService tenantService,
+            ICommissionService commissionService,
             ILogger<IyzicoPaymentService> logger,
             HttpClient httpClient,
             IOptions<IyzicoOptions> options)
@@ -38,6 +41,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Payment
             _paymentRepository = paymentRepository;
             _unitOfWork = unitOfWork;
             _tenantService = tenantService;
+            _commissionService = commissionService;
             _logger = logger;
             _httpClient = httpClient;
             _options = options.Value;
@@ -154,6 +158,20 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Payment
                     payment.BankName = iyzicoResponse.BankName;
                     payment.InstallmentCount = request.InstallmentCount;
                     payment.PaymentDate = DateTime.UtcNow;
+
+                    // Komisyon hesapla ve kaydet
+                    var clientId = _tenantService.GetCurrentClientId() ?? 0;
+                    if (clientId > 0)
+                    {
+                        var commissionAmount = await _commissionService.CalculateCommissionAsync(payment.Amount, clientId);
+                        var commissionRate = 2.5m; // Varsayılan %2.5
+                        
+                        payment.CommissionAmount = commissionAmount;
+                        payment.CommissionRate = commissionRate;
+
+                        // Komisyon kaydı oluştur
+                        await _commissionService.RecordCommissionAsync(payment.Id, commissionAmount, commissionRate);
+                    }
 
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
 

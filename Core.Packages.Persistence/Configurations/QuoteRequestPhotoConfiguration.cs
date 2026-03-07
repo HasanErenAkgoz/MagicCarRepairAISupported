@@ -27,7 +27,7 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
 
             // Relationships
             builder.HasOne(qp => qp.QuoteRequest)
-                .WithMany(qr => qr.Photos)
+                .WithMany()
                 .HasForeignKey(qp => qp.QuoteRequestId)
                 .OnDelete(DeleteBehavior.Cascade);
 
