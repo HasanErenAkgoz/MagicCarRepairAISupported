@@ -69,7 +69,8 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.JWT
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Email),
             new Claim(ClaimTypes.Email, user.Email),
-  
+            new Claim("UserType", ((int)user.UserType).ToString()),
+            new Claim("ClientId", user.ClientId.ToString()),
         };
 
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -109,9 +110,10 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.JWT
             return handler.ReadJwtToken(input).ToString();
         }
 
-        public Task<(string Token, string RefreshToken)> GenerateToken(User user)
+        public async Task<(string Token, string RefreshToken)> GenerateToken(User user)
         {
-            throw new NotImplementedException();
+            var accessToken = await CreateToken<MagicCarRepairAISupported.Application.Common.Models.JWT.AccessToken>(user);
+            return (accessToken.Token, accessToken.RefreshToken);
         }
     }
 }

@@ -49,6 +49,22 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
             builder.Property(p => p.RefundDescription)
                 .HasMaxLength(1000);
 
+            builder.Property(p => p.CommissionAmount)
+                .HasColumnType("decimal(18,2)");
+
+            builder.Property(p => p.CommissionRate)
+                .HasColumnType("decimal(5,2)");
+
+            builder.HasOne(p => p.Client)
+                .WithMany()
+                .HasForeignKey(p => p.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(p => p.Commissions)
+                .WithOne(c => c.Payment)
+                .HasForeignKey(c => c.PaymentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasIndex(p => p.ClientId);
             builder.HasIndex(p => p.PaymentNumber);
             builder.HasIndex(p => new { p.PaymentNumber, p.ClientId }).IsUnique();

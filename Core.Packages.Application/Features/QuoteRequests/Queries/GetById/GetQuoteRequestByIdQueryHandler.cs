@@ -51,16 +51,22 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.G
                     ValidUntilDate = qres.ValidUntilDate
                 }).ToList();
 
-                // Photos'ı map et
-                response.Photos = quoteRequest.Photos.Select(photo => new QuoteRequestPhotoDto
+                // Photos'ı map et (PhotoPaths JSON string'den parse et)
+                response.Photos = new List<QuoteRequestPhotoDto>();
+                if (!string.IsNullOrEmpty(quoteRequest.PhotoPaths) && quoteRequest.PhotoPaths != "[]")
                 {
-                    Id = photo.Id,
-                    FilePath = photo.FilePath,
-                    Description = photo.Description,
-                    PhotoType = photo.PhotoType,
-                    PhotoTypeName = photo.PhotoType.ToString(),
-                    UploadDate = photo.UploadDate
-                }).ToList();
+                    try
+                    {
+                        var photoPaths = System.Text.Json.JsonSerializer.Deserialize<List<string>>(quoteRequest.PhotoPaths) ?? new List<string>();
+                        response.Photos = photoPaths.Select((path, idx) => new QuoteRequestPhotoDto
+                        {
+                            Id = idx + 1,
+                            FilePath = path,
+                            UploadDate = quoteRequest.CreatedDate ?? DateTime.UtcNow
+                        }).ToList();
+                    }
+                    catch { /* JSON parse hatası - Photos boş bırak */ }
+                }
 
                 return new SuccessDataResult<GetQuoteRequestByIdResponse>(response);
             }

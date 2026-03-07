@@ -13,6 +13,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Creat
         public string Color { get; set; }
         public long Kilometers { get; set; } = 0;
         public VehicleStatus Status { get; set; } = VehicleStatus.Registered;
+        public VehicleType VehicleType { get; set; } = VehicleType.Unspecified;
     }
 }
 

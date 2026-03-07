@@ -14,9 +14,9 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         {
         }
 
-        public new async Task<QuoteRequest?> GetByIdAsync(int id)
+        public new async Task<QuoteRequest?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await GetQuoteRequestDetailsAsync(id);
+            return await GetQuoteRequestDetailsAsync(id, cancellationToken);
         }
 
         public async Task<QuoteRequest?> GetQuoteRequestDetailsAsync(int id, CancellationToken cancellationToken = default)
@@ -27,8 +27,6 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
                 .Include(qr => qr.Client)
                 .Include(qr => qr.QuoteResponses)
                     .ThenInclude(qres => qres.Client)
-                .Include(qr => qr.Photos)
-                .Include(qr => qr.SelectedQuoteResponse)
                 .FirstOrDefaultAsync(qr => qr.Id == id, cancellationToken);
         }
 
@@ -38,7 +36,7 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
                 .Include(qr => qr.Customer)
                 .Include(qr => qr.Vehicle)
                 .Include(qr => qr.Client)
-                .Where(qr => qr.Status == QuoteStatus.Open && 
+                .Where(qr => qr.Status == QuoteStatus.Open &&
                              qr.QuoteDeadline > DateTime.UtcNow);
 
             if (clientId.HasValue)
@@ -84,7 +82,7 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         public async Task<List<QuoteRequest>> GetExpiredQuoteRequestsAsync(CancellationToken cancellationToken = default)
         {
             return await Context.Set<QuoteRequest>()
-                .Where(qr => qr.Status == QuoteStatus.Open && 
+                .Where(qr => qr.Status == QuoteStatus.Open &&
                              qr.QuoteDeadline <= DateTime.UtcNow)
                 .ToListAsync(cancellationToken);
         }
@@ -92,10 +90,9 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         public async Task<bool> HasClientSubmittedQuoteAsync(int quoteRequestId, int clientId, CancellationToken cancellationToken = default)
         {
             return await Context.Set<QuoteResponse>()
-                .AnyAsync(qres => qres.QuoteRequestId == quoteRequestId && 
-                                 qres.ClientId == clientId, 
+                .AnyAsync(qres => qres.QuoteRequestId == quoteRequestId &&
+                                 qres.ClientId == clientId,
                           cancellationToken);
         }
     }
 }
-

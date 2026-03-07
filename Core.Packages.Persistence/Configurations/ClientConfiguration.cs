@@ -66,6 +66,11 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasForeignKey(fp => fp.ClientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasMany(c => c.Subscriptions)
+                .WithOne(s => s.Client)
+                .HasForeignKey(s => s.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Profile properties
             builder.Property(c => c.LogoUrl)
                 .HasMaxLength(500);

@@ -55,7 +55,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Tax.Co
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _taxRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _taxRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((TaxEntity?)null);
 
             // Act & Assert
@@ -88,7 +88,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Tax.Co
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _taxRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _taxRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(tax);
 
             // Act & Assert
@@ -122,7 +122,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Tax.Co
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _taxRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _taxRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(tax);
 
             // Act & Assert
@@ -158,7 +158,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Tax.Co
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _taxRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _taxRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(tax);
             _taxRepositoryMock.Setup(x => x.Update(It.IsAny<TaxEntity>()))
                 .Returns((TaxEntity t) => t);
@@ -188,3 +188,4 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Tax.Co
         }
     }
 }
+

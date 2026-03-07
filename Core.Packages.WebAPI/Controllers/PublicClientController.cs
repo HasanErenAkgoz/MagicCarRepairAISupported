@@ -5,6 +5,7 @@ using MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.GetPub
 using MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.GetPublicReviews;
 using MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.GetPublicStatistics;
 using MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.GetPublicTeam;
+using MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.GetPublicShopList;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -133,6 +134,23 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
                 ClientId = clientId,
                 PageNumber = pageNumber,
                 PageSize = pageSize
+            };
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Public tamirhane listesini getirir (sadece aktif ve public profili olanlar)
+        /// </summary>
+        [HttpGet("list")]
+        public async Task<IActionResult> GetPublicShopList(
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? city = null)
+        {
+            var query = new GetPublicShopListQuery
+            {
+                SearchTerm = searchTerm,
+                City = city
             };
             var result = await _mediator.Send(query);
             return Ok(result);

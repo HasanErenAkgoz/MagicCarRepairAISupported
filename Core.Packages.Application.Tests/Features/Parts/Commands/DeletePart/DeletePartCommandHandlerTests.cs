@@ -1,4 +1,5 @@
 using FluentAssertions;
+using MagicCarRepairAISupported.Application.Common.Services.Cache;
 using MagicCarRepairAISupported.Application.Features.Parts.Commands.DeletePart;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
@@ -12,12 +13,14 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.De
     public class DeletePartCommandHandlerTests
     {
         private readonly Mock<IPartRepository> _partRepositoryMock;
+        private readonly Mock<ICacheInvalidationService> _cacheInvalidationServiceMock;
         private readonly DeletePartCommandHandler _handler;
 
         public DeletePartCommandHandlerTests()
         {
             _partRepositoryMock = new Mock<IPartRepository>();
-            _handler = new DeletePartCommandHandler(_partRepositoryMock.Object);
+            _cacheInvalidationServiceMock = new Mock<ICacheInvalidationService>();
+            _handler = new DeletePartCommandHandler(_partRepositoryMock.Object, _cacheInvalidationServiceMock.Object);
         }
 
         [Fact]

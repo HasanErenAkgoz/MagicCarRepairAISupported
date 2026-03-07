@@ -3,6 +3,7 @@ using MagicCarRepairAISupported.Infrastructure;
 using MagicCarRepairAISupported.Persistence;
 using MagicCarRepairAISupported.Persistence.Context;
 using MagicCarRepairAISupported.Persistence.Middlewares;
+using MagicCarRepairAISupported.Persistence.Seeds;
 using MagicCarRepairAISupported.WebAPI.Extensions;
 using MagicCarRepairAISupported.WebAPI.Hubs;
 
@@ -22,12 +23,20 @@ builder.Services.AddCors(options =>
 
 ConfigureServices(builder);
 var app = builder.Build();
+
+// ── Startup seed: Araç fotoğrafları yoksa DB'ye ekle ─────────────────────
+await VehiclePhotoDataSeeder.SeedAsync(app.Services);
+
 ConfigureMiddleware(app);
 app.Run();
 
 void ConfigureServices(WebApplicationBuilder builder)
 {
-    builder.Services.AddControllers();
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+        });
     builder.Services.AddHttpContextAccessor();
     
     // Swagger Configuration - AddEndpointsApiExplorer ekle (AddSwaggerServices içinde değil)
@@ -41,6 +50,9 @@ void ConfigureServices(WebApplicationBuilder builder)
     builder.Services.AddCoreInfrastructureServices(builder.Configuration);
     // AddSwaggerServices burada çağrılıyor (AddCorePersistenceServices içinde)
     builder.Services.AddCorePersistenceServices<BaseDbContext>(builder.Configuration);
+    
+    // Background Jobs
+    builder.Services.AddHostedService<MagicCarRepairAISupported.Infrastructure.Jobs.ReminderJob>();
 
 }
 

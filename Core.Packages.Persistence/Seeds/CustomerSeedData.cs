@@ -5,14 +5,14 @@ namespace MagicCarRepairAISupported.Persistence.Seeds
 {
     public static class CustomerSeedData
     {
-        public static List<Customer> GetCustomers()
+        public static List<MagicCarRepairAISupported.Domain.Entities.Customer> GetCustomers()
         {
             var now = DateTime.UtcNow;
             
-            return new List<Customer>
+            return new List<MagicCarRepairAISupported.Domain.Entities.Customer>
             {
                 // Demo Client Customers
-                new Customer
+                new MagicCarRepairAISupported.Domain.Entities.Customer
                 {
                     Id = 1,
                     IdentityNo = "11111111111",
@@ -74,6 +74,7 @@ namespace MagicCarRepairAISupported.Persistence.Seeds
                     LastName = "Çelik",
                     Email = "fatma.celik@example.com",
                     PhoneNumber = "+905351234570",
+                    Avatar = "https://i.pravatar.cc/150?u=4",
                     Address = "İstanbul, Üsküdar, Bağlarbaşı Caddesi No:12",
                     DateTimeOfBirth = new DateTime(1992, 11, 5),
                     Language = "tr",
@@ -91,6 +92,7 @@ namespace MagicCarRepairAISupported.Persistence.Seeds
                     LastName = "Öztürk",
                     Email = "ali.ozturk@example.com",
                     PhoneNumber = "+905361234571",
+                    Avatar = "https://i.pravatar.cc/150?u=5",
                     Address = "İstanbul, Bakırköy, Atatürk Caddesi No:234",
                     DateTimeOfBirth = new DateTime(1987, 7, 18),
                     Language = "tr",
@@ -108,6 +110,7 @@ namespace MagicCarRepairAISupported.Persistence.Seeds
                     LastName = "Arslan",
                     Email = "zeynep.arslan@example.com",
                     PhoneNumber = "+905371234572",
+                    Avatar = "https://i.pravatar.cc/150?u=6",
                     Address = "İstanbul, Maltepe, Bağdat Caddesi No:567",
                     DateTimeOfBirth = new DateTime(1991, 2, 28),
                     Language = "tr",

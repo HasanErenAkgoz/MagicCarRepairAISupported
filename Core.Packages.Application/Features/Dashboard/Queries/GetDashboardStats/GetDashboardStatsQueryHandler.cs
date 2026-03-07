@@ -180,7 +180,7 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetDa
 
             var pendingQuotes = await _quoteResponseRepository.Query()
                 .AsNoTracking() // Read-only query
-                .Where(qr => qr.ClientId == clientId && qr.Status == QuoteResponseStatus.Pending)
+                .Where(qr => qr.ClientId == clientId && qr.Status == "Pending")
                 .CountAsync(cancellationToken);
             response.PendingQuoteResponses = pendingQuotes;
 

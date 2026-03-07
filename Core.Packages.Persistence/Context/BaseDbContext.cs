@@ -1,5 +1,5 @@
 using MagicCarRepairAISupported.Application.Common.Services;
-using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Common;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Interfaces;
@@ -47,6 +47,7 @@ namespace MagicCarRepairAISupported.Persistence.Context
         public DbSet<QuoteRequest> QuoteRequests { get; set; }
         public DbSet<QuoteResponse> QuoteResponses { get; set; }
         public DbSet<QuoteRequestPhoto> QuoteRequestPhotos { get; set; }
+        public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
         public DbSet<StockAlert> StockAlerts { get; set; }
@@ -68,6 +69,14 @@ namespace MagicCarRepairAISupported.Persistence.Context
         public DbSet<ServicePortfolio> ServicePortfolios { get; set; }
         public DbSet<Certificate> Certificates { get; set; }
         public DbSet<FacilityPhoto> FacilityPhotos { get; set; }
+        public DbSet<LoyaltyPoint> LoyaltyPoints { get; set; }
+        public DbSet<Reward> Rewards { get; set; }
+        public DbSet<Reminder> Reminders { get; set; }
+        public DbSet<HelpArticle> HelpArticles { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<SubscriptionPayment> SubscriptionPayments { get; set; }
+        public DbSet<Commission> Commissions { get; set; }
+        public DbSet<UsageTracking> UsageTracking { get; set; }
         
         protected override void OnModelCreating(ModelBuilder builder)
         {

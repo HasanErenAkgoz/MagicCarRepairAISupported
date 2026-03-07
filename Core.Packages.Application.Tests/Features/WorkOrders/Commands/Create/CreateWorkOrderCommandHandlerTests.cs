@@ -1,6 +1,7 @@
 using AutoMapper;
 using FluentAssertions;
 using MagicCarRepairAISupported.Application.Common.Services;
+using MagicCarRepairAISupported.Application.Common.Services.Notification;
 using MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Create;
 using MagicCarRepairAISupported.Application.Features.WorkOrders.Profiles;
 using MagicCarRepairAISupported.Domain.Entities;
@@ -23,6 +24,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
         private readonly Mock<IInsurancePolicyRepository> _insurancePolicyRepositoryMock;
         private readonly Mock<ITenantService> _tenantServiceMock;
         private readonly Mock<ILogger<CreateWorkOrderCommandHandler>> _loggerMock;
+        private readonly Mock<ISignalRNotificationService> _signalRNotificationServiceMock;
         private readonly IMapper _mapper;
         private readonly CreateWorkOrderCommandHandler _handler;
 
@@ -35,6 +37,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             _insurancePolicyRepositoryMock = new Mock<IInsurancePolicyRepository>();
             _tenantServiceMock = new Mock<ITenantService>();
             _loggerMock = new Mock<ILogger<CreateWorkOrderCommandHandler>>();
+            _signalRNotificationServiceMock = new Mock<ISignalRNotificationService>();
 
             var mapperConfig = new MapperConfiguration(cfg =>
             {
@@ -50,7 +53,8 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
                 _insurancePolicyRepositoryMock.Object,
                 _mapper,
                 _tenantServiceMock.Object,
-                _loggerMock.Object);
+                _loggerMock.Object,
+                _signalRNotificationServiceMock.Object);
         }
 
         [Fact]
@@ -65,7 +69,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Vehicle?)null);
 
             // Act & Assert
@@ -92,9 +96,9 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(vehicle);
-            _customerRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _customerRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Customer?)null);
 
             // Act & Assert
@@ -129,9 +133,9 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(vehicle);
-            _customerRepositoryMock.Setup(x => x.GetByIdAsync(2))
+            _customerRepositoryMock.Setup(x => x.GetByIdAsync(2, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(customer);
 
             // Act & Assert
@@ -167,11 +171,11 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(vehicle);
-            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(customer);
-            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Employee?)null);
 
             // Act & Assert
@@ -210,9 +214,9 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(vehicle);
-            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(customer);
             _insurancePolicyRepositoryMock.Setup(x => x.GetActivePolicyForVehicleAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((InsurancePolicy?)null);
@@ -291,9 +295,9 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _vehicleRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(vehicle);
-            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _customerRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(customer);
             _insurancePolicyRepositoryMock.Setup(x => x.GetActivePolicyForVehicleAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(insurancePolicy);
@@ -326,3 +330,4 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
         }
     }
 }
+

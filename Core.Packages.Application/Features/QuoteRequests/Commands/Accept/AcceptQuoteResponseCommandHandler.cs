@@ -55,9 +55,9 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Commands.
                 }
 
                 // Müşteri kontrolü - sadece talep sahibi kabul edebilir
-                if (quoteRequest.CustomerId.HasValue)
+                if (quoteRequest.CustomerId > 0)
                 {
-                    var customer = await _customerRepository.GetByIdAsync(quoteRequest.CustomerId.Value);
+                    var customer = await _customerRepository.GetByIdAsync(quoteRequest.CustomerId);
                     if (customer == null || customer.ClientId != clientId)
                     {
                         return new ErrorDataResult<AcceptQuoteResponseResponse>("You are not authorized to accept this quote");
@@ -95,7 +95,7 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Commands.
 
                 // WorkOrder oluştur
                 int? workOrderId = null;
-                if (quoteRequest.VehicleId.HasValue && quoteRequest.CustomerId.HasValue)
+                if (quoteRequest.VehicleId.HasValue && quoteRequest.CustomerId > 0)
                 {
                     var vehicle = await _vehicleRepository.GetByIdAsync(quoteRequest.VehicleId.Value);
                     if (vehicle != null)
@@ -104,9 +104,9 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Commands.
                         {
                             WorkOrderNumber = WorkOrder.GenerateWorkOrderNumber(),
                             VehicleId = quoteRequest.VehicleId.Value,
-                            CustomerId = quoteRequest.CustomerId.Value,
+                            CustomerId = quoteRequest.CustomerId,
                             EntryDate = DateTime.UtcNow,
-                            EstimatedDeliveryDate = DateTime.UtcNow.AddDays(quoteResponse.EstimatedDays),
+                            EstimatedDeliveryDate = DateTime.UtcNow.AddDays(quoteResponse.EstimatedDays ?? 7),
                             Priority = UrgencyLevelToWorkOrderPriority(quoteRequest.UrgencyLevel),
                             CustomerComplaints = quoteRequest.ProblemDescription,
                             TotalAmount = quoteResponse.NetAmount,

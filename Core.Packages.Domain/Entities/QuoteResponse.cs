@@ -1,40 +1,50 @@
-using MagicCarRepairAISupported.Domain.Comman;
-using MagicCarRepairAISupported.Domain.Enums;
+using MagicCarRepairAISupported.Domain.Common;
 using MagicCarRepairAISupported.Domain.Interfaces;
 
 namespace MagicCarRepairAISupported.Domain.Entities
 {
     /// <summary>
-    /// Teklif yanıtı entity'si - Servislerin verdiği teklifler
+    /// Tamirhanelerin müşterilere verdiği fiyat teklifi
     /// </summary>
     public class QuoteResponse : BaseEntity<int>, IClientEntity
     {
         /// <summary>
-        /// Teklif talebi ID
+        /// Fiyat teklifi isteği ID
         /// </summary>
         public int QuoteRequestId { get; set; }
         public virtual QuoteRequest QuoteRequest { get; set; }
 
         /// <summary>
-        /// Teklif veren servis (Client) ID
+        /// Teklif veren tamirhane (Client) ID
         /// </summary>
         public int ClientId { get; set; }
         public virtual Client Client { get; set; }
 
         /// <summary>
-        /// Teklif numarası (Otomatik oluşturulur: QRES-YYYYMMDD-XXXX)
+        /// Teklif veren çalışan ID (opsiyonel)
         /// </summary>
-        public string QuoteNumber { get; set; }
+        public int? EmployeeId { get; set; }
+        public virtual Employee? Employee { get; set; }
+
+        /// <summary>
+        /// Teklif edilen fiyat
+        /// </summary>
+        public decimal Amount { get; set; }
 
         /// <summary>
         /// Teklif açıklaması
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
-        /// Tahmini süre (Gün)
+        /// Teklif geçerlilik süresi (gün)
         /// </summary>
-        public int EstimatedDays { get; set; }
+        public int? ValidityDays { get; set; }
+
+        /// <summary>
+        /// Tahmini tamamlanma süresi (gün)
+        /// </summary>
+        public int? EstimatedDays { get; set; }
 
         /// <summary>
         /// Teklif tutarı
@@ -44,47 +54,17 @@ namespace MagicCarRepairAISupported.Domain.Entities
         /// <summary>
         /// İndirim oranı (%)
         /// </summary>
-        public decimal DiscountRate { get; set; } = 0;
+        public decimal? DiscountRate { get; set; }
 
         /// <summary>
-        /// İndirim tutarı
+        /// Vergi oranı (%)
         /// </summary>
-        public decimal DiscountAmount { get; private set; }
+        public decimal? TaxRate { get; set; }
 
         /// <summary>
-        /// KDV oranı (%)
+        /// Garanti süresi (ay)
         /// </summary>
-        public decimal TaxRate { get; set; } = 20; // Varsayılan %20 KDV
-
-        /// <summary>
-        /// KDV tutarı
-        /// </summary>
-        public decimal TaxAmount { get; private set; }
-
-        /// <summary>
-        /// Net tutar (İndirim ve KDV sonrası)
-        /// </summary>
-        public decimal NetAmount { get; private set; }
-
-        /// <summary>
-        /// Garanti süresi (Ay)
-        /// </summary>
-        public int WarrantyMonths { get; set; } = 0;
-
-        /// <summary>
-        /// Durum
-        /// </summary>
-        public QuoteResponseStatus Status { get; set; } = QuoteResponseStatus.Pending;
-
-        /// <summary>
-        /// Teklif tarihi
-        /// </summary>
-        public DateTime QuoteDate { get; set; } = DateTime.UtcNow;
-
-        /// <summary>
-        /// Geçerlilik tarihi (Bu tarihten sonra geçersiz)
-        /// </summary>
-        public DateTime ValidUntilDate { get; set; }
+        public int? WarrantyMonths { get; set; }
 
         /// <summary>
         /// Notlar
@@ -92,48 +72,49 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public string? Notes { get; set; }
 
         /// <summary>
-        /// Kabul edilme tarihi
+        /// Teklif geçerlilik tarihi
         /// </summary>
-        public DateTime? AcceptedDate { get; set; }
+        public DateTime? ValidUntilDate { get; set; }
 
         /// <summary>
-        /// Reddedilme tarihi
+        /// Teklif numarası
         /// </summary>
-        public DateTime? RejectedDate { get; set; }
+        public string? QuoteNumber { get; set; }
 
         /// <summary>
-        /// Red nedeni
+        /// Teklif durumu (Beklemede, Kabul Edildi, Reddedildi)
         /// </summary>
-        public string? RejectionReason { get; set; }
+        public string Status { get; set; } = "Pending"; // Pending, Accepted, Rejected
 
         /// <summary>
-        /// Teklif numarası oluştur
+        /// Teklif tarihi
         /// </summary>
-        public void GenerateQuoteNumber()
+        public DateTime QuoteDate { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// İndirim tutarı
+        /// </summary>
+        public decimal DiscountAmount => QuoteAmount * (DiscountRate ?? 0) / 100;
+
+        /// <summary>
+        /// Net tutar (indirim ve vergi sonrası)
+        /// </summary>
+        public decimal NetAmount
         {
-            if (string.IsNullOrEmpty(QuoteNumber))
+            get
             {
-                var date = DateTime.UtcNow;
-                QuoteNumber = $"QRES-{date:yyyyMMdd}-{Id:D4}";
+                var discounted = QuoteAmount - DiscountAmount;
+                return discounted * (1 + (TaxRate ?? 0) / 100);
             }
         }
 
         /// <summary>
-        /// Tutarları hesapla
+        /// Teklif geçerli mi?
         /// </summary>
-        public void CalculateAmounts()
+        public bool IsValid()
         {
-            // İndirim tutarı
-            DiscountAmount = QuoteAmount * (DiscountRate / 100);
-
-            // İndirim sonrası tutar
-            var amountAfterDiscount = QuoteAmount - DiscountAmount;
-
-            // KDV tutarı
-            TaxAmount = amountAfterDiscount * (TaxRate / 100);
-
-            // Net tutar
-            NetAmount = amountAfterDiscount + TaxAmount;
+            return Status == "Pending" &&
+                   (!ValidUntilDate.HasValue || ValidUntilDate > DateTime.UtcNow);
         }
 
         /// <summary>
@@ -141,8 +122,7 @@ namespace MagicCarRepairAISupported.Domain.Entities
         /// </summary>
         public void Accept()
         {
-            Status = QuoteResponseStatus.Accepted;
-            AcceptedDate = DateTime.UtcNow;
+            Status = "Accepted";
         }
 
         /// <summary>
@@ -150,34 +130,23 @@ namespace MagicCarRepairAISupported.Domain.Entities
         /// </summary>
         public void Reject(string? reason = null)
         {
-            Status = QuoteResponseStatus.Rejected;
-            RejectedDate = DateTime.UtcNow;
-            RejectionReason = reason;
+            Status = "Rejected";
         }
 
         /// <summary>
-        /// Teklifi geri çek
+        /// Vergi ve indirim sonrası toplam tutarı hesaplar
         /// </summary>
-        public void Withdraw()
+        public void CalculateAmounts()
         {
-            Status = QuoteResponseStatus.Withdrawn;
+            Amount = NetAmount;
         }
 
         /// <summary>
-        /// Süresi doldu mu kontrol et
+        /// Teklif numarası oluşturur
         /// </summary>
-        public bool IsExpired()
+        public void GenerateQuoteNumber()
         {
-            return DateTime.UtcNow > ValidUntilDate && Status == QuoteResponseStatus.Pending;
-        }
-
-        /// <summary>
-        /// Geçerli mi kontrol et
-        /// </summary>
-        public bool IsValid()
-        {
-            return Status == QuoteResponseStatus.Pending && !IsExpired();
+            QuoteNumber = $"QN-{DateTime.UtcNow:yyyyMMdd}-{Id:D5}";
         }
     }
 }
-

@@ -15,8 +15,15 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Profiles
             CreateMap<Vehicle, CreateVehicleResponse>();
             CreateMap<Vehicle, UpdateVehicleResponse>();
             CreateMap<Vehicle, GetAllVehiclesResponse>();
-            CreateMap<Vehicle, GetVehicleByIdResponse>();
             CreateMap<Vehicle, GetVehiclesByCustomerResponse>();
+
+            // VehiclePhoto → VehiclePhotoDto
+            CreateMap<VehiclePhoto, VehiclePhotoDto>();
+
+            // Vehicle → GetVehicleByIdResponse
+            // Photos handler'da manuel map ediliyor, AutoMapper'ın ignore etmesi yeterli
+            CreateMap<Vehicle, GetVehicleByIdResponse>()
+                .ForMember(dest => dest.Photos, opt => opt.Ignore());
         }
     }
 }

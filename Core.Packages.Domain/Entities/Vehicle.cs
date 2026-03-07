@@ -1,4 +1,4 @@
-using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Common;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Exceptions;
 using MagicCarRepairAISupported.Domain.Interfaces;
@@ -18,6 +18,7 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public string? Trim { get; set; }
         public long Kilometers { get; private set; }
         public new VehicleStatus Status { get; set; }
+        public VehicleType VehicleType { get; set; } = VehicleType.Unspecified;
         
         // Multi-tenant support
         public int ClientId { get; set; }

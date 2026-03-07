@@ -40,9 +40,9 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Commands.
                 }
 
                 // Müşteri kontrolü - sadece talep sahibi reddedebilir
-                if (quoteRequest.CustomerId.HasValue)
+                if (quoteRequest.CustomerId > 0)
                 {
-                    var customer = await _customerRepository.GetByIdAsync(quoteRequest.CustomerId.Value);
+                    var customer = await _customerRepository.GetByIdAsync(quoteRequest.CustomerId);
                     if (customer == null || customer.ClientId != clientId)
                     {
                         return new ErrorResult("You are not authorized to reject this quote");

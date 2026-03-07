@@ -1,4 +1,4 @@
-using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Common;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Persistence.Context;
@@ -25,12 +25,18 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// <summary>
         /// Seed data'yı manuel olarak çalıştırır (Development için)
         /// </summary>
+        /// <param name="clearExisting">Mevcut verileri temizle</param>
         [HttpPost("run")]
-        public async Task<IActionResult> RunSeedData()
+        public async Task<IActionResult> RunSeedData([FromQuery] bool clearExisting = false)
         {
             try
             {
-                _logger.LogInformation("Manual seed data process started...");
+                _logger.LogInformation("Manual seed data process started (ClearExisting: {ClearExisting})...", clearExisting);
+
+                if (clearExisting)
+                {
+                    await ClearAllTablesAsync();
+                }
 
                 // Seed Customers
                 await SeedCustomersAsync();
@@ -334,6 +340,26 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
             }
             
             _logger.LogInformation("Seeded {Count} part stocks.", partStocks.Count);
+        }
+
+        private async Task ClearAllTablesAsync()
+        {
+            _logger.LogInformation("Clearing all tables...");
+            
+            // Order is important because of foreign keys
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM PartStocks");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM Parts");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM Incomes");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM Expenses");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM WorkOrderTimeline");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM WorkOrderPhotos");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM WorkOrderItems");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM WorkOrderLabors");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM WorkOrders");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM Vehicles");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM Customers");
+            
+            _logger.LogInformation("All tables cleared.");
         }
     }
 }

@@ -55,7 +55,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Ratings.Commands.
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((WorkOrder?)null);
 
             // Act & Assert
@@ -87,7 +87,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Ratings.Commands.
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(workOrder);
 
             // Act & Assert
@@ -125,7 +125,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Ratings.Commands.
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(workOrder);
             _serviceRatingRepositoryMock.Setup(x => x.GetByWorkOrderIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingRating);
@@ -159,7 +159,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Ratings.Commands.
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(workOrder);
             _serviceRatingRepositoryMock.Setup(x => x.GetByWorkOrderIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((ServiceRating?)null);
@@ -194,7 +194,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Ratings.Commands.
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _workOrderRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(workOrder);
             _serviceRatingRepositoryMock.Setup(x => x.GetByWorkOrderIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((ServiceRating?)null);
@@ -228,3 +228,4 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Ratings.Commands.
         }
     }
 }
+

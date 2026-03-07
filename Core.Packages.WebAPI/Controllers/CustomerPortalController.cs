@@ -1,9 +1,11 @@
+using MagicCarRepairAISupported.Application.Features.CustomerPortal.Commands.AddWorkOrderPhoto;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Commands.UpdateMyProfile;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMaintenanceHistory;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMyProfile;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMyVehicles;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMyWorkOrderDetails;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMyWorkOrders;
+using MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.GetMyQuoteRequests;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -105,6 +107,45 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         {
             var result = await _mediator.Send(command);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Müşterinin iş emrine fotoğraf ekler
+        /// </summary>
+        [HttpPost("work-orders/{workOrderId}/photos")]
+        public async Task<IActionResult> AddWorkOrderPhoto(int workOrderId, [FromBody] AddWorkOrderPhotoCommand command)
+        {
+            command.WorkOrderId = workOrderId;
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Müşterinin fiyat teklifi isteklerini getirir
+        /// </summary>
+        [HttpGet("quote-requests")]
+        public async Task<IActionResult> GetMyQuoteRequests()
+        {
+            try
+            {
+                // Get customer ID from profile
+                var profileResult = await _mediator.Send(new GetMyProfileQuery());
+                // GetMyProfileQuery returns UpdateMyProfileResponse directly (not wrapped in IDataResult)
+                if (profileResult == null)
+                {
+                    return BadRequest(new { message = "Customer profile not found" });
+                }
+
+                // UpdateMyProfileResponse.Id is the CustomerId
+                var customerId = profileResult.Id;
+                var query = new GetMyQuoteRequestsQuery { CustomerId = customerId };
+                var result = await _mediator.Send(query);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

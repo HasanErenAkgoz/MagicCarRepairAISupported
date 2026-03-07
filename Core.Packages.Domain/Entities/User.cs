@@ -16,5 +16,11 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public UserType UserType { get; set; }
         public int ClientId { get; set; }
         public virtual Client Client { get; set; }
+        
+        // 2FA/MFA Fields
+        public bool TwoFactorEnabled { get; set; } = false;
+        public string? TwoFactorSecret { get; set; }
+        public string? RecoveryCodes { get; set; } // JSON array of recovery codes
+        public bool HasCompletedOnboarding { get; set; } = false;
     }
 }

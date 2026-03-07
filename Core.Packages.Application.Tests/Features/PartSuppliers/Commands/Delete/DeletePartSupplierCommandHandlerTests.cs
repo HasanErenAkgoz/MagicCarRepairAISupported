@@ -26,7 +26,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Com
             // Arrange
             var command = new DeletePartSupplierCommand { Id = 1 };
 
-            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((PartSupplier?)null);
 
             // Act & Assert
@@ -48,7 +48,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Com
 
             var command = new DeletePartSupplierCommand { Id = 1 };
 
-            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(supplier);
 
             _partSupplierRepositoryMock.Setup(x => x.Update(It.IsAny<PartSupplier>()));
@@ -69,4 +69,5 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Com
         }
     }
 }
+
 

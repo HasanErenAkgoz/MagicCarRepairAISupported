@@ -15,8 +15,43 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetByI
         public long Kilometers { get; set; }
         public VehicleStatus Status { get; set; }
         public string StatusName { get; set; }
+        public VehicleType VehicleType { get; set; }
+        public string VehicleTypeName { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
+
+        /// <summary>
+        /// Araç fotoğrafları (DB'den Include edilerek gelir)
+        /// </summary>
+        public List<VehiclePhotoDto> Photos { get; set; } = new();
+
+        /// <summary>
+        /// Sigorta/Kasko poliçeleri
+        /// </summary>
+        public List<InsurancePolicyDto> InsurancePolicies { get; set; } = new();
+    }
+
+    public class InsurancePolicyDto
+    {
+        public int Id { get; set; }
+        public string PolicyNumber { get; set; } = string.Empty;
+        public string InsuranceCompanyName { get; set; } = string.Empty;
+        public InsuranceType InsuranceType { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public decimal PremiumAmount { get; set; }
+        public InsuranceStatus Status { get; set; }
+        public int DaysUntilExpiration { get; set; }
+    }
+
+    public class VehiclePhotoDto
+    {
+        public int Id { get; set; }
+        public string FilePath { get; set; }
+        public string? PhotoType { get; set; }
+        public string? Description { get; set; }
+        public int DisplayOrder { get; set; }
+        public DateTime UploadDate { get; set; }
     }
 }
 

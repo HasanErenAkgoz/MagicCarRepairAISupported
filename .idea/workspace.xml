@@ -5,38 +5,53 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4cb2329-7bf3-4c07-bf4a-d847211b3976" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Core.Packages.WebAPI/Controllers/CustomerPortalController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.WebAPI/Controllers/CustomerPortalController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Common/Models/JWT/AccessToken.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Common/Models/JWT/AccessToken.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/Auth/Login/Commands/LoginCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/Auth/Login/Commands/LoginCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Create/CreateVehicleCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Create/CreateVehicleCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Create/CreateVehicleCommandHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Create/CreateVehicleCommandHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Create/CreateVehicleResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Create/CreateVehicleResponse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Update/UpdateVehicleCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Update/UpdateVehicleCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Update/UpdateVehicleCommandHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Update/UpdateVehicleCommandHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Update/UpdateVehicleResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Commands/Update/UpdateVehicleResponse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Queries/GetAll/GetAllVehiclesQueryHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Queries/GetAll/GetAllVehiclesQueryHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Queries/GetAll/GetAllVehiclesResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Queries/GetAll/GetAllVehiclesResponse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Queries/GetById/GetVehicleByIdQueryHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Queries/GetById/GetVehicleByIdQueryHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Queries/GetById/GetVehicleByIdResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/Vehicles/Queries/GetById/GetVehicleByIdResponse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Application/Features/WorkOrders/Profiles/WorkOrderMappingProfile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Application/Features/WorkOrders/Profiles/WorkOrderMappingProfile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Domain/Entities/Vehicle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Domain/Entities/Vehicle.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Persistence/Configurations/VehicleConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Persistence/Configurations/VehicleConfiguration.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Persistence/Configurations/WorkOrderConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Persistence/Configurations/WorkOrderConfiguration.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Persistence/Extensions/ModelBuilderExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Persistence/Extensions/ModelBuilderExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Persistence/Migrations/BaseDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Persistence/Migrations/BaseDbContextModelSnapshot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Persistence/Seeds/CustomerSeedData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Persistence/Seeds/CustomerSeedData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.Persistence/Seeds/WorkOrderSeedData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.Persistence/Seeds/WorkOrderSeedData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Core.Packages.WebAPI/Controllers/SeedDataController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.WebAPI/Controllers/SeedDataController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Core.Packages.WebAPI/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.WebAPI/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Core.Packages.WebAPI/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/Core.Packages.WebAPI/Properties/launchSettings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/app/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/app/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PROJE_DURUMU.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/API/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/API/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/API/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/API/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/API/customers.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/API/customers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/API/employees.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/API/employees.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/API/http.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/API/http.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/API/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/API/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/API/workOrders.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/API/workOrders.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/app/_layout.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/app/_layout.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/components/DrawerContent.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/components/DrawerContent.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/navigation/AppNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/navigation/AppNavigator.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/AdminDashboardOverviewScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/AdminDashboardOverviewScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/AdminDashboardScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/AdminDashboardScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/BillingInvoicesScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/BillingInvoicesScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/BillingScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/BillingScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerDashboardScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerDashboardScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerDirectoryScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerDirectoryScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerListScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerListScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerPortalScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/CustomerPortalScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/DataSyncScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/DataSyncScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/GlobalSearchScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/GlobalSearchScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/InventoryScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/InventoryScreen.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/LoginScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/LoginScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/MessagesScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/MessagesScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/MessagesSupportScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/MessagesSupportScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/NewWorkOrderScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/NewWorkOrderScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/PublicShopProfileScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/PublicShopProfileScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/ServiceCalendarScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/ServiceCalendarScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/ServiceScheduleScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/ServiceScheduleScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/StaffManagementScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/StaffManagementScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/VehicleProfileScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/VehicleProfileScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderDetailScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderDetailScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderListScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderListScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderManagementScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrderManagementScreen.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrdersEmptyScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/WorkOrdersEmptyScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magic-car-repair-mobile/screens/LoginScreen2.js" beforeDir="false" afterPath="$PROJECT_DIR$/magic-car-repair-mobile/screens/LoginScreen2.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcp-server/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcp-server/config.example.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcp-server/env-setup.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcp-server/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcp-server/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcp-server/src/index.js" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,28 +64,28 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="38j4v8AqZxg2NGITFa25t6ddXcg" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="b4cb2329-7bf3-4c07-bf4a-d847211b3976" name="Changes" comment="" />

@@ -1,4 +1,4 @@
-using MagicCarRepairAISupported.Domain.Comman;
+using MagicCarRepairAISupported.Domain.Common;
 using MagicCarRepairAISupported.Domain.Enums;
 
 namespace MagicCarRepairAISupported.Domain.Entities
@@ -61,6 +61,7 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public virtual ICollection<ServicePortfolio> Portfolios { get; set; } = new List<ServicePortfolio>();
         public virtual ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
         public virtual ICollection<FacilityPhoto> FacilityPhotos { get; set; } = new List<FacilityPhoto>();
+        public virtual ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     }
 }
 

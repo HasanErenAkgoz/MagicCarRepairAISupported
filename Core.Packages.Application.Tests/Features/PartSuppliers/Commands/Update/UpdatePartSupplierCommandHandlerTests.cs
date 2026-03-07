@@ -46,7 +46,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Com
                 CompanyName = "Updated Supplier"
             };
 
-            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((PartSupplier?)null);
 
             // Act & Assert
@@ -77,7 +77,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Com
                 CompanyName = "Duplicate Supplier"
             };
 
-            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingSupplier);
 
             _partSupplierRepositoryMock.Setup(x => x.GetByCompanyNameAsync("Duplicate Supplier", It.IsAny<CancellationToken>()))
@@ -116,7 +116,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Com
                 IsActive = true
             };
 
-            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(supplier);
 
             _partSupplierRepositoryMock.Setup(x => x.GetByCompanyNameAsync("Updated Supplier", It.IsAny<CancellationToken>()))
@@ -141,4 +141,5 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Com
         }
     }
 }
+
 

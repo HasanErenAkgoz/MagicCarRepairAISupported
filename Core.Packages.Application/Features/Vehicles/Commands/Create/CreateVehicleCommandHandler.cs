@@ -60,6 +60,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Creat
                 Year = request.Year,
                 Color = request.Color,
                 Status = request.Status,
+                VehicleType = request.VehicleType,
                 ClientId = clientId
             };
 
@@ -77,6 +78,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Creat
             var response = _mapper.Map<CreateVehicleResponse>(vehicle);
             response.CustomerName = customer.FullName;
             response.StatusName = vehicle.Status.ToString();
+            response.VehicleTypeName = vehicle.VehicleType.ToString();
             return response;
         }
     }

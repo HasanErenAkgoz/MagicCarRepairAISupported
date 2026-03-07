@@ -14,11 +14,9 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
             builder.HasKey(qr => qr.Id);
 
             builder.Property(qr => qr.RequestNumber)
-                .IsRequired()
                 .HasMaxLength(50);
 
-            builder.Property(qr => qr.ProblemDescription)
-                .IsRequired()
+            builder.Property(qr => qr.Description)
                 .HasMaxLength(2000);
 
             builder.Property(qr => qr.VehicleBrand)
@@ -53,11 +51,17 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .IsRequired()
                 .HasDefaultValue(QuoteStatus.Open);
 
+            builder.Property(qr => qr.PhotoPaths)
+                .HasDefaultValue("[]");
+
+            // Ignore computed / alias properties
+            builder.Ignore(qr => qr.ProblemDescription);
+
             // Relationships
             builder.HasOne(qr => qr.Customer)
                 .WithMany()
                 .HasForeignKey(qr => qr.CustomerId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(qr => qr.Vehicle)
                 .WithMany()
@@ -69,28 +73,13 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasForeignKey(qr => qr.ClientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(qr => qr.SelectedQuoteResponse)
-                .WithMany()
-                .HasForeignKey(qr => qr.SelectedQuoteResponseId)
-                .OnDelete(DeleteBehavior.SetNull);
-
             builder.HasMany(qr => qr.QuoteResponses)
                 .WithOne(qres => qres.QuoteRequest)
                 .HasForeignKey(qres => qres.QuoteRequestId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(qr => qr.Photos)
-                .WithOne(qp => qp.QuoteRequest)
-                .HasForeignKey(qp => qp.QuoteRequestId)
-                .OnDelete(DeleteBehavior.Cascade);
-
             // Indexes
-            builder.HasIndex(qr => qr.RequestNumber)
-                .IsUnique();
-
-            builder.HasIndex(qr => new { qr.RequestNumber, qr.ClientId })
-                .IsUnique();
-
+            builder.HasIndex(qr => qr.RequestNumber);
             builder.HasIndex(qr => qr.CustomerId);
             builder.HasIndex(qr => qr.VehicleId);
             builder.HasIndex(qr => qr.ClientId);
@@ -99,4 +88,3 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
         }
     }
 }
-

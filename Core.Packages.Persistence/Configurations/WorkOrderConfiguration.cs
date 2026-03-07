@@ -64,6 +64,9 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasColumnType("decimal(18,2)")
                 .HasDefaultValue(0);
 
+            builder.Property(w => w.EstimatedCost)
+                .HasColumnType("decimal(18,2)");
+
             builder.Property(w => w.PaidAmount)
                 .IsRequired()
                 .HasColumnType("decimal(18,2)")

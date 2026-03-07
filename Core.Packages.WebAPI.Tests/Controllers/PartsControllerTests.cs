@@ -29,9 +29,9 @@ namespace MagicCarRepairAISupported.WebAPI.Tests.Controllers
             // Arrange
             var response = new GetAllPartsResponse
             {
-                Parts = new List<GetAllPartsResponse.PartDto>
+                Parts = new List<PartDto>
                 {
-                    new GetAllPartsResponse.PartDto
+                    new PartDto
                     {
                         Id = 1,
                         PartCode = "PART-001",
@@ -48,7 +48,7 @@ namespace MagicCarRepairAISupported.WebAPI.Tests.Controllers
                 .ReturnsAsync(response);
 
             // Act
-            var result = await _controller.GetAll();
+            var result = await _controller.GetAll(null, null, null, null, null, null);
 
             // Assert
             result.Should().BeOfType<OkObjectResult>();
@@ -162,4 +162,3 @@ namespace MagicCarRepairAISupported.WebAPI.Tests.Controllers
         }
     }
 }
-

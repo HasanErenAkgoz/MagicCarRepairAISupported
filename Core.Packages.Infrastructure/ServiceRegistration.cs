@@ -13,6 +13,7 @@ using MagicCarRepairAISupported.Application.Common.Services.Payment;
 using MagicCarRepairAISupported.Application.Common.Services.SMS;
 using MagicCarRepairAISupported.Application.Common.Services.Stock;
 using MagicCarRepairAISupported.Application.Common.Services.WhatsApp;
+using MagicCarRepairAISupported.Application.Common.Services.Subscription;
 using MagicCarRepairAISupported.Infrastructure.Configurations.AI;
 using MagicCarRepairAISupported.Infrastructure.Middlewares;
 using MagicCarRepairAISupported.Infrastructure.Services.AI;
@@ -28,6 +29,7 @@ using MagicCarRepairAISupported.Infrastructure.Services.JWT;
 using MagicCarRepairAISupported.Infrastructure.Services.Notification;
 using MagicCarRepairAISupported.Infrastructure.Services.Payment;
 using MagicCarRepairAISupported.Infrastructure.Services.SMS;
+using MagicCarRepairAISupported.Infrastructure.Services.Subscription;
 using MagicCarRepairAISupported.Infrastructure.Services.Stock;
 using MagicCarRepairAISupported.Infrastructure.Services.Tenant;
 using MagicCarRepairAISupported.Infrastructure.Services.WhatsApp;
@@ -102,13 +104,16 @@ namespace MagicCarRepairAISupported.Infrastructure
             // Other Infrastructure Services
             services.AddScoped<ITokenService, JwtService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<ITwoFactorService, TwoFactorService>();
             services.AddScoped<IErrorMessageService, ErrorMessageService>();
             services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ISmsService, NetgsmSmsService>();
             services.AddScoped<IWhatsAppService, WhatsAppService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IFCMNotificationService, FCMNotificationService>();
             services.AddScoped<IPaymentService, IyzicoPaymentService>();
+            services.AddScoped<IMobilePaymentService, IyzicoMobilePaymentService>();
             services.AddScoped<IStockAlertService, StockAlertService>();
             services.AddScoped<IAutoOrderService, AutoOrderService>();
             services.AddScoped<IPdfInvoiceService, PdfInvoiceService>();
@@ -126,6 +131,8 @@ namespace MagicCarRepairAISupported.Infrastructure
             });
             services.AddScoped<ICacheInvalidationService, CacheInvalidationService>();
             services.AddScoped<MagicCarRepairAISupported.Application.Common.Services.Audit.IAuditLogService, Infrastructure.Services.Audit.AuditLogService>();
+            services.AddScoped<Application.Common.Services.Subscription.ISubscriptionService, Infrastructure.Services.Subscription.SubscriptionService>();
+            services.AddScoped<Application.Common.Services.Commission.ICommissionService, Infrastructure.Services.Commission.CommissionService>();
 
             // Note: Middleware should NOT be registered in DI container
             // They are used directly in the middleware pipeline via UseMiddleware<T>() or custom extension methods

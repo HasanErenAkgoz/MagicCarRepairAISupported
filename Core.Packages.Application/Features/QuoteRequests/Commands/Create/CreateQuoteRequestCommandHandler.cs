@@ -1,114 +1,92 @@
-using AutoMapper;
 using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Shared.Result;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories;
-using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
+using MagicCarRepairAISupported.Domain.UnitOfWork;
 using MediatR;
+using System.Text.Json;
 
 namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Commands.Create
 {
     public class CreateQuoteRequestCommandHandler : IRequestHandler<CreateQuoteRequestCommand, IDataResult<CreateQuoteRequestResponse>>
     {
         private readonly IQuoteRequestRepository _quoteRequestRepository;
-        private readonly IEntityRepository<Customer, int> _customerRepository;
-        private readonly IEntityRepository<Vehicle, int> _vehicleRepository;
-        private readonly IMapper _mapper;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IVehicleRepository _vehicleRepository;
+        private readonly IClientRepository _clientRepository;
         private readonly ITenantService _tenantService;
+        private readonly IUnitOfWork _unitOfWork;
 
         public CreateQuoteRequestCommandHandler(
             IQuoteRequestRepository quoteRequestRepository,
-            IEntityRepository<Customer, int> customerRepository,
-            IEntityRepository<Vehicle, int> vehicleRepository,
-            IMapper mapper,
-            ITenantService tenantService)
+            ICustomerRepository customerRepository,
+            IVehicleRepository vehicleRepository,
+            IClientRepository clientRepository,
+            ITenantService tenantService,
+            IUnitOfWork unitOfWork)
         {
             _quoteRequestRepository = quoteRequestRepository;
             _customerRepository = customerRepository;
             _vehicleRepository = vehicleRepository;
-            _mapper = mapper;
+            _clientRepository = clientRepository;
             _tenantService = tenantService;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IDataResult<CreateQuoteRequestResponse>> Handle(CreateQuoteRequestCommand request, CancellationToken cancellationToken)
         {
-            try
+            // 1. Customer kontrolü
+            var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
+            if (customer == null)
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
-
-                // Customer kontrolü (eğer CustomerId verilmişse)
-                if (request.CustomerId.HasValue)
-                {
-                    var customer = await _customerRepository.GetByIdAsync(request.CustomerId.Value);
-                    if (customer == null || customer.ClientId != clientId)
-                    {
-                        return new ErrorDataResult<CreateQuoteRequestResponse>("Customer not found");
-                    }
-                }
-
-                // Vehicle kontrolü (eğer VehicleId verilmişse)
-                if (request.VehicleId.HasValue)
-                {
-                    var vehicle = await _vehicleRepository.GetByIdAsync(request.VehicleId.Value);
-                    if (vehicle == null || vehicle.ClientId != clientId)
-                    {
-                        return new ErrorDataResult<CreateQuoteRequestResponse>("Vehicle not found");
-                    }
-
-                    // Vehicle'ın Customer'a ait olduğunu kontrol et
-                    if (request.CustomerId.HasValue && vehicle.CustomerId != request.CustomerId.Value)
-                    {
-                        return new ErrorDataResult<CreateQuoteRequestResponse>("Vehicle does not belong to customer");
-                    }
-                }
-
-                // Misafir kullanıcı için iletişim bilgileri kontrolü
-                if (!request.CustomerId.HasValue)
-                {
-                    if (string.IsNullOrWhiteSpace(request.CustomerEmail) && string.IsNullOrWhiteSpace(request.CustomerPhone))
-                    {
-                        return new ErrorDataResult<CreateQuoteRequestResponse>("Customer email or phone is required for guest users");
-                    }
-                }
-
-                // QuoteRequest oluştur
-                var quoteRequest = new QuoteRequest
-                {
-                    CustomerId = request.CustomerId,
-                    VehicleId = request.VehicleId,
-                    VehicleBrand = request.VehicleBrand,
-                    VehicleModel = request.VehicleModel,
-                    VehicleYear = request.VehicleYear,
-                    VehicleLicensePlate = request.VehicleLicensePlate,
-                    ProblemDescription = request.ProblemDescription,
-                    RequestType = request.RequestType,
-                    UrgencyLevel = request.UrgencyLevel,
-                    DesiredStartDate = request.DesiredStartDate,
-                    DesiredEndDate = request.DesiredEndDate,
-                    CustomerEmail = request.CustomerEmail,
-                    CustomerPhone = request.CustomerPhone,
-                    CustomerName = request.CustomerName,
-                    Status = QuoteStatus.Open,
-                    ClientId = clientId,
-                    QuoteDeadline = request.QuoteDeadline ?? DateTime.UtcNow.AddDays(7), // Varsayılan 7 gün
-                    CreatedDate = DateTime.UtcNow
-                };
-
-                // RequestNumber oluşturulacak, önce kaydet
-                await _quoteRequestRepository.AddAsync(quoteRequest, cancellationToken);
-                
-                // RequestNumber oluştur
-                quoteRequest.GenerateRequestNumber();
-                _quoteRequestRepository.Update(quoteRequest);
-
-                var response = _mapper.Map<CreateQuoteRequestResponse>(quoteRequest);
-                return new SuccessDataResult<CreateQuoteRequestResponse>(response, "Quote request created successfully");
+                return new ErrorDataResult<CreateQuoteRequestResponse>("Müşteri bulunamadı.");
             }
-            catch (Exception ex)
+
+            // 2. Vehicle kontrolü (eğer belirtilmişse)
+            if (request.VehicleId.HasValue)
             {
-                return new ErrorDataResult<CreateQuoteRequestResponse>(ex.Message);
+                var vehicle = await _vehicleRepository.GetByIdAsync(request.VehicleId.Value);
+                if (vehicle == null)
+                {
+                    return new ErrorDataResult<CreateQuoteRequestResponse>("Araç bulunamadı.");
+                }
+                if (vehicle.CustomerId != request.CustomerId)
+                {
+                    return new ErrorDataResult<CreateQuoteRequestResponse>("Araç bu müşteriye ait değil.");
+                }
             }
+
+            // 3. ClientId - Customer'ın ClientId'sini kullan
+            var clientId = customer.ClientId;
+
+            // 4. PhotoPaths'i JSON'a çevir
+            var photoPathsJson = JsonSerializer.Serialize(request.PhotoPaths ?? new List<string>());
+
+            // 5. QuoteRequest oluştur
+            var quoteRequest = new QuoteRequest
+            {
+                CustomerId = request.CustomerId,
+                VehicleId = request.VehicleId,
+                PhotoPaths = photoPathsJson,
+                Description = request.Description,
+                Status = QuoteStatus.Open,
+                EstimatedCost = request.EstimatedCost,
+                EstimatedDescription = request.EstimatedDescription,
+                ClientId = clientId
+            };
+
+            await _quoteRequestRepository.AddAsync(quoteRequest, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var response = new CreateQuoteRequestResponse
+            {
+                QuoteRequestId = quoteRequest.Id,
+                CustomerId = quoteRequest.CustomerId,
+                Message = "Fiyat teklifi isteği başarıyla oluşturuldu."
+            };
+
+            return new SuccessDataResult<CreateQuoteRequestResponse>(response, response.Message);
         }
     }
 }

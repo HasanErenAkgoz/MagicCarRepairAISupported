@@ -46,8 +46,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Up
             var command = new UpdatePartStockCommand
             {
                 PartId = 1,
-                Quantity = 10,
-                MovementType = StockMovementType.StockIn
+                Quantity = 10
             };
 
             _partRepositoryMock.Setup(x => x.GetWithStockAsync(1, It.IsAny<CancellationToken>()))
@@ -99,7 +98,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Up
             _stockMovementRepositoryMock.Setup(x => x.SaveChangesAsync()).ReturnsAsync(1);
 
             _stockAlertServiceMock.Setup(x => x.CheckAndCreateAlertAsync(1, 1, It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((StockAlert?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -151,7 +150,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Up
             _stockMovementRepositoryMock.Setup(x => x.SaveChangesAsync()).ReturnsAsync(1);
 
             _stockAlertServiceMock.Setup(x => x.CheckAndCreateAlertAsync(1, It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync((StockAlert?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);

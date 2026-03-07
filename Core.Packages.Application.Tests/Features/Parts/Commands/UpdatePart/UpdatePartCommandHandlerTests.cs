@@ -1,5 +1,6 @@
 using AutoMapper;
 using FluentAssertions;
+using MagicCarRepairAISupported.Application.Common.Services.Cache;
 using MagicCarRepairAISupported.Application.Features.Parts.Commands.UpdatePart;
 using MagicCarRepairAISupported.Application.Features.Parts.Profiles;
 using MagicCarRepairAISupported.Domain.Entities;
@@ -15,6 +16,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Up
     {
         private readonly Mock<IPartRepository> _partRepositoryMock;
         private readonly Mock<IPartSupplierRepository> _partSupplierRepositoryMock;
+        private readonly Mock<ICacheInvalidationService> _cacheInvalidationServiceMock;
         private readonly IMapper _mapper;
         private readonly UpdatePartCommandHandler _handler;
 
@@ -22,6 +24,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Up
         {
             _partRepositoryMock = new Mock<IPartRepository>();
             _partSupplierRepositoryMock = new Mock<IPartSupplierRepository>();
+            _cacheInvalidationServiceMock = new Mock<ICacheInvalidationService>();
 
             var mapperConfig = new MapperConfiguration(cfg =>
             {
@@ -32,7 +35,8 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Up
             _handler = new UpdatePartCommandHandler(
                 _partRepositoryMock.Object,
                 _partSupplierRepositoryMock.Object,
-                _mapper);
+                _mapper,
+                _cacheInvalidationServiceMock.Object);
         }
 
         [Fact]
@@ -185,7 +189,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Up
             _partRepositoryMock.Setup(x => x.GetWithStockAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(part);
 
-            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _partSupplierRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((PartSupplier?)null);
 
             // Act & Assert
@@ -193,5 +197,6 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Up
         }
     }
 }
+
 
 

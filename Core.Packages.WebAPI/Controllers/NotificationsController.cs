@@ -1,5 +1,6 @@
 using MagicCarRepairAISupported.Application.Features.Notifications.Commands.MarkAsRead;
 using MagicCarRepairAISupported.Application.Features.Notifications.Commands.Send;
+using MagicCarRepairAISupported.Application.Features.Notifications.Commands.SendPushNotification;
 using MagicCarRepairAISupported.Application.Features.Notifications.Queries.GetByUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -66,6 +67,20 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         public async Task<IActionResult> MarkAsRead(int id)
         {
             var command = new MarkNotificationAsReadCommand { NotificationId = id };
+            var result = await _mediator.Send(command);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        /// <summary>
+        /// Push notification gönderir
+        /// </summary>
+        [HttpPost("push")]
+        public async Task<IActionResult> SendPushNotification([FromBody] SendPushNotificationCommand command)
+        {
             var result = await _mediator.Send(command);
             if (result.Success)
             {

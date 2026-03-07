@@ -2,6 +2,7 @@ using MagicCarRepairAISupported.Application.Common.Services.Payment;
 using MagicCarRepairAISupported.Application.Shared.Result;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using PaymentInstallmentOption = MagicCarRepairAISupported.Application.Common.Services.Payment.Dtos.InstallmentOption;
 
 namespace MagicCarRepairAISupported.Application.Features.Payments.Queries.GetInstallmentOptions
 {

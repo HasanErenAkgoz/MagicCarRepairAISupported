@@ -61,7 +61,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Salary
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(999))
+            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(999, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Employee?)null);
 
             // Act & Assert
@@ -94,7 +94,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Salary
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(employee);
 
             // Act & Assert
@@ -135,7 +135,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Salary
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(employee);
             _salaryPaymentRepositoryMock.Setup(x => x.GetByEmployeeAndPeriodAsync(1, 2024, 1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(existingPayment);
@@ -169,7 +169,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Salary
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(employee);
             _salaryPaymentRepositoryMock.Setup(x => x.GetByEmployeeAndPeriodAsync(1, 2024, 13, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((SalaryPaymentEntity?)null);
@@ -209,7 +209,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Salary
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
-            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1))
+            _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(employee);
             _salaryPaymentRepositoryMock.Setup(x => x.GetByEmployeeAndPeriodAsync(1, 2024, 1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((SalaryPaymentEntity?)null);
@@ -240,3 +240,4 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Salary
         }
     }
 }
+
