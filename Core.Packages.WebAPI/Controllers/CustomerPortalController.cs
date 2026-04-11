@@ -1,4 +1,6 @@
+using MagicCarRepairAISupported.Application.Features.CustomerPortal.Commands.AddMyVehicle;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Commands.AddWorkOrderPhoto;
+using MagicCarRepairAISupported.Application.Features.CustomerPortal.Commands.SubmitWorkOrderReview;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Commands.UpdateMyProfile;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMaintenanceHistory;
 using MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.GetMyProfile;
@@ -114,6 +116,27 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// </summary>
         [HttpPost("work-orders/{workOrderId}/photos")]
         public async Task<IActionResult> AddWorkOrderPhoto(int workOrderId, [FromBody] AddWorkOrderPhotoCommand command)
+        {
+            command.WorkOrderId = workOrderId;
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Müşterinin kendi aracını ekler
+        /// </summary>
+        [HttpPost("vehicles")]
+        public async Task<IActionResult> AddMyVehicle([FromBody] AddMyVehicleCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Müşteri iş emri değerlendirmesi gönderir
+        /// </summary>
+        [HttpPost("work-orders/{workOrderId}/review")]
+        public async Task<IActionResult> SubmitWorkOrderReview(int workOrderId, [FromBody] SubmitWorkOrderReviewCommand command)
         {
             command.WorkOrderId = workOrderId;
             var result = await _mediator.Send(command);

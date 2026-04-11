@@ -8,7 +8,7 @@ namespace MagicCarRepairAISupported.Domain.Entities
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string IdentityNo { get; set; }
+        public string? IdentityNo { get; set; }
         public string? Address { get; set; }
         public string Language { get; set; } = "tr";
         public string? RefreshToken { get; set; }
@@ -18,7 +18,7 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public virtual Client Client { get; set; }
         
         // 2FA/MFA Fields
-        public bool TwoFactorEnabled { get; set; } = false;
+        // TwoFactorEnabled is inherited from IdentityUser (defaults to false)
         public string? TwoFactorSecret { get; set; }
         public string? RecoveryCodes { get; set; } // JSON array of recovery codes
         public bool HasCompletedOnboarding { get; set; } = false;

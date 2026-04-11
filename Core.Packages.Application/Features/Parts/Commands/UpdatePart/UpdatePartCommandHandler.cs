@@ -74,13 +74,21 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.UpdatePa
             part.WarrantyMonths = request.WarrantyMonths;
             part.Notes = request.Notes;
 
+            // Stok konumunu güncelle (Stock kaydı varsa)
+            if (part.Stock != null && request.StockLocation != null)
+            {
+                part.Stock.Location = request.StockLocation;
+            }
+
             // Güncelle
             _partRepository.Update(part);
             await _partRepository.SaveChangesAsync();
 
-            // Cache invalidation
-            await _cacheInvalidationService.InvalidatePartCacheAsync(part.Id);
-            await _cacheInvalidationService.InvalidateDashboardCacheAsync();
+            // Cache invalidation (parallel)
+            await Task.WhenAll(
+                _cacheInvalidationService.InvalidatePartCacheAsync(part.Id),
+                _cacheInvalidationService.InvalidateDashboardCacheAsync()
+            );
 
             // Response
             var response = _mapper.Map<UpdatePartResponse>(part);

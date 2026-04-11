@@ -44,13 +44,32 @@ namespace MagicCarRepairAISupported.Application.Features.Clients.Commands.Approv
                 return new ErrorDataResult<ApproveClientResponse>("Tamirhane bulunamadı.");
             }
 
-            if (client.IsActive)
+            // Zaten aktif ve keşif listesi için kamuya açık — tekrar onaya gerek yok
+            if (client.IsActive && client.IsPublicProfileEnabled)
             {
                 return new ErrorDataResult<ApproveClientResponse>("Bu tamirhane zaten onaylanmış.");
             }
 
-            // Client'ı aktif yap
+            // Aktif ama IsPublicProfileEnabled false (eski veri / manuel DB) — sadece kamu profilini aç
+            if (client.IsActive && !client.IsPublicProfileEnabled)
+            {
+                client.IsPublicProfileEnabled = true;
+                _clientRepository.Update(client);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                var repairResponse = new ApproveClientResponse
+                {
+                    ClientId = client.Id,
+                    ClientName = client.Name,
+                    Message = $"'{client.Name}' için kamuya açık profil etkinleştirildi. Keşifte görünecek."
+                };
+
+                return new SuccessDataResult<ApproveClientResponse>(repairResponse, repairResponse.Message);
+            }
+
+            // Client'ı aktif yap ve kamuya açık profile etkinleştir
             client.IsActive = true;
+            client.IsPublicProfileEnabled = true;
             _clientRepository.Update(client);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

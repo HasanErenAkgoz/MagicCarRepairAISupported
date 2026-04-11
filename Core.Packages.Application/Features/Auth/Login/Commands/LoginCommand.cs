@@ -1,11 +1,15 @@
+using MagicCarRepairAISupported.Application.Common.Models.JWT;
 using MagicCarRepairAISupported.Application.Common.Services.JWT;
 using MagicCarRepairAISupported.Application.Shared.Result;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories;
+using MagicCarRepairAISupported.Domain.Common;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using UserEntity = MagicCarRepairAISupported.Domain.Entities.User;
 
@@ -15,6 +19,9 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
     {
         public string Email { get; set; }
         public string Password { get; set; }
+        public bool RememberMe { get; set; } = false;
+        public string? DeviceId { get; set; }
+        public string? DeviceName { get; set; }
     }
 
     public class LoginCommandHandler : IRequestHandler<LoginCommand, IDataResult<AccessToken>>
@@ -23,17 +30,29 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
         private readonly ITokenService _tokenService;
         private readonly IConfiguration _configuration;
         private readonly IClientRepository _clientRepository;
+        private readonly IUserDeviceRepository _userDeviceRepository;
+        private readonly IUserSessionRepository _userSessionRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISubscriptionRepository _subscriptionRepository;
 
         public LoginCommandHandler(
             UserManager<UserEntity> userManager,
             ITokenService tokenService,
             IConfiguration configuration,
-            IClientRepository clientRepository)
+            IClientRepository clientRepository,
+            IUserDeviceRepository userDeviceRepository,
+            IUserSessionRepository userSessionRepository,
+            IHttpContextAccessor httpContextAccessor,
+            ISubscriptionRepository subscriptionRepository)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _configuration = configuration;
             _clientRepository = clientRepository;
+            _userDeviceRepository = userDeviceRepository;
+            _userSessionRepository = userSessionRepository;
+            _httpContextAccessor = httpContextAccessor;
+            _subscriptionRepository = subscriptionRepository;
         }
 
         public async Task<IDataResult<AccessToken>> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -117,14 +136,100 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
                 };
             }
 
-            var tokens = await _tokenService.CreateToken<AccessToken>(user);
+            // Abonelik planını al (Manager/Employee için clientId bazlı, diğerleri null)
+            SubscriptionPlan? subscriptionPlan = null;
+            if (user.ClientId > 0 &&
+                (user.UserType == UserType.Manager || user.UserType == UserType.Employee))
+            {
+                var subscription = await _subscriptionRepository.GetActiveSubscriptionAsync(user.ClientId);
+                subscriptionPlan = subscription?.Plan;
+            }
+
+            // Token oluştur (Remember Me'ye göre expiration süreleri ayarlanır)
+            var tokens = await _tokenService.CreateToken<AccessToken>(user, request.RememberMe);
             var userRoles = await _userManager.GetRolesAsync(user);
+
+            // Refresh token'ı DB'ye kaydet
+            user.RefreshToken = tokens.RefreshToken;
+            user.RefreshTokenExpiryTime = request.RememberMe ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddDays(7);
+            await _userManager.UpdateAsync(user);
+
+            // Token'dan JTI (JWT ID) claim'ini al - Session tracking için
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(tokens.Token);
+            var jtiClaim = jsonToken.Claims.FirstOrDefault(c => c.Type == "jti");
+            var tokenId = jtiClaim?.Value ?? Guid.NewGuid().ToString();
+
+            // IP Address ve User Agent bilgilerini al
+            var ipAddress = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+            var userAgent = _httpContextAccessor.HttpContext?.Request?.Headers["User-Agent"].ToString();
+
+            // Device tracking - DeviceId varsa kaydet
+            if (!string.IsNullOrEmpty(request.DeviceId))
+            {
+                var existingDevice = await _userDeviceRepository.GetByUserIdAndDeviceIdAsync(user.Id, request.DeviceId, cancellationToken);
+                
+                if (existingDevice != null)
+                {
+                    // Mevcut device'ı güncelle
+                    existingDevice.LastLoginAt = DateTime.UtcNow;
+                    existingDevice.IsTrusted = request.RememberMe; // Remember Me durumunu güncelle
+                    if (!string.IsNullOrEmpty(request.DeviceName))
+                    {
+                        existingDevice.DeviceName = request.DeviceName;
+                    }
+                    _userDeviceRepository.Update(existingDevice);
+                }
+                else
+                {
+                    // Yeni device kaydet
+                    var newDevice = new UserDevice
+                    {
+                        UserId = user.Id,
+                        DeviceId = request.DeviceId,
+                        DeviceName = request.DeviceName,
+                        IsTrusted = request.RememberMe,
+                        LastLoginAt = DateTime.UtcNow,
+                        ClientId = user.ClientId,
+                        Status = Status.Active,
+                        CreatedDate = DateTime.UtcNow,
+                        CreatedBy = user.Id
+                    };
+                    await _userDeviceRepository.AddAsync(newDevice, cancellationToken);
+                }
+            }
+
+            // Session Management - Her login'de yeni session kaydet
+            var refreshTokenExpiration = request.RememberMe 
+                ? DateTime.UtcNow.AddDays(30)  // Remember Me: 30 gün
+                : DateTime.UtcNow.AddDays(7);  // Normal: 7 gün
+
+            var userSession = new UserSession
+            {
+                UserId = user.Id,
+                TokenId = tokenId,
+                DeviceId = request.DeviceId,
+                DeviceName = request.DeviceName,
+                IpAddress = ipAddress,
+                UserAgent = userAgent,
+                IsRemembered = request.RememberMe,
+                ExpiresAt = refreshTokenExpiration,
+                LastActivityAt = DateTime.UtcNow,
+                ClientId = user.ClientId,
+                Status = Status.Active,
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = user.Id
+            };
+            await _userSessionRepository.AddAsync(userSession, cancellationToken);
+            
+            // Claims listesini oluştur
+            var claimsList = jsonToken.Claims.Select(c => $"{c.Type}:{c.Value}").ToList();
             
             return new SuccessDataResult<AccessToken>(new AccessToken
             {
                 Token = tokens.Token,
                 RefreshToken = tokens.RefreshToken,
-                Claims = tokens.Claims,
+                Claims = claimsList,
                 Expiration = tokens.Expiration,
                 User = new LoginUserInfo
                 {
@@ -136,7 +241,8 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
                     Roles = userRoles.ToList(),
                     ClientId = user.ClientId,
                     RequiresTwoFactor = false,
-                    HasCompletedOnboarding = user.HasCompletedOnboarding
+                    HasCompletedOnboarding = user.HasCompletedOnboarding,
+                    SubscriptionPlan = subscriptionPlan
                 }
             });
         }

@@ -4,6 +4,7 @@ using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetIncome
 using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetRecentActivities;
 using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetTodayRevenue;
 using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetTopCustomers;
+using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetWeeklyRevenue;
 using MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetWorkOrderStatusChart;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -92,6 +93,16 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         public async Task<IActionResult> GetFleetStatus()
         {
             var query = new GetFleetStatusQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Haftalık gelir analitik verilerini getirir
+        /// </summary>
+        [HttpGet("weekly-revenue")]
+        public async Task<IActionResult> GetWeeklyRevenue([FromQuery] GetWeeklyRevenueQuery query)
+        {
             var result = await _mediator.Send(query);
             return Ok(result);
         }

@@ -14,6 +14,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Commands.Verify2FA
     {
         public bool IsValid { get; set; }
         public bool TwoFactorEnabled { get; set; }
+        public bool RequiresTwoFactor { get; set; } // Alias for TwoFactorEnabled (for frontend compatibility)
         public string Message { get; set; } = string.Empty;
     }
 }

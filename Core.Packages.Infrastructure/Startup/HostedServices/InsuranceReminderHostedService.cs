@@ -93,9 +93,11 @@ namespace MagicCarRepairAISupported.Infrastructure.Startup.HostedServices
                             if (policy.Customer.UserId.HasValue)
                             {
                                 await notificationService.SendNotificationAsync(
-                                    Domain.Enums.NotificationType.Email,
+                                    string.IsNullOrEmpty(policy.Customer.Email)
+                                        ? Domain.Enums.NotificationType.Push
+                                        : Domain.Enums.NotificationType.Email,
                                     policy.Customer.UserId.Value,
-                                    policy.Customer.Email,
+                                    policy.Customer.Email ?? string.Empty,
                                     policy.Customer.PhoneNumber,
                                     "Sigorta Poliçesi Hatırlatması",
                                     $"{vehicleInfo} için sigorta poliçeniz {daysUntilExpiration} gün sonra dolacak. Poliçe No: {policy.PolicyNumber}",

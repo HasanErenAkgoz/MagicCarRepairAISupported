@@ -30,7 +30,7 @@ namespace MagicCarRepairAISupported.Application.Features.Roles.Commands.Create
             try
             {
                 // Get current ClientId (default to 1 if not set, for system operations)
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = request.ClientId ?? _tenantService.GetCurrentClientId() ?? 1;
                 
                 // Check if role exists with same Name and ClientId (multi-tenant unique constraint)
                 // RoleManager.FindByNameAsync uses NormalizedName and may bypass global query filter

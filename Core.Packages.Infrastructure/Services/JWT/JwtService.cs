@@ -30,13 +30,24 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.JWT
                 throw new InvalidOperationException("Security key must be at least 256 bits (32 characters) long.");
         }
 
-        public async Task<TAccessToken> CreateToken<TAccessToken>(User user)
+        public async Task<TAccessToken> CreateToken<TAccessToken>(User user, bool rememberMe = false)
              where TAccessToken : IAccessToken, new()
         {
-            _accessTokenExpiration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
+            // Remember Me'ye göre token expiration sürelerini ayarla
+            if (rememberMe)
+            {
+                // Remember Me: Access token 24 saat, Refresh token 30 gün
+                _accessTokenExpiration = DateTime.UtcNow.AddDays(1);
+            }
+            else
+            {
+                // Normal: Access token config'den, Refresh token 7 gün
+                _accessTokenExpiration = DateTime.UtcNow.AddMinutes(_tokenOptions.AccessTokenExpiration);
+            }
+
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenOptions.SecurityKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var jwt = await CreateJwtSecurityToken(_tokenOptions, user, credentials);
+            var jwt = await CreateJwtSecurityToken(_tokenOptions, user, credentials, rememberMe);
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             var token = jwtSecurityTokenHandler.WriteToken(jwt);
             return new TAccessToken()
@@ -47,14 +58,25 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.JWT
             };
         }
 
-        public async Task<JwtSecurityToken> CreateJwtSecurityToken(TokenOptions tokenOptions,User user,SigningCredentials signingCredentials)
+        public async Task<JwtSecurityToken> CreateJwtSecurityToken(TokenOptions tokenOptions, User user, SigningCredentials signingCredentials, bool rememberMe = false)
         {
+            var claims = await SetClaims(user);
+            
+            // JTI (JWT ID) claim'i ekle - Session tracking için
+            var jti = Guid.NewGuid().ToString();
+            var claimsList = claims.ToList();
+            claimsList.Add(new Claim("jti", jti)); // JWT ID claim
+            if (rememberMe)
+            {
+                claimsList.Add(new Claim("RememberMe", "true"));
+            }
+
             var jwt = new JwtSecurityToken(
                 tokenOptions.Issuer,
                 tokenOptions.Audience,
                 expires: _accessTokenExpiration,
-                notBefore: DateTime.Now,
-                claims: await SetClaims(user),
+                notBefore: DateTime.UtcNow,
+                claims: claimsList,
                 signingCredentials: signingCredentials);
             return jwt;
         }
@@ -73,6 +95,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.JWT
             new Claim("ClientId", user.ClientId.ToString()),
         };
 
+            claims.Add(new Claim("Language", user.Language ?? "tr"));
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
             claims.AddRange(permissions.Select(permission => new Claim("Permission", permission)));
             return claims;

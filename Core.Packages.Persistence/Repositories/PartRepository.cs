@@ -24,14 +24,14 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
             return await Context.Set<Part>()
                 .Include(p => p.Stock)
                 .Include(p => p.Supplier)
-                .FirstOrDefaultAsync(p => p.PartCode == partCode, cancellationToken);
+                .FirstOrDefaultAsync(p => p.PartCode == partCode && p.Status != Status.Deleted, cancellationToken);
         }
 
         public async Task<List<Part>> GetByCategoryAsync(PartCategory category, CancellationToken cancellationToken = default)
         {
             return await Context.Set<Part>()
                 .Include(p => p.Stock)
-                .Where(p => p.Category == category)
+                .Where(p => p.Category == category && p.Status != Status.Deleted)
                 .OrderBy(p => p.Name)
                 .ToListAsync(cancellationToken);
         }
@@ -40,8 +40,9 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         {
             return await Context.Set<Part>()
                 .Include(p => p.Stock)
-                .Where(p => p.IsLowStockAlertEnabled && 
-                           p.Stock != null && 
+                .Where(p => p.Status != Status.Deleted &&
+                           p.IsLowStockAlertEnabled &&
+                           p.Stock != null &&
                            p.Stock.Quantity <= p.MinimumStockLevel)
                 .OrderBy(p => p.Stock!.Quantity)
                 .ToListAsync(cancellationToken);
@@ -53,11 +54,12 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
             return await Context.Set<Part>()
                 .Include(p => p.Stock)
                 .Include(p => p.Supplier)
-                .Where(p => p.Name.ToLower().Contains(term) ||
+                .Where(p => p.Status != Status.Deleted && (
+                           p.Name.ToLower().Contains(term) ||
                            p.PartCode.ToLower().Contains(term) ||
                            (p.Description != null && p.Description.ToLower().Contains(term)) ||
                            (p.Barcode != null && p.Barcode.ToLower().Contains(term)) ||
-                           (p.OEMNumber != null && p.OEMNumber.ToLower().Contains(term)))
+                           (p.OEMNumber != null && p.OEMNumber.ToLower().Contains(term))))
                 .OrderBy(p => p.Name)
                 .ToListAsync(cancellationToken);
         }
@@ -65,7 +67,7 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         public async Task<bool> IsPartCodeExistsAsync(string partCode, CancellationToken cancellationToken = default)
         {
             return await Context.Set<Part>()
-                .AnyAsync(p => p.PartCode == partCode, cancellationToken);
+                .AnyAsync(p => p.PartCode == partCode && p.Status != Status.Deleted, cancellationToken);
         }
 
         public async Task<Part?> GetWithStockAsync(int id, CancellationToken cancellationToken = default)
@@ -73,7 +75,8 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
             return await Context.Set<Part>()
                 .Include(p => p.Stock)
                 .Include(p => p.Supplier)
-                .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+                .Include(p => p.Photos)
+                .FirstOrDefaultAsync(p => p.Id == id && p.Status != Status.Deleted, cancellationToken);
         }
 
         public async Task<bool> IsPartUsedInActiveWorkOrdersAsync(int partId, CancellationToken cancellationToken = default)

@@ -34,6 +34,7 @@ using MagicCarRepairAISupported.Infrastructure.Services.Stock;
 using MagicCarRepairAISupported.Infrastructure.Services.Tenant;
 using MagicCarRepairAISupported.Infrastructure.Services.WhatsApp;
 using MagicCarRepairAISupported.Infrastructure.Redis;
+using MagicCarRepairAISupported.Infrastructure.Configurations.SMS;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -108,7 +109,17 @@ namespace MagicCarRepairAISupported.Infrastructure
             services.AddScoped<IErrorMessageService, ErrorMessageService>();
             services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<ISmsService, NetgsmSmsService>();
+            
+            // SMS Settings Configuration
+            services.Configure<SmsSettings>(configuration.GetSection("SmsSettings"));
+            
+            // SMS Services - Her iki provider'ı da kaydet
+            services.AddScoped<NetgsmSmsService>();
+            services.AddScoped<TwilioSmsService>();
+            
+            // Wrapper service - Configuration'a göre doğru provider'ı seçer
+            services.AddScoped<ISmsService, SmsServiceWrapper>();
+            
             services.AddScoped<IWhatsAppService, WhatsAppService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IFCMNotificationService, FCMNotificationService>();

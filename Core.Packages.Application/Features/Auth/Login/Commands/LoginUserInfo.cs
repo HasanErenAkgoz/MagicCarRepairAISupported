@@ -13,5 +13,6 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
         public int? ClientId { get; set; }
         public bool RequiresTwoFactor { get; set; } = false;
         public bool HasCompletedOnboarding { get; set; } = false;
+        public SubscriptionPlan? SubscriptionPlan { get; set; }
     }
 }

@@ -30,7 +30,13 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Commands.Enable2FA
                 var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
                 if (user == null)
                 {
-                    return new ErrorDataResult<Enable2FAResponse>("Kullanıcı bulunamadı.");
+                    return new ErrorDataResult<Enable2FAResponse>("User not found.");
+                }
+
+                // Zaten aktif ise hata döndür
+                if (user.TwoFactorEnabled)
+                {
+                    return new ErrorDataResult<Enable2FAResponse>("Two-factor authentication is already enabled.");
                 }
 
                 // 2FA secret oluştur
@@ -49,14 +55,16 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Commands.Enable2FA
 
                 var response = new Enable2FAResponse
                 {
-                    Secret = setupResult.Secret,
+                    RequiresTwoFactor = false, // Henüz aktif değil, verify sonrası true olacak
                     QrCodeUrl = setupResult.QrCodeUrl,
-                    ManualEntryKey = setupResult.ManualEntryKey,
-                    RecoveryCodes = recoveryCodes,
+                    BackupCodes = recoveryCodes, // Sadece bir kez gösterilecek
+                    Secret = setupResult.Secret, // For backward compatibility
+                    ManualEntryKey = setupResult.ManualEntryKey, // For backward compatibility
+                    RecoveryCodes = recoveryCodes, // For backward compatibility
                     Message = "2FA kurulumu başlatıldı. Lütfen QR kodu tarayın veya manuel kodu girin, ardından doğrulama kodunu girin."
                 };
 
-                return new SuccessDataResult<Enable2FAResponse>(response, "2FA kurulumu başlatıldı.");
+                return new SuccessDataResult<Enable2FAResponse>(response, "Two-factor authentication has been enabled successfully");
             }
             catch (Exception ex)
             {

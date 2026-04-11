@@ -29,6 +29,10 @@ namespace MagicCarRepairAISupported.Application.Features.Users.Commands.UpdateUs
             if (user == null)
                 return new ErrorResult("Kullanıcı bulunamadı.");
 
+            // Manager yalnızca kendi clientId'sindeki kullanıcıları değiştirebilir
+            if (request.CallerClientId.HasValue && user.ClientId != request.CallerClientId.Value)
+                return new ErrorResult("Bu kullanıcının rolünü değiştirme yetkiniz yok.");
+
             var oldType = user.UserType;
             user.UserType = (UserType)request.UserType;
 

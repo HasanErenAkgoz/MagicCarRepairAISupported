@@ -41,6 +41,10 @@ namespace MagicCarRepairAISupported.Application.Features.Employees.Commands.Upda
             if (request.EmergencyContact != null) employee.EmergencyContact = request.EmergencyContact;
             if (request.EmergencyPhone != null) employee.EmergencyPhone = request.EmergencyPhone;
             if (request.Notes != null) employee.Notes = request.Notes;
+            if (request.Biography != null) employee.Biography = request.Biography;
+            if (request.ProfilePhotoUrl != null) employee.ProfilePhotoUrl = request.ProfilePhotoUrl;
+            if (request.IsPublic.HasValue) employee.IsPublic = request.IsPublic.Value;
+            if (request.DisplayOrder.HasValue) employee.DisplayOrder = request.DisplayOrder.Value;
 
             if (request.Specializations != null)
             {

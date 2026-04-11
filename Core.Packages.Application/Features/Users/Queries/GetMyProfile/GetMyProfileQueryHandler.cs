@@ -47,7 +47,8 @@ namespace MagicCarRepairAISupported.Application.Features.Users.Queries.GetMyProf
                 Email = user.Email ?? string.Empty,
                 PhoneNumber = user.PhoneNumber ?? string.Empty,
                 Address = user.Address ?? string.Empty,
-                Language = user.Language ?? "tr"
+                Language = user.Language ?? "tr",
+                IdentityNo = user.IdentityNo
             };
         }
     }

@@ -16,6 +16,11 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Queries.GetAl
         public bool IsVip { get; set; }
         public int? UserId { get; set; }
         public DateTime CreatedDate { get; set; }
+        
+        // Mobil uygulama için eklenen alanlar
+        public int VehicleCount { get; set; }
+        public int ActiveWorkOrders { get; set; }
+        public int TotalWorkOrders { get; set; }
     }
 }
 

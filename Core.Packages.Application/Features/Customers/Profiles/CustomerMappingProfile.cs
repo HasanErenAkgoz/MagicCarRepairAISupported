@@ -18,10 +18,16 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Profiles
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName));
             
             CreateMap<Customer, GetAllCustomersResponse>()
-                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName));
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+                .ForMember(dest => dest.VehicleCount, opt => opt.Ignore())
+                .ForMember(dest => dest.ActiveWorkOrders, opt => opt.Ignore())
+                .ForMember(dest => dest.TotalWorkOrders, opt => opt.Ignore());
             
             CreateMap<Customer, GetCustomerByIdResponse>()
-                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName));
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+                .ForMember(dest => dest.ActiveWorkOrders, opt => opt.Ignore())
+                .ForMember(dest => dest.TotalWorkOrders, opt => opt.Ignore())
+                .ForMember(dest => dest.Vehicles, opt => opt.Ignore());
         }
     }
 }

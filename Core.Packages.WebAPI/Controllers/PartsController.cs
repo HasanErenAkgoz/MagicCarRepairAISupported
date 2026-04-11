@@ -1,7 +1,10 @@
+using MagicCarRepairAISupported.Application.Features.Parts.Commands.AddPhoto;
 using MagicCarRepairAISupported.Application.Features.Parts.Commands.CreatePart;
 using MagicCarRepairAISupported.Application.Features.Parts.Commands.DeletePart;
+using MagicCarRepairAISupported.Application.Features.Parts.Commands.DeletePhoto;
 using MagicCarRepairAISupported.Application.Features.Parts.Commands.Import;
 using MagicCarRepairAISupported.Application.Features.Parts.Commands.UpdatePart;
+using MagicCarRepairAISupported.Application.Features.Parts.Commands.RepairUtf8Mojibake;
 using MagicCarRepairAISupported.Application.Features.Parts.Commands.UpdatePartStock;
 using MagicCarRepairAISupported.Application.Features.Parts.Queries.Export;
 using MagicCarRepairAISupported.Application.Features.Parts.Queries.GetAllParts;
@@ -169,6 +172,20 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         }
 
         /// <summary>
+        /// Parça / stok metinlerinde UTF-8 mojibake onarımı (ör. KÃ¶rÃ¼ → Körü). JWT'deki ClientId veya X-Client-Id kullanılır.
+        /// SystemAdmin için: <c>?forClientId=1</c> ile hedef bayi (shop) seçilebilir.
+        /// </summary>
+        [HttpPost("repair-utf8-mojibake")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RepairUtf8Mojibake([FromQuery] int? forClientId, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(
+                new RepairUtf8MojibakeCommand { ForClientId = forClientId },
+                cancellationToken);
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Parçaları import et (Excel, CSV)
         /// </summary>
         [HttpPost("import")]
@@ -246,6 +263,30 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
             var query = new GetPartByBarcodeQuery { Barcode = barcode };
             var result = await _mediator.Send(query);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Parçaya fotoğraf ekle
+        /// </summary>
+        [HttpPost("{id}/photos")]
+        public async Task<IActionResult> AddPhoto(int id, [FromBody] AddPartPhotoCommand command)
+        {
+            command.PartId = id;
+            var result = await _mediator.Send(command);
+            return Ok(new { success = true, data = result });
+        }
+
+        /// <summary>
+        /// Parça fotoğrafını sil
+        /// </summary>
+        [HttpDelete("{id}/photos/{photoId}")]
+        public async Task<IActionResult> DeletePhoto(int id, int photoId)
+        {
+            var command = new DeletePartPhotoCommand { PartId = id, PhotoId = photoId };
+            var result = await _mediator.Send(command);
+            if (!result.Success)
+                return BadRequest(result);
+            return Ok(new { success = true, message = "Fotoğraf silindi." });
         }
     }
 }

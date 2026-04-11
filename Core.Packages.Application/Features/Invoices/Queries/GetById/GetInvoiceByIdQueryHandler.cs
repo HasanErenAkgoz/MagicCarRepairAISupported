@@ -55,21 +55,6 @@ namespace MagicCarRepairAISupported.Application.Features.Invoices.Queries.GetByI
             response.SupplierName = invoice.Supplier?.CompanyName;
             response.RemainingAmount = invoice.TotalAmount - invoice.PaidAmount;
 
-            // Items'ı map et
-            if (invoice.Items != null)
-            {
-                response.Items = invoice.Items.Select(item => new InvoiceItemDto
-                {
-                    Id = item.Id,
-                    Description = item.Description,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.UnitPrice,
-                    TaxRate = item.TaxRate,
-                    TaxAmount = item.TaxAmount,
-                    TotalAmount = item.TotalAmount
-                }).ToList();
-            }
-
             return response;
         }
     }

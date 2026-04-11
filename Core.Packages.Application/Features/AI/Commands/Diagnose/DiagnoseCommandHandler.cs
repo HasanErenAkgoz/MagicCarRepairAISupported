@@ -29,7 +29,7 @@ namespace MagicCarRepairAISupported.Application.Features.AI.Commands.Diagnose
                     return new ErrorDataResult<DiagnosisResultDto>("Şikayet metni boş olamaz");
                 }
 
-                result = await _aiDiagnosisService.DiagnoseFromTextAsync(request.Complaint, request.VehicleId, cancellationToken);
+                result = await _aiDiagnosisService.DiagnoseFromTextAsync(request.Complaint, request.VehicleId, request.PhotoUrls, request.Language, cancellationToken);
             }
 
             return new SuccessDataResult<DiagnosisResultDto>(result, "Arıza tespiti başarıyla tamamlandı");

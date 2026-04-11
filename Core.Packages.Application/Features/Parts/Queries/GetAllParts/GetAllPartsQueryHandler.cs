@@ -1,3 +1,4 @@
+using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,8 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Queries.GetAllPar
             var query = baseQuery
                 .Include(p => p.Stock)
                 .Include(p => p.Supplier)
-                .AsNoTracking() // Read-only query, no change tracking needed
+                .Where(p => p.Status != Status.Deleted)
+                .AsNoTracking()
                 .AsQueryable();
 
             // Filtreleme

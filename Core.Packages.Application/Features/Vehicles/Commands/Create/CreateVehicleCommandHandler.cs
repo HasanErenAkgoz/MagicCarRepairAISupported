@@ -47,7 +47,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Creat
             var existingVehicle = await _vehicleRepository.GetByLicensePlateAsync(request.LicensePlate, cancellationToken);
             if (existingVehicle != null && existingVehicle.ClientId == clientId)
             {
-                throw new DomainException("VEHICLE_LICENSE_PLATE_EXISTS", new { LicensePlate = request.LicensePlate });
+                throw new DomainException("VEHICLE_LICENSE_PLATE_EXISTS", new { LicensePlate = request.LicensePlate, ExistingVehicleId = existingVehicle.Id });
             }
 
             // Entity oluştur
@@ -61,6 +61,8 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Creat
                 Color = request.Color,
                 Status = request.Status,
                 VehicleType = request.VehicleType,
+                FuelType = request.FuelType,
+                Vin = request.Vin,
                 ClientId = clientId
             };
 

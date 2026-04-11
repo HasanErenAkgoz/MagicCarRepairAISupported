@@ -22,6 +22,23 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
         public string? OwnerPhoneNumber { get; set; }
         public string? OwnerIdentityNo { get; set; }
         public string? OwnerAddress { get; set; }
+        
+        // Tax Office Number
+        public string? TaxOfficeNo { get; set; }
+
+        // Shop profile fields
+        public string? ShopLogoUrl { get; set; }
+        public string? ShopBannerUrl { get; set; }
+        public double? ShopLatitude { get; set; }
+        public double? ShopLongitude { get; set; }
+        
+        // Vehicle data (optional - from VehicleInfoScreen)
+        public string? VehicleLicensePlate { get; set; }
+        public string? VehicleBrand { get; set; }
+        public string? VehicleModel { get; set; }
+        public int? VehicleYear { get; set; }
+        public string? VehicleColor { get; set; }
+        public long? VehicleKilometers { get; set; }
     }
 
     public class RegisterShopResponse

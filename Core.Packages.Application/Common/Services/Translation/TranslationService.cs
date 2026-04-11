@@ -96,7 +96,10 @@ namespace MagicCarRepairAISupported.Application.Common.Services.Translation
             var translations = await _translationRepository
                 .GetListAsync(CancellationToken.None, t => t.Language == language && t.Status == Domain.Enums.Status.Active);
 
-            var result = translations.ToDictionary(t => t.Key, t => t.Value);
+            // Duplicate key'leri önlemek için GroupBy kullan ve ilk değeri al
+            var result = translations
+                .GroupBy(t => t.Key)
+                .ToDictionary(g => g.Key, g => g.First().Value);
             
             _cache.Set(cacheKey, result, TimeSpan.FromMinutes(CACHE_DURATION_MINUTES));
             
@@ -109,9 +112,10 @@ namespace MagicCarRepairAISupported.Application.Common.Services.Translation
             if (httpContext == null)
                 return "tr";
 
-            // 1. Query string'den dil al (api/endpoint?lang=en)
-            if (httpContext.Request.Query.TryGetValue("lang", out var queryLang))
-                return queryLang.ToString();
+            // 1. Claims'den dil al (JWT token - en yuksek oncelik)
+            var languageClaim = httpContext.User?.FindFirst("Language");
+            if (languageClaim != null && !string.IsNullOrEmpty(languageClaim.Value))
+                return languageClaim.Value;
 
             // 2. Header'dan dil al (Accept-Language: en-US,en;q=0.9)
             if (httpContext.Request.Headers.TryGetValue("Accept-Language", out var acceptLanguage))
@@ -129,7 +133,7 @@ namespace MagicCarRepairAISupported.Application.Common.Services.Translation
             if (httpContext.Request.Cookies.TryGetValue("language", out var cookieLang))
                 return cookieLang;
 
-            // 4. Varsayılan dil
+            // 4. Varsayilan dil
             return "tr";
         }
 

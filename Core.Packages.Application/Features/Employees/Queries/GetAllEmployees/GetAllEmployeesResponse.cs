@@ -16,6 +16,7 @@ namespace MagicCarRepairAISupported.Application.Features.Employees.Queries.GetAl
         public EmploymentStatus EmploymentStatus { get; set; }
         public string EmploymentStatusName { get; set; }
         public DateTime HireDate { get; set; }
+        public string? ProfilePhotoUrl { get; set; }
         public int? UserId { get; set; }
     }
 }

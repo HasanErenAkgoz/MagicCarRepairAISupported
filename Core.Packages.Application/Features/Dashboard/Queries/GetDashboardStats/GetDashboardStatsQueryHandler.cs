@@ -4,7 +4,11 @@ using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using UserEntity = MagicCarRepairAISupported.Domain.Entities.User;
 
 namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetDashboardStats
 {
@@ -23,6 +27,8 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetDa
         private readonly IQuoteResponseRepository _quoteResponseRepository;
         private readonly INotificationRepository _notificationRepository;
         private readonly ITenantService _tenantService;
+        private readonly UserManager<UserEntity> _userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public GetDashboardStatsQueryHandler(
             IWorkOrderRepository workOrderRepository,
@@ -37,7 +43,9 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetDa
             IQuoteRequestRepository quoteRequestRepository,
             IQuoteResponseRepository quoteResponseRepository,
             INotificationRepository notificationRepository,
-            ITenantService tenantService)
+            ITenantService tenantService,
+            UserManager<UserEntity> userManager,
+            IHttpContextAccessor httpContextAccessor)
         {
             _workOrderRepository = workOrderRepository;
             _incomeRepository = incomeRepository;
@@ -52,11 +60,30 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetDa
             _quoteResponseRepository = quoteResponseRepository;
             _notificationRepository = notificationRepository;
             _tenantService = tenantService;
+            _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<GetDashboardStatsResponse> Handle(GetDashboardStatsQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            // SystemAdmin tüm clientları görebilir (clientId = null), Manager/Employee sadece kendi clientını
+            int? clientId = null;
+
+            var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out var userIdInt))
+            {
+                var user = await _userManager.FindByIdAsync(userIdInt.ToString());
+                if (user != null && user.UserType != UserType.SystemAdmin)
+                {
+                    clientId = _tenantService.GetCurrentClientId() ?? user.ClientId;
+                }
+            }
+            else
+            {
+                // Claim yoksa tenant servisine geri dön
+                clientId = _tenantService.GetCurrentClientId();
+            }
+
             var startDate = request.StartDate ?? DateTime.UtcNow.AddMonths(-1);
             var endDate = request.EndDate ?? DateTime.UtcNow;
 
@@ -68,8 +95,8 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetDa
 
             // İş Emirleri İstatistikleri (optimize: AsNoTracking kullan)
             var workOrders = _workOrderRepository.Query()
-                .AsNoTracking() // Read-only query
-                .Where(wo => wo.ClientId == clientId);
+                .AsNoTracking()
+                .Where(wo => !clientId.HasValue || wo.ClientId == clientId.Value);
 
             response.TotalWorkOrders = await workOrders.CountAsync(cancellationToken);
             response.ActiveWorkOrders = await workOrders
@@ -84,42 +111,42 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetDa
 
             // Finansal İstatistikler (optimize: AsNoTracking kullan)
             var incomes = _incomeRepository.Query()
-                .AsNoTracking() // Read-only query
-                .Where(i => i.ClientId == clientId && i.TransactionDate >= startDate && i.TransactionDate <= endDate);
+                .AsNoTracking()
+                .Where(i => (!clientId.HasValue || i.ClientId == clientId.Value) && i.TransactionDate >= startDate && i.TransactionDate <= endDate);
             response.TotalIncome = await incomes.SumAsync(i => (decimal?)i.Amount, cancellationToken) ?? 0;
 
             var expenses = _expenseRepository.Query()
-                .AsNoTracking() // Read-only query
-                .Where(e => e.ClientId == clientId && e.TransactionDate >= startDate && e.TransactionDate <= endDate);
+                .AsNoTracking()
+                .Where(e => (!clientId.HasValue || e.ClientId == clientId.Value) && e.TransactionDate >= startDate && e.TransactionDate <= endDate);
             response.TotalExpense = await expenses.SumAsync(e => (decimal?)e.Amount, cancellationToken) ?? 0;
 
             response.NetProfit = response.TotalIncome - response.TotalExpense;
 
             // Fatura İstatistikleri (optimize: AsNoTracking ve Select projection kullan)
             var pendingInvoices = await _invoiceRepository.Query()
-                .AsNoTracking() // Read-only query
-                .Where(i => i.ClientId == clientId && 
+                .AsNoTracking()
+                .Where(i => (!clientId.HasValue || i.ClientId == clientId.Value) &&
                            (i.Status == InvoiceStatus.Pending || i.Status == InvoiceStatus.PartiallyPaid))
-                .Select(i => new { i.TotalAmount, i.PaidAmount }) // Sadece ihtiyaç olan alanları çek
+                .Select(i => new { i.TotalAmount, i.PaidAmount })
                 .ToListAsync(cancellationToken);
             response.PendingInvoiceAmount = pendingInvoices.Sum(i => i.TotalAmount - i.PaidAmount);
 
             var overdueInvoices = await _invoiceRepository.GetOverdueInvoicesAsync(cancellationToken);
             response.OverdueInvoiceAmount = overdueInvoices
-                .Where(i => i.ClientId == clientId)
+                .Where(i => !clientId.HasValue || i.ClientId == clientId.Value)
                 .Sum(i => i.TotalAmount - i.PaidAmount);
 
             // Stok İstatistikleri (optimize: Select projection kullan, gereksiz veri çekme)
             var parts = await _partRepository.Query()
-                .AsNoTracking() // Read-only query
-                .Where(p => p.ClientId == clientId)
+                .AsNoTracking()
+                .Where(p => !clientId.HasValue || p.ClientId == clientId.Value)
                 .Select(p => new { p.Id, p.MinimumStockLevel, p.IsLowStockAlertEnabled })
                 .ToListAsync(cancellationToken);
             response.TotalParts = parts.Count;
 
             var partIds = parts.Select(p => p.Id).ToList();
             var partStocks = await _partStockRepository.Query()
-                .AsNoTracking() // Read-only query
+                .AsNoTracking()
                 .Where(ps => partIds.Contains(ps.PartId))
                 .Select(ps => new { ps.PartId, ps.Quantity })
                 .ToListAsync(cancellationToken);
@@ -127,20 +154,20 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetDa
             // In-memory join yerine database query kullan (daha performanslı)
             var lowStockPartsQuery = _partRepository.Query()
                 .AsNoTracking()
-                .Where(p => p.ClientId == clientId && 
+                .Where(p => (!clientId.HasValue || p.ClientId == clientId.Value) &&
                            p.IsLowStockAlertEnabled &&
                            p.Status != Status.Deleted)
                 .Join(_partStockRepository.Query().AsNoTracking(),
                       p => p.Id,
                       ps => ps.PartId,
                       (p, ps) => new { Part = p, Stock = ps })
-                .Where(x => x.Stock.Quantity <= x.Part.MinimumStockLevel && 
+                .Where(x => x.Stock.Quantity <= x.Part.MinimumStockLevel &&
                            x.Stock.Quantity > 0);
             response.LowStockParts = await lowStockPartsQuery.CountAsync(cancellationToken);
 
             var outOfStockPartsQuery = _partRepository.Query()
                 .AsNoTracking()
-                .Where(p => p.ClientId == clientId && 
+                .Where(p => (!clientId.HasValue || p.ClientId == clientId.Value) &&
                            p.Status != Status.Deleted)
                 .GroupJoin(_partStockRepository.Query().AsNoTracking(),
                           p => p.Id,
@@ -150,20 +177,20 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetDa
             response.OutOfStockParts = await outOfStockPartsQuery.CountAsync(cancellationToken);
 
             var activeAlerts = await _stockAlertRepository.Query()
-                .AsNoTracking() // Read-only query
-                .Where(a => a.ClientId == clientId && a.Status == StockAlertStatus.Active)
+                .AsNoTracking()
+                .Where(a => (!clientId.HasValue || a.ClientId == clientId.Value) && a.Status == StockAlertStatus.Active)
                 .CountAsync(cancellationToken);
             response.ActiveStockAlerts = activeAlerts;
 
             // Müşteri İstatistikleri (optimize: AsNoTracking kullan)
             var customers = _customerRepository.Query()
-                .AsNoTracking() // Read-only query
-                .Where(c => c.ClientId == clientId);
+                .AsNoTracking()
+                .Where(c => !clientId.HasValue || c.ClientId == clientId.Value);
             response.TotalCustomers = await customers.CountAsync(cancellationToken);
 
             var vehicles = _vehicleRepository.Query()
-                .AsNoTracking() // Read-only query
-                .Where(v => v.ClientId == clientId);
+                .AsNoTracking()
+                .Where(v => !clientId.HasValue || v.ClientId == clientId.Value);
             response.TotalVehicles = await vehicles.CountAsync(cancellationToken);
 
             var newCustomersThisMonth = await customers
@@ -173,22 +200,21 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetDa
 
             // Teklif İstatistikleri (optimize: AsNoTracking kullan)
             var openQuotes = await _quoteRequestRepository.Query()
-                .AsNoTracking() // Read-only query
-                .Where(qr => qr.ClientId == clientId && qr.Status == QuoteStatus.Open)
+                .AsNoTracking()
+                .Where(qr => (!clientId.HasValue || qr.ClientId == clientId.Value) && qr.Status == QuoteStatus.Open)
                 .CountAsync(cancellationToken);
             response.OpenQuoteRequests = openQuotes;
 
             var pendingQuotes = await _quoteResponseRepository.Query()
-                .AsNoTracking() // Read-only query
-                .Where(qr => qr.ClientId == clientId && qr.Status == "Pending")
+                .AsNoTracking()
+                .Where(qr => (!clientId.HasValue || qr.ClientId == clientId.Value) && qr.Status == "Pending")
                 .CountAsync(cancellationToken);
             response.PendingQuoteResponses = pendingQuotes;
 
-            // Bildirim İstatistikleri (optimize: AsNoTracking kullan)
-            // Not: UserId HttpContext'ten alınabilir, şimdilik tüm bildirimleri sayıyoruz
+            // Bildirim İstatistikleri
             var unreadNotifications = await _notificationRepository.Query()
-                .AsNoTracking() // Read-only query
-                .Where(n => n.ClientId == clientId && 
+                .AsNoTracking()
+                .Where(n => (!clientId.HasValue || n.ClientId == clientId.Value) &&
                            n.Status != NotificationStatus.Read)
                 .CountAsync(cancellationToken);
             response.UnreadNotifications = unreadNotifications;

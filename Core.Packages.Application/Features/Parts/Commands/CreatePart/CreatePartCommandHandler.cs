@@ -88,9 +88,11 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.CreatePa
                 await _partStockRepository.SaveChangesAsync();
             }
 
-            // Cache invalidation
-            await _cacheInvalidationService.InvalidatePartCacheAsync(part.Id);
-            await _cacheInvalidationService.InvalidateDashboardCacheAsync();
+            // Cache invalidation (parallel)
+            await Task.WhenAll(
+                _cacheInvalidationService.InvalidatePartCacheAsync(part.Id),
+                _cacheInvalidationService.InvalidateDashboardCacheAsync()
+            );
 
             // Response
             var response = _mapper.Map<CreatePartResponse>(part);

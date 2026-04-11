@@ -11,5 +11,10 @@ namespace MagicCarRepairAISupported.Application.Features.Users.Commands.UpdateUs
         /// 1=SystemAdmin, 2=Manager, 3=Employee, 4=Customer
         /// </summary>
         public int UserType { get; set; }
+
+        /// <summary>
+        /// Manager arayandan gelir — null ise SystemAdmin çağırıyordur (kısıtlama yok).
+        /// </summary>
+        public int? CallerClientId { get; set; }
     }
 }

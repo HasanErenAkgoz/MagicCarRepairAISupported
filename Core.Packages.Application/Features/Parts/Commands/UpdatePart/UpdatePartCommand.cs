@@ -23,6 +23,7 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.UpdatePa
         public string Unit { get; set; } = "Adet";
         public int? WarrantyMonths { get; set; }
         public string? Notes { get; set; }
+        public string? StockLocation { get; set; }
     }
 }
 

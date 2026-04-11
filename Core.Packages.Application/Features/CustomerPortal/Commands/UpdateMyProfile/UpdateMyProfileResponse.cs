@@ -10,6 +10,7 @@ namespace MagicCarRepairAISupported.Application.Features.CustomerPortal.Commands
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
         public string Language { get; set; }
+        public string? IdentityNo { get; set; }
     }
 }
 

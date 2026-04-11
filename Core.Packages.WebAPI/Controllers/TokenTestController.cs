@@ -1,3 +1,4 @@
+#if DEBUG
 using MagicCarRepairAISupported.Infrastructure.Configurations.Token;
 using Core.Utilities.Security.Encyption;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +11,8 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [Authorize(Roles = "SystemAdmin")]
     public class TokenTestController : ControllerBase
     {
         private readonly TokenOptions _tokenOptions;
@@ -83,3 +86,4 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         }
     }
 }
+#endif

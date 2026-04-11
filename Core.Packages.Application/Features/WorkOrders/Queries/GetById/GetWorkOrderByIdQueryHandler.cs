@@ -59,15 +59,12 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
                     Vin = workOrder.Vehicle.Vin,
                     ModelVariant = workOrder.Vehicle.ModelVariant,
                     Trim = workOrder.Vehicle.Trim,
-                    Photos = workOrder.Vehicle.Photos?.OrderBy(p => p.DisplayOrder).ThenBy(p => p.UploadDate).Select(p => new VehiclePhotoDto
-                    {
-                        Id = p.Id,
-                        FilePath = p.FilePath,
-                        Description = p.Description,
-                        PhotoType = p.PhotoType,
-                        UploadDate = p.UploadDate,
-                        DisplayOrder = p.DisplayOrder
-                    }).ToList() ?? new List<VehiclePhotoDto>()
+                    Photos = workOrder.Vehicle.Photos?
+                        .OrderBy(p => p.DisplayOrder)
+                        .ThenBy(p => p.UploadDate)
+                        .Select(MapVehiclePhoto)
+                        .Where(p => !string.IsNullOrWhiteSpace(p.FilePath))
+                        .ToList() ?? new List<VehiclePhotoDto>()
                 };
             }
 
@@ -148,18 +145,60 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
             // Photos
             if (workOrder.Photos != null)
             {
-                response.Photos = workOrder.Photos.Select(p => new WorkOrderPhotoDto
-                {
-                    Id = p.Id,
-                    FilePath = p.FilePath,
-                    Description = p.Description,
-                    PhotoType = p.PhotoType,
-                    PhotoTypeName = p.PhotoType.ToString(),
-                    UploadDate = p.UploadDate
-                }).ToList();
+                response.Photos = workOrder.Photos
+                    .OrderBy(p => p.UploadDate)
+                    .Select(MapWorkOrderPhoto)
+                    .Where(p => !string.IsNullOrWhiteSpace(p.FilePath))
+                    .ToList();
             }
 
             return response;
+        }
+
+        private static VehiclePhotoDto MapVehiclePhoto(Domain.Entities.VehiclePhoto photo)
+        {
+            return new VehiclePhotoDto
+            {
+                Id = photo.Id,
+                FilePath = NormalizeFilePath(GetFilePath(photo.FilePath, photo.UploadedFile?.FilePath)),
+                Description = photo.Description,
+                PhotoType = photo.PhotoType,
+                UploadDate = photo.UploadDate,
+                DisplayOrder = photo.DisplayOrder
+            };
+        }
+
+        private static WorkOrderPhotoDto MapWorkOrderPhoto(Domain.Entities.WorkOrderPhoto photo)
+        {
+            return new WorkOrderPhotoDto
+            {
+                Id = photo.Id,
+                FilePath = NormalizeFilePath(GetFilePath(photo.FilePath, photo.UploadedFile?.FilePath)),
+                Description = photo.Description,
+                PhotoType = photo.PhotoType,
+                PhotoTypeName = photo.PhotoType.ToString(),
+                UploadDate = photo.UploadDate
+            };
+        }
+
+        private static string? GetFilePath(string? primaryFilePath, string? fallbackFilePath)
+        {
+            return !string.IsNullOrWhiteSpace(primaryFilePath) ? primaryFilePath : fallbackFilePath;
+        }
+
+        private static string NormalizeFilePath(string? filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                return string.Empty;
+            }
+
+            if (filePath.StartsWith("http://") || filePath.StartsWith("https://"))
+            {
+                return filePath;
+            }
+
+            return filePath.StartsWith("/") ? filePath : $"/{filePath}";
         }
     }
 }

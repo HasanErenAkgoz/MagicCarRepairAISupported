@@ -37,6 +37,7 @@ namespace MagicCarRepairAISupported.Persistence.Context
         public DbSet<ErrorMessage> ErrorMessages { get; set; }
         public DbSet<Part> Parts { get; set; }
         public DbSet<PartStock> PartStocks { get; set; }
+        public DbSet<PartPhoto> PartPhotos { get; set; }
         public DbSet<PartSupplier> PartSuppliers { get; set; }
         public DbSet<StockMovement> StockMovements { get; set; }
         public DbSet<WorkOrder> WorkOrders { get; set; }
@@ -48,6 +49,8 @@ namespace MagicCarRepairAISupported.Persistence.Context
         public DbSet<QuoteResponse> QuoteResponses { get; set; }
         public DbSet<QuoteRequestPhoto> QuoteRequestPhotos { get; set; }
         public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
+        public DbSet<UserDevice> UserDevices { get; set; }
+        public DbSet<UserSession> UserSessions { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
         public DbSet<StockAlert> StockAlerts { get; set; }
@@ -77,6 +80,7 @@ namespace MagicCarRepairAISupported.Persistence.Context
         public DbSet<SubscriptionPayment> SubscriptionPayments { get; set; }
         public DbSet<Commission> Commissions { get; set; }
         public DbSet<UsageTracking> UsageTracking { get; set; }
+        public DbSet<PasswordResetOtp> PasswordResetOtps { get; set; }
         
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -147,7 +151,9 @@ namespace MagicCarRepairAISupported.Persistence.Context
                     }
                     
                     // Set ClientId for multi-tenant entities
-                    if (entry.Entity is IClientEntity clientEntity && clientId.HasValue)
+                    // clientId.Value != 0 kontrolü: SystemAdmin (clientId=0) için override etme,
+                    // handler tarafından explicit set edilen ClientId'yi koru
+                    if (entry.Entity is IClientEntity clientEntity && clientId.HasValue && clientId.Value != 0)
                     {
                         clientEntity.ClientId = clientId.Value;
                     }

@@ -20,6 +20,10 @@ namespace MagicCarRepairAISupported.Application.Features.Employees.Commands.Upda
         public string? EmergencyContact { get; set; }
         public string? EmergencyPhone { get; set; }
         public string? Notes { get; set; }
+        public string? Biography { get; set; }
+        public string? ProfilePhotoUrl { get; set; }
+        public bool? IsPublic { get; set; }
+        public int? DisplayOrder { get; set; }
     }
 }
 

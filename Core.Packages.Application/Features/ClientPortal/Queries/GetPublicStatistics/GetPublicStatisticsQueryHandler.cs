@@ -36,9 +36,9 @@ namespace MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.Ge
         public async Task<IDataResult<GetPublicStatisticsResponse>> Handle(GetPublicStatisticsQuery request, CancellationToken cancellationToken)
         {
             var client = await _clientRepository.GetAsync(c => c.Id == request.ClientId, cancellationToken);
-            if (client == null || !client.IsPublicProfileEnabled)
+            if (client == null || !client.IsActive)
             {
-                return new ErrorDataResult<GetPublicStatisticsResponse>("Client profile not found or not public");
+                return new ErrorDataResult<GetPublicStatisticsResponse>("Client profile not found or inactive");
             }
 
             var completedWorkOrders = await _workOrderRepository.GetListAsync(

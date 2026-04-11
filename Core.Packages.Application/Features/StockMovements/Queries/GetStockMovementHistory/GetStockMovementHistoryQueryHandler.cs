@@ -40,8 +40,8 @@ namespace MagicCarRepairAISupported.Application.Features.StockMovements.Queries.
             }
             else
             {
-                // Tüm hareketler - repository metodları Include'lu getiriyor zaten
-                movements = (await _stockMovementRepository.GetListAsync(cancellationToken)).ToList();
+                // Tüm hareketler — Part / Employee Include zorunlu (GetListAsync navigation yüklemez)
+                movements = await _stockMovementRepository.GetAllWithDetailsAsync(cancellationToken);
             }
 
             // Tarih aralığı filtreleme (ek filtre)

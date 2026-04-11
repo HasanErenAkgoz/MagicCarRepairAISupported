@@ -4,7 +4,9 @@ using MagicCarRepairAISupported.Application.Features.Invoices.Commands.GenerateF
 using MagicCarRepairAISupported.Application.Features.Invoices.Commands.UpdateStatus;
 using MagicCarRepairAISupported.Application.Features.Invoices.Queries.GetAll;
 using MagicCarRepairAISupported.Application.Features.Invoices.Queries.GetById;
+using MagicCarRepairAISupported.Domain.Entities;
 using InvoiceEntity = MagicCarRepairAISupported.Domain.Entities.Invoice;
+using GetByIdInvoiceItemDto = MagicCarRepairAISupported.Application.Features.Invoices.Queries.GetById.InvoiceItemDto;
 
 namespace MagicCarRepairAISupported.Application.Features.Invoices.Profiles
 {
@@ -16,6 +18,7 @@ namespace MagicCarRepairAISupported.Application.Features.Invoices.Profiles
             CreateMap<InvoiceEntity, GenerateInvoiceFromWorkOrderResponse>();
             CreateMap<InvoiceEntity, UpdateInvoiceStatusResponse>();
             CreateMap<InvoiceEntity, GetAllInvoicesResponse>();
+            CreateMap<InvoiceItem, GetByIdInvoiceItemDto>();
             CreateMap<InvoiceEntity, GetInvoiceByIdResponse>();
         }
     }

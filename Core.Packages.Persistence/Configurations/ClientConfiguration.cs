@@ -34,6 +34,9 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
             builder.Property(c => c.Address)
                 .HasMaxLength(500);
 
+            builder.Property(c => c.TaxOfficeNo)
+                .HasMaxLength(50);
+
             // Relationships
             builder.HasMany(c => c.Users)
                 .WithOne(u => u.Client)

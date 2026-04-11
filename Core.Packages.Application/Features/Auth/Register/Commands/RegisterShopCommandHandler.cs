@@ -5,6 +5,7 @@ using MagicCarRepairAISupported.Application.Shared.Result;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MagicCarRepairAISupported.Domain.UnitOfWork;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -19,19 +20,25 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
         private readonly IClientRepository _clientRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMediator _mediator;
+        private readonly IEntityRepository<Customer, int> _customerRepository;
+        private readonly IVehicleRepository _vehicleRepository;
 
         public RegisterShopCommandHandler(
             UserManager<UserEntity> userManager,
             RoleManager<Role> roleManager,
             IClientRepository clientRepository,
             IUnitOfWork unitOfWork,
-            IMediator mediator)
+            IMediator mediator,
+            IEntityRepository<Customer, int> customerRepository,
+            IVehicleRepository vehicleRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _clientRepository = clientRepository;
             _unitOfWork = unitOfWork;
             _mediator = mediator;
+            _customerRepository = customerRepository;
+            _vehicleRepository = vehicleRepository;
         }
 
         public async Task<IDataResult<RegisterShopResponse>> Handle(RegisterShopCommand request, CancellationToken cancellationToken)
@@ -65,8 +72,13 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
                 ContactEmail = request.ShopContactEmail,
                 ContactPhone = request.ShopContactPhone,
                 Address = request.ShopAddress,
+                TaxOfficeNo = request.TaxOfficeNo,
                 IsActive = false, // Admin onayı bekliyor
-                IsPublicProfileEnabled = false
+                IsPublicProfileEnabled = false,
+                LogoUrl = request.ShopLogoUrl,
+                BannerUrl = request.ShopBannerUrl,
+                Latitude = request.ShopLatitude,
+                Longitude = request.ShopLongitude
             };
 
             await _clientRepository.AddAsync(client, cancellationToken);
@@ -80,7 +92,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
                 Email = request.OwnerEmail,
                 UserName = request.OwnerEmail,
                 PhoneNumber = request.OwnerPhoneNumber,
-                IdentityNo = request.OwnerIdentityNo,
+                IdentityNo = request.OwnerIdentityNo,  // nullable artık
                 Address = request.OwnerAddress,
                 UserType = UserType.Manager,
                 ClientId = client.Id
@@ -129,6 +141,51 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 
                 return new ErrorDataResult<RegisterShopResponse>("Kullanıcıya rol atanamadı.");
+            }
+
+            // 8. Vehicle data varsa, önce Customer oluştur sonra Vehicle oluştur
+            if (!string.IsNullOrWhiteSpace(request.VehicleLicensePlate) && 
+                !string.IsNullOrWhiteSpace(request.VehicleBrand) && 
+                !string.IsNullOrWhiteSpace(request.VehicleModel))
+            {
+                // Owner için Customer kaydı oluştur
+                var ownerCustomer = new Customer
+                {
+                    IdentityNo = request.OwnerIdentityNo ?? string.Empty,
+                    FirstName = request.OwnerFirstName,
+                    LastName = request.OwnerLastName,
+                    Email = request.OwnerEmail,
+                    PhoneNumber = request.OwnerPhoneNumber ?? string.Empty,
+                    Address = request.OwnerAddress ?? string.Empty,
+                    DateTimeOfBirth = DateTime.UtcNow.AddYears(-30), // Default, gerçek doğum tarihi bilinmiyorsa
+                    ClientId = client.Id,
+                    UserId = ownerUser.Id
+                };
+
+                await _customerRepository.AddAsync(ownerCustomer, cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                // Vehicle oluştur
+                var vehicle = new Vehicle
+                {
+                    CustomerId = ownerCustomer.Id,
+                    LicensePlate = request.VehicleLicensePlate,
+                    Brand = request.VehicleBrand,
+                    Model = request.VehicleModel,
+                    Year = request.VehicleYear ?? DateTime.UtcNow.Year,
+                    Color = request.VehicleColor ?? "Bilinmiyor",
+                    Status = VehicleStatus.Registered,
+                    VehicleType = VehicleType.Unspecified,
+                    ClientId = client.Id
+                };
+
+                if (request.VehicleKilometers.HasValue && request.VehicleKilometers.Value > 0)
+                {
+                    vehicle.UpdateKilometers(request.VehicleKilometers.Value);
+                }
+
+                await _vehicleRepository.AddAsync(vehicle, cancellationToken);
+                await _vehicleRepository.SaveChangesAsync();
             }
 
             var response = new RegisterShopResponse

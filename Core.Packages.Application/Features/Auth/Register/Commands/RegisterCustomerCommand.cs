@@ -15,6 +15,15 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
         public string? IdentityNo { get; set; }
         public DateTime? DateTimeOfBirth { get; set; }
         public string Language { get; set; } = "tr";
+        
+        // Vehicle data (optional - from VehicleInfoScreen)
+        public string? VehicleLicensePlate { get; set; }
+        public string? VehicleBrand { get; set; }
+        public string? VehicleModel { get; set; }
+        public int? VehicleYear { get; set; }
+        public string? VehicleColor { get; set; }
+        public long? VehicleKilometers { get; set; }
+        public string? VehicleFuelType { get; set; }
     }
 
     public class RegisterCustomerResponse

@@ -40,9 +40,11 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.DeletePa
             _partRepository.Update(part);
             await _partRepository.SaveChangesAsync();
 
-            // Cache invalidation
-            await _cacheInvalidationService.InvalidatePartCacheAsync(part.Id);
-            await _cacheInvalidationService.InvalidateDashboardCacheAsync();
+            // Cache invalidation (parallel)
+            await Task.WhenAll(
+                _cacheInvalidationService.InvalidatePartCacheAsync(part.Id),
+                _cacheInvalidationService.InvalidateDashboardCacheAsync()
+            );
 
             return new DeletePartResponse
             {
