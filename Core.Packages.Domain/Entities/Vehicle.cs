@@ -16,6 +16,7 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public string? Vin { get; set; }
         public string? ModelVariant { get; set; }
         public string? Trim { get; set; }
+        public string? FuelType { get; set; } // "Benzin", "Dizel", "Elektrik", "Hybrid", "LPG"
         public long Kilometers { get; private set; }
         public new VehicleStatus Status { get; set; }
         public VehicleType VehicleType { get; set; } = VehicleType.Unspecified;

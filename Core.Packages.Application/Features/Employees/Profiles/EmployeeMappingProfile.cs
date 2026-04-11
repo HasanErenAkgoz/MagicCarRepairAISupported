@@ -17,7 +17,11 @@ namespace MagicCarRepairAISupported.Application.Features.Employees.Profiles
             CreateMap<Employee, GetAllEmployeesResponse>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName));
             CreateMap<Employee, GetEmployeeByIdResponse>()
-                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName));
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+                // Handler sets these manually after mapping (type mismatch or derived values)
+                .ForMember(dest => dest.Specializations, opt => opt.Ignore())
+                .ForMember(dest => dest.PositionName, opt => opt.Ignore())
+                .ForMember(dest => dest.EmploymentStatusName, opt => opt.Ignore());
             CreateMap<Employee, GetEmployeesByPositionResponse>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName));
         }

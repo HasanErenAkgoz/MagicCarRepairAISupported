@@ -30,6 +30,18 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Queries.GetPartBy
             response.StockLocation = part.Stock?.Location;
             response.IsLowStock = part.IsLowStock();
             response.SupplierName = part.Supplier?.CompanyName;
+            response.Photos = (part.Photos ?? [])
+                .OrderBy(ph => ph.DisplayOrder)
+                .ThenBy(ph => ph.UploadDate)
+                .Select(ph => new PartPhotoItem
+                {
+                    Id = ph.Id,
+                    FilePath = ph.FilePath,
+                    Description = ph.Description,
+                    DisplayOrder = ph.DisplayOrder,
+                    UploadDate = ph.UploadDate,
+                })
+                .ToList();
 
             return response;
         }

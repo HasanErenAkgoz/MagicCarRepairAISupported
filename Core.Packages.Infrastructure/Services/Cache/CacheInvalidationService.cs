@@ -29,24 +29,20 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Cache
 
                 if (clientId.HasValue)
                 {
-                    // Parts listesi cache'leri
                     patterns.Add($"parts:list:ClientId:{clientId.Value}:*");
-                    
-                    // Low stock parts cache
                     patterns.Add($"parts:low-stock:ClientId:{clientId.Value}:*");
                 }
 
                 if (partId.HasValue)
                 {
-                    // Belirli part cache'leri
                     patterns.Add($"parts:*:PartId:{partId.Value}:*");
                 }
 
-                foreach (var pattern in patterns)
+                await Task.WhenAll(patterns.Select(async pattern =>
                 {
                     await _cacheService.RemoveByPatternAsync(pattern);
                     _logger.LogInformation("[CACHE] Invalidated pattern: {Pattern}", pattern);
-                }
+                }));
             }
             catch (Exception ex)
             {

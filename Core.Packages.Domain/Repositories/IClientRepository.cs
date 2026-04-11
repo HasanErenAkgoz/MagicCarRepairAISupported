@@ -7,6 +7,7 @@ namespace MagicCarRepairAISupported.Domain.Repositories
     {
         Task<Client?> GetByCodeAsync(string code);
         Task<bool> IsCodeUniqueAsync(string code, int? excludeId = null);
+        Task DeleteCascadeAsync(int clientId, IEnumerable<int> userIds, CancellationToken cancellationToken);
     }
 }
 

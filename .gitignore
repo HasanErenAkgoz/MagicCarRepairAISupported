@@ -383,3 +383,12 @@ MigrationBackup/
 FodyWeavers.xsd
 /Core.Packages.WebAPI/appsettings.json
 /Core.Packages.WebAPI/appsettings.Development.json
+
+# Firebase Admin SDK (FCM) — never commit
+**/firebase-service-account.json
+google-services.json
+
+# Secrets — never commit
+appsettings.Production.json
+appsettings.Secrets.json
+*.p12

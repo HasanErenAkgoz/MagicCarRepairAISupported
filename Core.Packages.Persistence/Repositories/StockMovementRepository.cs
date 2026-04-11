@@ -14,6 +14,15 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         {
         }
 
+        public async Task<List<StockMovement>> GetAllWithDetailsAsync(CancellationToken cancellationToken = default)
+        {
+            return await Context.Set<StockMovement>()
+                .Include(m => m.Part)
+                .Include(m => m.Employee)
+                .OrderByDescending(m => m.MovementDate)
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<StockMovement?> GetByIdAsync(int id)
         {
             return await Context.Set<StockMovement>().FindAsync(id);

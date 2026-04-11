@@ -1,4 +1,5 @@
 using MagicCarRepairAISupported.Application.Shared.Result;
+using MagicCarRepairAISupported.Domain.Entities;
 using MediatR;
 
 namespace MagicCarRepairAISupported.Application.Features.Reminders.Commands.CreateReminder
@@ -14,15 +15,6 @@ namespace MagicCarRepairAISupported.Application.Features.Reminders.Commands.Crea
         public int? RelatedEntityId { get; set; }
         public bool IsRecurring { get; set; } = false;
         public int? RecurrenceDays { get; set; }
-    }
-
-    public enum ReminderType
-    {
-        WorkOrder = 1,
-        Appointment = 2,
-        Payment = 3,
-        Maintenance = 4,
-        Custom = 5
     }
 
     public class CreateReminderResponse

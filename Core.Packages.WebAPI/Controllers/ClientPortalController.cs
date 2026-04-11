@@ -3,8 +3,11 @@ using MagicCarRepairAISupported.Application.Features.ClientPortal.Commands.Delet
 using MagicCarRepairAISupported.Application.Features.ClientPortal.Commands.UpdatePortfolio;
 using MagicCarRepairAISupported.Application.Features.ClientPortal.Commands.Certificates;
 using MagicCarRepairAISupported.Application.Features.ClientPortal.Commands.FacilityPhotos;
+using MagicCarRepairAISupported.Application.Features.ClientPortal.Commands.UpdateProfile;
 using MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.GetCertificate;
 using MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.GetFacilityPhoto;
+using MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.GetMyProfile;
+using MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.GetMyFacilityPhotos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -141,6 +144,36 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         {
             var query = new GetFacilityPhotoQuery { Id = id };
             var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Mevcut müşterinin işletme profilini getirir
+        /// </summary>
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var result = await _mediator.Send(new GetMyProfileQuery());
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Mevcut müşterinin işletme profilini günceller
+        /// </summary>
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateClientProfileCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Mevcut müşterinin tüm tesis fotoğraflarını listeler
+        /// </summary>
+        [HttpGet("my-facility-photos")]
+        public async Task<IActionResult> GetMyFacilityPhotos()
+        {
+            var result = await _mediator.Send(new GetMyFacilityPhotosQuery());
             return Ok(result);
         }
     }

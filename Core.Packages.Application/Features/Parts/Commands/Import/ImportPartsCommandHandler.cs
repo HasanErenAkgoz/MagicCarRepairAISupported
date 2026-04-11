@@ -1,3 +1,4 @@
+using MagicCarRepairAISupported.Application.Common.TextEncoding;
 using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Common.Services.Import;
 using MagicCarRepairAISupported.Domain.Entities;
@@ -46,6 +47,8 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.Import
             // Create parts from imported data
             foreach (var dto in importResult.SuccessItems)
             {
+                SanitizeImportedStrings(dto);
+
                 // Check if part code already exists
                 var existingPart = await _partRepository.GetByPartCodeAsync(dto.PartCode, cancellationToken);
                 if (existingPart != null && existingPart.ClientId == clientId)
@@ -104,6 +107,20 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.Import
                 ErrorCount = importResult.ErrorCount,
                 Errors = importResult.Errors
             };
+        }
+
+        private static void SanitizeImportedStrings(PartImportDto dto)
+        {
+            dto.PartCode = Utf8MojibakeHelper.Repair(dto.PartCode) ?? dto.PartCode;
+            dto.Name = Utf8MojibakeHelper.Repair(dto.Name) ?? dto.Name;
+            dto.Description = Utf8MojibakeHelper.Repair(dto.Description);
+            dto.Category = Utf8MojibakeHelper.Repair(dto.Category) ?? dto.Category;
+            dto.BrandType = Utf8MojibakeHelper.Repair(dto.BrandType) ?? dto.BrandType;
+            dto.Brand = Utf8MojibakeHelper.Repair(dto.Brand);
+            dto.OEMNumber = Utf8MojibakeHelper.Repair(dto.OEMNumber);
+            dto.Barcode = Utf8MojibakeHelper.Repair(dto.Barcode);
+            dto.Unit = Utf8MojibakeHelper.Repair(dto.Unit);
+            dto.Notes = Utf8MojibakeHelper.Repair(dto.Notes);
         }
 
         // DTO for import

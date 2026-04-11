@@ -1,8 +1,12 @@
+using MagicCarRepairAISupported.Domain.Converters;
+using System.Text.Json.Serialization;
+
 namespace MagicCarRepairAISupported.Domain.Enums
 {
     /// <summary>
     /// Kullanıcı tipi
     /// </summary>
+    [JsonConverter(typeof(UserTypeJsonConverter))]
     public enum UserType
     {
         /// <summary>

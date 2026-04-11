@@ -1,5 +1,7 @@
 using MagicCarRepairAISupported.Application.Features.AI.Commands.Chat;
 using MagicCarRepairAISupported.Application.Features.AI.Commands.AnalyzeDamagePhotos;
+using MagicCarRepairAISupported.Application.Features.AI.Commands.Diagnose;
+using MagicCarRepairAISupported.Application.Features.AI.Commands.GenerateDescription;
 using MagicCarRepairAISupported.Application.Features.AI.Queries.OptimizeAppointments;
 using MagicCarRepairAISupported.Application.Features.AI.Queries.ForecastStock;
 using MagicCarRepairAISupported.Application.Features.AI.Queries.AnalyzeCustomers;
@@ -74,12 +76,38 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         }
 
         /// <summary>
+        /// AI destekli arıza teşhisi - Müşteri şikayetine göre olası arızaları, gerekli parça ve işçilikleri tahmin et
+        /// </summary>
+        [HttpPost("diagnose")]
+        public async Task<IActionResult> Diagnose([FromBody] DiagnoseCommand command)
+        {
+            // Read Accept-Language from request header; default to "tr"
+            var acceptLang = Request.Headers["Accept-Language"].FirstOrDefault() ?? "tr";
+            var primaryLang = acceptLang.Split(',')[0].Trim().ToLower();
+            command.Language = primaryLang.StartsWith("en") ? "en" : "tr";
+
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
         /// AI destekli parça önerisi - İş emri veya araç bilgisine göre parça öner
         /// </summary>
         [HttpGet("suggest-parts")]
         public async Task<IActionResult> SuggestParts([FromQuery] SuggestPartsQuery query)
         {
             var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Servis yeri için AI destekli benzersiz açıklama üretir — kayıt akışı için anonim erişim açık
+        /// </summary>
+        [HttpPost("generate-description")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GenerateDescription([FromBody] GenerateDescriptionCommand command)
+        {
+            var result = await _mediator.Send(command);
             return Ok(result);
         }
 

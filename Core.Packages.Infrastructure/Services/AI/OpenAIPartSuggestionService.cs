@@ -120,7 +120,8 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
                 var partsList = allParts.ToList();
 
                 // AI ile öneri yap veya heuristic kullan
-                if (_openAIClient != null && similarWorkOrders.Any() && partsList.Any())
+                // Not: similarWorkOrders olmasa da AI kendi genel bilgisiyle öneri yapabilir
+                if (_openAIClient != null && partsList.Any())
                 {
                     var aiSuggestions = await GetAISuggestionsAsync(
                         vehicle, 
@@ -207,78 +208,129 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
         {
             try
             {
-                var contextBuilder = new StringBuilder();
-                contextBuilder.AppendLine("Sen bir otomobil parça önerisi uzmanısın. Müşterinin ihtiyacına uygun parçalar önereceksin.");
-                contextBuilder.AppendLine();
-
-                contextBuilder.AppendLine($"Araç Bilgileri:");
-                contextBuilder.AppendLine($"- Marka: {vehicle.Brand}");
-                contextBuilder.AppendLine($"- Model: {vehicle.Model}");
-                contextBuilder.AppendLine($"- Yıl: {vehicle.Year}");
-                contextBuilder.AppendLine($"- Kilometre: {vehicle.Kilometers}");
-                contextBuilder.AppendLine();
-
-                if (!string.IsNullOrEmpty(request.CustomerComplaint))
-                {
-                    contextBuilder.AppendLine($"Müşteri Şikayeti: {request.CustomerComplaint}");
-                    contextBuilder.AppendLine();
-                }
-
-                // Benzer iş emirlerinde kullanılan parçalar
+                // ── Benzer iş emirlerindeki parça kullanım sayıları ──────────────
                 var usedParts = new Dictionary<int, int>();
                 foreach (var wo in similarWorkOrders)
                 {
-                    if (wo.Items != null)
+                    if (wo.Items == null) continue;
+                    foreach (var item in wo.Items.Where(i => i.PartId.HasValue))
                     {
-                        foreach (var item in wo.Items.Where(i => i.PartId.HasValue))
-                        {
-                            var partId = item.PartId!.Value;
-                            if (!usedParts.ContainsKey(partId))
-                                usedParts[partId] = 0;
-                            usedParts[partId]++;
-                        }
+                        var pid = item.PartId!.Value;
+                        usedParts.TryGetValue(pid, out var cnt);
+                        usedParts[pid] = cnt + 1;
                     }
                 }
 
-                contextBuilder.AppendLine($"Benzer iş emirlerinde en çok kullanılan parçalar:");
-                foreach (var partUsage in usedParts.OrderByDescending(p => p.Value).Take(10))
+                // ── Parça listesini oluştur: stokta olanlar ve sık kullanılanlar önce ──
+                var sortedParts = availableParts
+                    .OrderByDescending(p => usedParts.ContainsKey(p.Id) ? usedParts[p.Id] : 0)
+                    .ThenByDescending(p => p.Stock?.Quantity ?? 0)
+                    .Take(60)
+                    .ToList();
+
+                // ── System prompt ────────────────────────────────────────────────
+                var systemPrompt = new StringBuilder();
+                systemPrompt.AppendLine("Sen deneyimli bir otomotiv parça uzmanısın.");
+                systemPrompt.AppendLine("Görevin: verilen araç bilgileri ve müşteri şikayetine göre envanterdeki en uygun parçaları önermek.");
+                systemPrompt.AppendLine();
+                systemPrompt.AppendLine("KURALLAR:");
+                systemPrompt.AppendLine("1. YALNIZCA 'Mevcut Parça Listesi' bölümündeki ID değerlerini kullan. Listede olmayan partId yazma.");
+                systemPrompt.AppendLine("2. Her öneri için araç teknik özelliklerine ve şikayete dayalı somut gerekçe yaz.");
+                systemPrompt.AppendLine("3. Yağ önerilerinde viskozite ve spesifikasyonu (5W-30, 507.00 vb.) araç üreticisi gereksinimlerine göre değerlendir.");
+                systemPrompt.AppendLine("4. Yakıt tipini dikkate al: Dizel ve benzinli araçlar farklı yağ/filtre gerektirir.");
+                systemPrompt.AppendLine("5. Kilometre bilgisini dikkate al: yüksek kilometreli araçlarda yıpranma parçaları (balata, amortisör vb.) daha olası.");
+                systemPrompt.AppendLine("6. suitabilityScore: 80-100 = kesinlikle uyumlu ve gerekli, 50-79 = muhtemelen gerekli, 0-49 = düşük ihtimal.");
+                systemPrompt.AppendLine("7. Stokta olmayan parçaları (Stok: 0) listeleyebilirsin ama suitabilityScore'u 10 puan düşür.");
+                systemPrompt.AppendLine("8. Yanıtı YALNIZCA geçerli JSON olarak döndür, başka metin ekleme.");
+
+                // ── User prompt ──────────────────────────────────────────────────
+                var userPrompt = new StringBuilder();
+
+                // Araç bilgileri
+                userPrompt.AppendLine("== ARAÇ BİLGİLERİ ==");
+                userPrompt.AppendLine($"Marka       : {vehicle.Brand}");
+                userPrompt.AppendLine($"Model       : {vehicle.Model}");
+                userPrompt.AppendLine($"Yıl         : {vehicle.Year}");
+                userPrompt.AppendLine($"Yakıt Tipi  : {(string.IsNullOrEmpty(vehicle.FuelType) ? "Belirtilmemiş" : vehicle.FuelType)}");
+                userPrompt.AppendLine($"Kilometre   : {vehicle.Kilometers:N0}");
+                if (!string.IsNullOrEmpty(vehicle.Trim))
+                    userPrompt.AppendLine($"Trim/Versiyon: {vehicle.Trim}");
+                if (!string.IsNullOrEmpty(vehicle.ModelVariant))
+                    userPrompt.AppendLine($"Motor/Varyant: {vehicle.ModelVariant}");
+                if (!string.IsNullOrEmpty(vehicle.Vin))
+                    userPrompt.AppendLine($"VIN         : {vehicle.Vin}");
+                userPrompt.AppendLine();
+
+                // Müşteri şikayeti
+                userPrompt.AppendLine("== MÜŞTERİ ŞİKAYETİ ==");
+                userPrompt.AppendLine(string.IsNullOrEmpty(request.CustomerComplaint)
+                    ? "Belirtilmemiş"
+                    : request.CustomerComplaint);
+                userPrompt.AppendLine();
+
+                // Geçmiş servis verileri
+                if (usedParts.Any())
                 {
-                    var part = availableParts.FirstOrDefault(p => p.Id == partUsage.Key);
-                    if (part != null)
+                    userPrompt.AppendLine($"== GEÇMİŞ SERVİS VERİSİ ({similarWorkOrders.Count} benzer iş emri) ==");
+                    userPrompt.AppendLine("Bu araç modeli için daha önce en sık kullanılan parçalar:");
+                    foreach (var kv in usedParts.OrderByDescending(x => x.Value).Take(10))
                     {
-                        contextBuilder.AppendLine($"- {part.Name} ({partUsage.Value} kez kullanılmış)");
+                        var p = availableParts.FirstOrDefault(x => x.Id == kv.Key);
+                        if (p != null)
+                            userPrompt.AppendLine($"  - [{p.Id}] {p.Name} → {kv.Value} kez kullanılmış");
                     }
+                    userPrompt.AppendLine();
                 }
-                contextBuilder.AppendLine();
 
-                contextBuilder.AppendLine($"Mevcut Parçalar ({availableParts.Count} adet):");
-                foreach (var part in availableParts.Take(30))
+                // Parça listesi — ID dahil, tüm teknik detaylarla
+                userPrompt.AppendLine($"== MEVCUT PARÇA LİSTESİ ({sortedParts.Count} parça) ==");
+                userPrompt.AppendLine("SADECE bu listedeki ID değerlerini kullan:");
+                userPrompt.AppendLine("ID  | Ad | Kategori | Marka | Tip | OEM | Birim | Stok | Fiyat | Açıklama");
+                userPrompt.AppendLine(new string('-', 120));
+                foreach (var part in sortedParts)
                 {
-                    var stockInfo = part.Stock != null ? $", Stok: {part.Stock.Quantity}" : ", Stok: 0";
-                    contextBuilder.AppendLine($"- {part.Name} ({part.Category}){stockInfo}, Fiyat: {part.SalePrice:C}");
+                    var stock = part.Stock?.Quantity ?? 0;
+                    var oem = string.IsNullOrEmpty(part.OEMNumber) ? "-" : part.OEMNumber;
+                    var brand = string.IsNullOrEmpty(part.Brand) ? "-" : part.Brand;
+                    var desc = string.IsNullOrEmpty(part.Description) ? "-" : part.Description.Length > 60
+                        ? part.Description[..60] + "…"
+                        : part.Description;
+                    userPrompt.AppendLine(
+                        $"{part.Id,4} | {part.Name,-35} | {part.Category,-12} | {brand,-12} | {part.BrandType,-10} | {oem,-15} | {part.Unit,-6} | {stock,4} | {part.SalePrice,8:N2}₺ | {desc}");
                 }
+                userPrompt.AppendLine();
 
-                contextBuilder.AppendLine();
-                contextBuilder.AppendLine($"Lütfen JSON formatında {request.NumberOfSuggestions} parça önerisi döndür:");
-                contextBuilder.AppendLine("{\"suggestions\": [{\"partId\": 0, \"reason\": \"...\", \"suitabilityScore\": 0-100, \"priority\": 1-10}]}");
+                // İstenen format
+                userPrompt.AppendLine($"== GÖREV ==");
+                userPrompt.AppendLine($"Yukarıdaki araç ve şikayet için en uygun {request.NumberOfSuggestions} parçayı öner.");
+                userPrompt.AppendLine("Yanıtı YALNIZCA aşağıdaki JSON formatında döndür:");
+                userPrompt.AppendLine(@"{
+  ""suggestions"": [
+    {
+      ""partId"": <yukarıdaki listeden geçerli bir tam sayı ID>,
+      ""reason"": ""<araç yakıt tipine, kilometresine ve şikayete özel somut gerekçe>"",
+      ""suitabilityScore"": <0-100 tam sayı>,
+      ""priority"": <1'den başlayan öncelik sırası>
+    }
+  ]
+}");
 
                 var messages = new List<ChatRequestMessage>
                 {
-                    new ChatRequestSystemMessage(contextBuilder.ToString()),
-                    new ChatRequestUserMessage($"Bu araç ve şikayet için en uygun {request.NumberOfSuggestions} parçayı öner.")
+                    new ChatRequestSystemMessage(systemPrompt.ToString()),
+                    new ChatRequestUserMessage(userPrompt.ToString())
                 };
 
                 var chatCompletionsOptions = new ChatCompletionsOptions(
                     deploymentName: _aiOptions.AzureDeploymentName ?? _aiOptions.Model,
                     messages);
 
-                chatCompletionsOptions.Temperature = 0.3f;
-                chatCompletionsOptions.MaxTokens = 1000;
+                chatCompletionsOptions.Temperature = 0.2f;
+                chatCompletionsOptions.MaxTokens = 2000;
 
                 var response = await _openAIClient!.GetChatCompletionsAsync(chatCompletionsOptions, cancellationToken);
                 var aiResponse = response.Value.Choices[0].Message.Content;
 
-                // AI yanıtını parse et
                 return ParseAIResponse(aiResponse, availableParts, usedParts, request);
             }
             catch (Exception ex)

@@ -3,12 +3,14 @@ using MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Create;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Delete;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Commands.DeletePhoto;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Update;
+using MagicCarRepairAISupported.Application.Features.Vehicles.Commands.UploadMobilePhoto;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetAll;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetById;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetByCustomer;
 using MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GenerateQrCode;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
@@ -115,25 +117,59 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Araca fotoğraf ekle
         /// </summary>
         [HttpPost("{id}/photos")]
-        public async Task<IActionResult> AddPhoto(int id, [FromBody] AddVehiclePhotoCommand command)
+        public async Task<IActionResult> AddPhoto(int id, [FromForm] AddPhotoRequest request)
         {
-            command.VehicleId = id;
-            var result = await _mediator.Send(command);
-            return Ok(result);
+            if (request.Photo != null)
+            {
+                var mobileCommand = new UploadMobileVehiclePhotoCommand
+                {
+                    VehicleId = id.ToString(),
+                    Photo = request.Photo
+                };
+                var mobileResult = await _mediator.Send(mobileCommand);
+                return Ok(new { success = true, data = mobileResult.Data });
+            }
+
+            if (!string.IsNullOrEmpty(request.PhotoUrl))
+            {
+                var command = new AddVehiclePhotoCommand
+                {
+                    VehicleId = id,
+                    FilePath = request.PhotoUrl,
+                    PhotoType = request.PhotoType?.ToString()
+                };
+                var result = await _mediator.Send(command);
+                return Ok(result);
+            }
+
+            return BadRequest(new { success = false, message = "Fotoğraf dosyası veya URL gereklidir." });
         }
 
         /// <summary>
         /// Araç fotoğrafını sil
         /// </summary>
         [HttpDelete("{id}/photos/{photoId}")]
-        public async Task<IActionResult> DeletePhoto(int id, int photoId)
+        public async Task<IActionResult> DeletePhoto(string id, string photoId)
         {
-            var command = new DeleteVehiclePhotoCommand { VehicleId = id, PhotoId = photoId };
-            var result = await _mediator.Send(command);
-            if (!result.Success)
-                return BadRequest(result);
-            return Ok(result);
+            // Mobil format - string ID
+            if (int.TryParse(id, out var vehicleId) && int.TryParse(photoId.Replace("ph", ""), out var photoIdInt))
+            {
+                var command = new DeleteVehiclePhotoCommand { VehicleId = vehicleId, PhotoId = photoIdInt };
+                var result = await _mediator.Send(command);
+                if (!result.Success)
+                    return BadRequest(result);
+                return Ok(new { success = true, message = "Fotoğraf silindi." });
+            }
+
+            return BadRequest(new { success = false, message = "Geçersiz ID formatı." });
         }
+    }
+
+    public class AddPhotoRequest
+    {
+        public IFormFile? Photo { get; set; }
+        public string? PhotoUrl { get; set; }
+        public int? PhotoType { get; set; }
     }
 }
 

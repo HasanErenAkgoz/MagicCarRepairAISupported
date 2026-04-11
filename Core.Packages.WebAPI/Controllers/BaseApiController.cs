@@ -29,6 +29,12 @@ namespace WebAPI.Controllers
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
+        public IActionResult GetResponse(MagicCarRepairAISupported.Application.Shared.Result.IResult result)
+        {
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult GetResponseOnlyResultData<T>(IDataResult<T> result)
         {
             return result.Success ? Ok(result.Data) : BadRequest(result.Message);

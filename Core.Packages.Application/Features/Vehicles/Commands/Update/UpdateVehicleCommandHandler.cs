@@ -59,6 +59,12 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Updat
             {
                 vehicle.UpdateKilometers(request.Kilometers.Value);
             }
+            if (!string.IsNullOrEmpty(request.FuelType))
+                vehicle.FuelType = request.FuelType;
+            if (!string.IsNullOrEmpty(request.Vin))
+                vehicle.Vin = request.Vin;
+            if (request.CustomerId.HasValue)
+                vehicle.CustomerId = request.CustomerId.Value;
 
             _vehicleRepository.Update(vehicle);
             await _vehicleRepository.SaveChangesAsync();

@@ -14,6 +14,9 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Updat
         public long? Kilometers { get; set; }
         public VehicleStatus? Status { get; set; }
         public VehicleType? VehicleType { get; set; }
+        public string? FuelType { get; set; }
+        public string? Vin { get; set; }
+        public int? CustomerId { get; set; }
     }
 }
 

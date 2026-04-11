@@ -11,6 +11,7 @@ namespace MagicCarRepairAISupported.Domain.Repositories
         Task<List<InsuranceClaim>> GetByInsurancePolicyIdAsync(int insurancePolicyId, CancellationToken cancellationToken = default);
         Task<List<InsuranceClaim>> GetByStatusAsync(ClaimStatus status, CancellationToken cancellationToken = default);
         Task<InsuranceClaim?> GetWithDetailsAsync(int id, CancellationToken cancellationToken = default);
+        Task<List<InsuranceClaim>> GetByCustomerIdAsync(int customerId, CancellationToken cancellationToken = default);
     }
 }
 

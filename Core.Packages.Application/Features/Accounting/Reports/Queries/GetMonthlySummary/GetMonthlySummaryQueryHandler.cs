@@ -32,8 +32,10 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Reports.Quer
         {
             var clientId = _tenantService.GetCurrentClientId() ?? 1;
 
-            // Tarih aralığı
-            var startDate = new DateTime(request.Year, request.Month, 1);
+            // Tarih aralığı — guard against unbound defaults (Year=0, Month=0)
+            var year = request.Year > 0 ? request.Year : DateTime.Today.Year;
+            var month = request.Month >= 1 && request.Month <= 12 ? request.Month : DateTime.Today.Month;
+            var startDate = new DateTime(year, month, 1);
             var endDate = startDate.AddMonths(1).AddDays(-1);
 
             // Gelirler
@@ -53,22 +55,22 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Reports.Quer
                                                       e.ExpenseType != ExpenseType.PartPurchase).Sum(e => e.Amount);
 
             // Maaş ödemeleri
-            var salaryPayments = await _salaryPaymentRepository.GetByPeriodAsync(request.Year, request.Month, cancellationToken);
+            var salaryPayments = await _salaryPaymentRepository.GetByPeriodAsync(year, month, cancellationToken);
             var totalSalaryPayments = salaryPayments.Sum(s => s.NetSalary);
 
             // Vergi ödemeleri (bu ay ödenenler)
             var allTaxes = await _taxRepository.Query()
-                .Where(t => t.ClientId == clientId && 
+                .Where(t => t.ClientId == clientId &&
                            t.PaymentDate.HasValue &&
-                           t.PaymentDate.Value.Year == request.Year &&
-                           t.PaymentDate.Value.Month == request.Month)
+                           t.PaymentDate.Value.Year == year &&
+                           t.PaymentDate.Value.Month == month)
                 .ToListAsync(cancellationToken);
             var totalTaxPayments = allTaxes.Sum(t => t.Amount);
 
             return new GetMonthlySummaryResponse
             {
-                Year = request.Year,
-                Month = request.Month,
+                Year = year,
+                Month = month,
                 TotalIncome = totalIncome,
                 TotalExpense = totalExpense,
                 NetProfit = totalIncome - totalExpense,

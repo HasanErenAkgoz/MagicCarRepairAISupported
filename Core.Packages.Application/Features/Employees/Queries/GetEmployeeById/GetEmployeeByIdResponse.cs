@@ -24,6 +24,10 @@ namespace MagicCarRepairAISupported.Application.Features.Employees.Queries.GetEm
         public string? EmergencyContact { get; set; }
         public string? EmergencyPhone { get; set; }
         public string? Notes { get; set; }
+        public string? Biography { get; set; }
+        public string? ProfilePhotoUrl { get; set; }
+        public bool IsPublic { get; set; }
+        public int DisplayOrder { get; set; }
         public int? UserId { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }

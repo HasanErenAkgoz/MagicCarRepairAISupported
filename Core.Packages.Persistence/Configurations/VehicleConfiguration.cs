@@ -36,6 +36,9 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
             builder.Property(v => v.Trim)
                 .HasMaxLength(100);
 
+            builder.Property(v => v.FuelType)
+                .HasMaxLength(50);
+
             builder.Property(v => v.VehicleType)
                 .IsRequired();
 

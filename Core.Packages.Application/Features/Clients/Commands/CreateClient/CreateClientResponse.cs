@@ -7,6 +7,8 @@ namespace MagicCarRepairAISupported.Application.Features.Clients.Commands.Create
         public string Code { get; set; }
         public string? ContactEmail { get; set; }
         public bool IsActive { get; set; }
+        public int OwnerUserId { get; set; }
+        public string OwnerEmail { get; set; } = string.Empty;
     }
 }
 

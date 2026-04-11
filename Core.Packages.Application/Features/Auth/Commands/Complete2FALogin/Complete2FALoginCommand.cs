@@ -3,6 +3,7 @@ using MagicCarRepairAISupported.Application.Common.Services.Auth;
 using MagicCarRepairAISupported.Application.Features.Auth.Login.Commands;
 using MagicCarRepairAISupported.Application.Shared.Result;
 using MediatR;
+using MagicCarRepairAISupported.Application.Common.Models.JWT;
 
 namespace MagicCarRepairAISupported.Application.Features.Auth.Commands.Complete2FALogin
 {
@@ -71,15 +72,20 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Commands.Complete2
                 }
             }
 
-            // Token oluştur
-            var tokens = await _tokenService.CreateToken<AccessToken>(user);
+            // Token oluştur (2FA login'de RememberMe false olarak kabul edilir - güvenlik için)
+            var tokens = await _tokenService.CreateToken<AccessToken>(user, rememberMe: false);
             var userRoles = await _userManager.GetRolesAsync(user);
+
+            // Claims listesini oluştur
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(tokens.Token);
+            var claimsList = jsonToken.Claims.Select(c => $"{c.Type}:{c.Value}").ToList();
 
             return new SuccessDataResult<AccessToken>(new AccessToken
             {
                 Token = tokens.Token,
                 RefreshToken = tokens.RefreshToken,
-                Claims = tokens.Claims,
+                Claims = claimsList,
                 Expiration = tokens.Expiration,
                 User = new LoginUserInfo
                 {

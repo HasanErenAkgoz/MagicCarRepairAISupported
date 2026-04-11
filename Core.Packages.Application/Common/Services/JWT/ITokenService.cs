@@ -5,7 +5,7 @@ namespace MagicCarRepairAISupported.Application.Common.Services.JWT
 {
     public interface ITokenService
     {
-        Task<TAccessToken> CreateToken<TAccessToken>(User user)
+        Task<TAccessToken> CreateToken<TAccessToken>(User user, bool rememberMe = false)
 
           where TAccessToken : IAccessToken, new();
 

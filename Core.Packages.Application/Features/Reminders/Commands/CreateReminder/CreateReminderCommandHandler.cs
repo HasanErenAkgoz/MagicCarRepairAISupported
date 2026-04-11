@@ -36,7 +36,7 @@ namespace MagicCarRepairAISupported.Application.Features.Reminders.Commands.Crea
                     Title = request.Title,
                     Content = request.Content,
                     ReminderDate = request.ReminderDate,
-                    Type = (Domain.Entities.ReminderType)request.Type,
+                    Type = request.Type,
                     RelatedEntityType = request.RelatedEntityType,
                     RelatedEntityId = request.RelatedEntityId,
                     IsRecurring = request.IsRecurring,

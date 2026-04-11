@@ -8,6 +8,8 @@ using MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetAllIns
 using MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetExpiringPolicies;
 using MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetInsurancePoliciesByVehicle;
 using MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetInsurancePoliciesByCustomer;
+using MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetAllInsuranceClaims;
+using MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetInsuranceClaimsByCustomer;
 using MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetInsuranceClaimsByWorkOrder;
 using MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetInsuranceClaimById;
 using MediatR;
@@ -81,6 +83,17 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         }
 
         /// <summary>
+        /// Tüm sigorta hasarlarını listele
+        /// </summary>
+        [HttpGet("claims")]
+        public async Task<IActionResult> GetAllInsuranceClaims()
+        {
+            var query = new GetAllInsuranceClaimsQuery();
+            var result = await _mediator.Send(query);
+            return Ok(new { success = true, data = result.Claims });
+        }
+
+        /// <summary>
         /// Sigorta hasarı oluştur
         /// </summary>
         [HttpPost("claims")]
@@ -143,6 +156,17 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
             command.ClaimId = id;
             var result = await _mediator.Send(command);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Müşteri bazlı hasar taleplerini getir
+        /// </summary>
+        [HttpGet("claims/customer/{customerId}")]
+        public async Task<IActionResult> GetInsuranceClaimsByCustomer(int customerId)
+        {
+            var query = new GetInsuranceClaimsByCustomerQuery { CustomerId = customerId };
+            var result = await _mediator.Send(query);
+            return Ok(new { success = true, data = result.Claims });
         }
 
         /// <summary>

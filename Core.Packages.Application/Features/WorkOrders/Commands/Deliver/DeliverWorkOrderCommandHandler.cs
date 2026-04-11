@@ -1,11 +1,13 @@
 using MagicCarRepairAISupported.Application.Common.Messages;
 using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Features.Accounting.Income.Commands.Create;
+using MagicCarRepairAISupported.Application.Features.Loyalty.Commands.EarnPoints;
 using MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.UpdateStatus;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Exceptions;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Deliver
 {
@@ -14,15 +16,18 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Del
         private readonly IWorkOrderRepository _workOrderRepository;
         private readonly IMediator _mediator;
         private readonly ITenantService _tenantService;
+        private readonly ILogger<DeliverWorkOrderCommandHandler> _logger;
 
         public DeliverWorkOrderCommandHandler(
             IWorkOrderRepository workOrderRepository,
             IMediator mediator,
-            ITenantService tenantService)
+            ITenantService tenantService,
+            ILogger<DeliverWorkOrderCommandHandler> logger)
         {
             _workOrderRepository = workOrderRepository;
             _mediator = mediator;
             _tenantService = tenantService;
+            _logger = logger;
         }
 
         public async Task<DeliverWorkOrderResponse> Handle(DeliverWorkOrderCommand request, CancellationToken cancellationToken)
@@ -107,6 +112,27 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Del
                 };
 
                 await _mediator.Send(createIncomeCommand, cancellationToken);
+            }
+
+            // Sadakat puanı kazandır (teslim edilen iş emri için)
+            if (workOrder.CustomerId > 0)
+            {
+                try
+                {
+                    var earnCommand = new EarnPointsCommand
+                    {
+                        CustomerId = workOrder.CustomerId,
+                        Points = Math.Max(1, (int)(workOrder.TotalAmount / 10)),
+                        Description = $"İş emri #{workOrder.WorkOrderNumber} tamamlandı",
+                        WorkOrderId = workOrder.Id,
+                        ExpiryDate = DateTime.UtcNow.AddYears(1)
+                    };
+                    await _mediator.Send(earnCommand, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Loyalty points could not be earned for work order {WorkOrderId}", workOrder.Id);
+                }
             }
 
             return new DeliverWorkOrderResponse

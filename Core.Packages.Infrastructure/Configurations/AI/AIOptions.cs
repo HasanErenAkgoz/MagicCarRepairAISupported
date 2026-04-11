@@ -49,6 +49,12 @@ namespace MagicCarRepairAISupported.Infrastructure.Configurations.AI
         /// Request timeout in seconds
         /// </summary>
         public int TimeoutSeconds { get; set; } = 60;
+
+        /// <summary>
+        /// Server base URL used to construct absolute photo URLs for Vision API
+        /// (e.g. https://api.magiccarrepair.com or http://localhost:5169 for local dev)
+        /// </summary>
+        public string? ServerBaseUrl { get; set; }
     }
 }
 

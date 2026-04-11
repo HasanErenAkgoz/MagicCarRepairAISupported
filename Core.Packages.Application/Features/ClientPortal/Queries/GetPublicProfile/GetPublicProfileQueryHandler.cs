@@ -45,9 +45,9 @@ namespace MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.Ge
                 return new ErrorDataResult<GetPublicProfileResponse>("Client ID or Client Code is required");
             }
 
-            if (client == null || !client.IsPublicProfileEnabled)
+            if (client == null || !client.IsActive)
             {
-                return new ErrorDataResult<GetPublicProfileResponse>("Client profile not found or not public");
+                return new ErrorDataResult<GetPublicProfileResponse>("Client profile not found or inactive");
             }
 
             // Get statistics

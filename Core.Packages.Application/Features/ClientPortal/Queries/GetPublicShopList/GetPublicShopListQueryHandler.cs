@@ -16,6 +16,7 @@ namespace MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.Ge
 
         public async Task<IDataResult<List<PublicShopDto>>> Handle(GetPublicShopListQuery request, CancellationToken cancellationToken)
         {
+            // Keşif: onaylı (aktif) tamirhaneler — IsPublicProfileEnabled veri tutarsızlığında liste boş kalmasın
             var query = _clientRepository.Query()
                 .Where(c => c.IsActive == true && c.IsPublicProfileEnabled == true);
 

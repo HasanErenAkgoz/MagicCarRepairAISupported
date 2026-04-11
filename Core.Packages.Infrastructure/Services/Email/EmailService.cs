@@ -18,10 +18,13 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Email
 
         public async Task<bool> SendEmailAsync(string to, string subject, string body)
         {
+            if (string.IsNullOrEmpty(_emailSettings.FromEmail) || string.IsNullOrEmpty(_emailSettings.SmtpServer))
+                return false;
+
             using (var client = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.SmtpPort))
             {
                 client.Credentials = new NetworkCredential(_emailSettings.SmtpUser, _emailSettings.SmtpPass);
-                client.EnableSsl = true; 
+                client.EnableSsl = true;
 
                 var mailMessage = new MailMessage
                 {

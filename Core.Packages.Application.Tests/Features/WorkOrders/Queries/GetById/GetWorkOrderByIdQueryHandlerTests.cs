@@ -179,5 +179,94 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Querie
             result.CustomerName.Should().BeNullOrEmpty();
             result.AssignedEmployeeName.Should().BeNullOrEmpty();
         }
+
+        [Fact]
+        public async Task Handle_ShouldUseUploadedFilePath_AndFilterEmptyPhotos()
+        {
+            // Arrange
+            var clientId = 1;
+
+            var workOrder = new WorkOrder
+            {
+                Id = 1,
+                ClientId = clientId,
+                WorkOrderNumber = "WO-001",
+                Status = WorkOrderStatus.VehicleEntered,
+                Priority = WorkOrderPriority.Normal,
+                PaymentStatus = PaymentStatus.Unpaid,
+                EntryDate = DateTime.UtcNow,
+                CreatedDate = DateTime.UtcNow,
+                Vehicle = new Vehicle
+                {
+                    Id = 10,
+                    LicensePlate = "34ABC123",
+                    Brand = "Toyota",
+                    Model = "Corolla",
+                    Photos = new List<VehiclePhoto>
+                    {
+                        new()
+                        {
+                            Id = 100,
+                            FilePath = string.Empty,
+                            UploadedFile = new UploadedFile { FilePath = "uploads/vehicle/front.jpg" },
+                            DisplayOrder = 1,
+                            UploadDate = DateTime.UtcNow
+                        },
+                        new()
+                        {
+                            Id = 101,
+                            FilePath = string.Empty,
+                            UploadedFile = null,
+                            DisplayOrder = 2,
+                            UploadDate = DateTime.UtcNow.AddMinutes(1)
+                        }
+                    }
+                },
+                Photos = new List<WorkOrderPhoto>
+                {
+                    new()
+                    {
+                        Id = 200,
+                        FilePath = "uploads/workorders/process.jpg",
+                        PhotoType = WorkOrderPhotoType.Process,
+                        UploadDate = DateTime.UtcNow
+                    },
+                    new()
+                    {
+                        Id = 201,
+                        FilePath = string.Empty,
+                        UploadedFile = new UploadedFile { FilePath = "https://cdn.example.com/workorders/final.jpg" },
+                        PhotoType = WorkOrderPhotoType.Exit,
+                        UploadDate = DateTime.UtcNow.AddMinutes(1)
+                    },
+                    new()
+                    {
+                        Id = 202,
+                        FilePath = string.Empty,
+                        UploadedFile = null,
+                        PhotoType = WorkOrderPhotoType.Process,
+                        UploadDate = DateTime.UtcNow.AddMinutes(2)
+                    }
+                }
+            };
+
+            var query = new GetWorkOrderByIdQuery { Id = 1 };
+
+            _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
+            _workOrderRepositoryMock.Setup(x => x.GetWithDetailsAsync(1, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(workOrder);
+
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+
+            // Assert
+            result.Vehicle.Should().NotBeNull();
+            result.Vehicle.Photos.Should().HaveCount(1);
+            result.Vehicle.Photos[0].FilePath.Should().Be("/uploads/vehicle/front.jpg");
+
+            result.Photos.Should().HaveCount(2);
+            result.Photos[0].FilePath.Should().Be("/uploads/workorders/process.jpg");
+            result.Photos[1].FilePath.Should().Be("https://cdn.example.com/workorders/final.jpg");
+        }
     }
 }

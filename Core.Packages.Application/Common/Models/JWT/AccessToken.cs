@@ -1,7 +1,9 @@
 using MagicCarRepairAISupported.Application.Common.Models.NewFolder;
 using MagicCarRepairAISupported.Application.Features.Auth.Login.Commands;
 
-public class AccessToken : IAccessToken
+namespace MagicCarRepairAISupported.Application.Common.Models.JWT
+{
+    public class AccessToken : IAccessToken
     {
         public List<string> Claims { get; set; }
         public string Token { get; set; }
@@ -9,3 +11,4 @@ public class AccessToken : IAccessToken
         public string RefreshToken { get; set; }
         public LoginUserInfo User { get; set; }
     }
+}

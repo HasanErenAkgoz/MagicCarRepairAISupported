@@ -48,15 +48,15 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Tenant
             if (!string.IsNullOrEmpty(_currentLanguage))
                 return _currentLanguage;
 
-            // Try to get from user claims
+            // 1. Try to get from user claims (JWT token - highest priority)
             var languageClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("Language");
-            if (languageClaim != null)
+            if (languageClaim != null && !string.IsNullOrEmpty(languageClaim.Value))
             {
                 _currentLanguage = languageClaim.Value;
                 return _currentLanguage;
             }
 
-            // Try to get from headers
+            // 2. Try to get from headers (Accept-Language)
             var languageHeader = _httpContextAccessor.HttpContext?.Request.Headers["Accept-Language"].FirstOrDefault();
             if (!string.IsNullOrEmpty(languageHeader))
             {
@@ -69,7 +69,14 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Tenant
                 }
             }
 
-            // Default to Turkish
+            // 3. Try to get from cookie
+            if (_httpContextAccessor.HttpContext?.Request.Cookies.TryGetValue("language", out var cookieLang) == true && !string.IsNullOrEmpty(cookieLang))
+            {
+                _currentLanguage = cookieLang;
+                return cookieLang;
+            }
+
+            // 4. Default to Turkish
             _currentLanguage = "tr";
             return _currentLanguage;
         }

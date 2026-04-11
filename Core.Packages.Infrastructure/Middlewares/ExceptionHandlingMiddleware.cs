@@ -6,13 +6,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace MagicCarRepairAISupported.Infrastructure.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
+        private static readonly Regex ErrorCodeLikeMessage = new("^[A-Z][A-Z0-9_]{2,63}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
 
         public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
         {
@@ -60,21 +67,22 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
 
         private async Task HandleDomainExceptionAsync(HttpContext context, DomainException ex, IErrorMessageService errorMessageService, ITenantService tenantService)
         {
-            _logger.LogError(ex, "Domain exception occurred: {ErrorCode}", ex.ErrorCode);
+            var resolvedCode = ResolveDomainExceptionErrorCode(ex);
+            _logger.LogError(ex, "Domain exception occurred: {ErrorCode}", resolvedCode);
             
             var language = tenantService.GetCurrentLanguage();
-            var localizedMessage = await errorMessageService.GetMessageAsync(ex.ErrorCode ?? "UNKNOWN_ERROR", language, ex.Details);
+            var localizedMessage = await errorMessageService.GetMessageAsync(resolvedCode ?? "UNKNOWN_ERROR", language, ex.Details);
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
-            var result = JsonSerializer.Serialize(new 
-            { 
+            var result = JsonSerializer.Serialize(new
+            {
                 success = false,
-                errorCode = ex.ErrorCode,
+                errorCode = resolvedCode,
                 message = localizedMessage,
-                details = ex.Details
-            });
+                details = ex.Details ?? ex.Parameters
+            }, _jsonOptions);
             
             await context.Response.WriteAsync(result);
         }
@@ -90,11 +98,11 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
-            var result = JsonSerializer.Serialize(new 
-            { 
+            var result = JsonSerializer.Serialize(new
+            {
                 success = false,
                 message = localizedMessage
-            });
+            }, _jsonOptions);
             
             await context.Response.WriteAsync(result);
         }
@@ -121,14 +129,14 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
                 _ => (int)HttpStatusCode.BadRequest
             };
 
-            var result = JsonSerializer.Serialize(new 
-            { 
+            var result = JsonSerializer.Serialize(new
+            {
                 success = false,
                 errorCode = ex.ErrorCode,
                 category = ex.Category.ToString(),
                 message = localizedMessage,
                 additionalData = ex.AdditionalData
-            });
+            }, _jsonOptions);
             
             await context.Response.WriteAsync(result);
         }
@@ -150,13 +158,13 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
-            var result = JsonSerializer.Serialize(new 
-            { 
+            var result = JsonSerializer.Serialize(new
+            {
                 success = false,
                 errorCode = "VALIDATION_ERROR",
                 message = "Validation failed",
                 errors = errors
-            });
+            }, _jsonOptions);
             
             await context.Response.WriteAsync(result);
         }
@@ -171,12 +179,12 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 
-            var result = JsonSerializer.Serialize(new 
-            { 
+            var result = JsonSerializer.Serialize(new
+            {
                 success = false,
                 errorCode = "UNAUTHORIZED_ACCESS",
                 message = localizedMessage
-            });
+            }, _jsonOptions);
             
             await context.Response.WriteAsync(result);
         }
@@ -191,8 +199,8 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            var result = JsonSerializer.Serialize(new 
-            { 
+            var result = JsonSerializer.Serialize(new
+            {
                 success = false,
                 errorCode = "SERVER_ERROR",
                 message = localizedMessage,
@@ -200,9 +208,28 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
                 // Include stack trace only in debug mode
                 stackTrace = ex.StackTrace
 #endif
-            });
+            }, _jsonOptions);
             
             await context.Response.WriteAsync(result);
+        }
+
+        /// <summary>
+        /// DomainException tek parametreli (message) kurucuda ErrorCode null kalabiliyor; mesajdan veya "Translation key: ..." biçiminden kod çıkarılır.
+        /// </summary>
+        private static string? ResolveDomainExceptionErrorCode(DomainException ex)
+        {
+            if (!string.IsNullOrEmpty(ex.ErrorCode))
+                return ex.ErrorCode;
+
+            var msg = ex.Message;
+            if (string.IsNullOrEmpty(msg))
+                return null;
+
+            const string prefix = "Translation key: ";
+            if (msg.StartsWith(prefix, StringComparison.Ordinal))
+                return msg[prefix.Length..].Trim();
+
+            return ErrorCodeLikeMessage.IsMatch(msg) ? msg : null;
         }
     }
 }

@@ -36,6 +36,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetByI
             var vehicle = await _vehicleRepository.Query()
                 .Include(v => v.Customer)
                 .Include(v => v.Photos)
+                    .ThenInclude(p => p.UploadedFile)
                 .FirstOrDefaultAsync(v => v.Id == request.Id, cancellationToken);
 
             if (vehicle == null)
@@ -61,7 +62,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetByI
                 .Select(p => new VehiclePhotoDto
                 {
                     Id = p.Id,
-                    FilePath = p.FilePath,
+                    FilePath = !string.IsNullOrWhiteSpace(p.FilePath) ? p.FilePath : (p.UploadedFile?.FilePath ?? string.Empty),
                     PhotoType = p.PhotoType,
                     Description = p.Description,
                     DisplayOrder = p.DisplayOrder,

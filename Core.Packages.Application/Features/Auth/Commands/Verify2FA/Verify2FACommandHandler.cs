@@ -60,6 +60,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Commands.Verify2FA
                                 {
                                     IsValid = true,
                                     TwoFactorEnabled = user.TwoFactorEnabled,
+                                    RequiresTwoFactor = user.TwoFactorEnabled,
                                     Message = "Recovery code ile doğrulama başarılı."
                                 },
                                 "Recovery code ile doğrulama başarılı."
@@ -72,6 +73,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Commands.Verify2FA
                         {
                             IsValid = false,
                             TwoFactorEnabled = user.TwoFactorEnabled,
+                            RequiresTwoFactor = user.TwoFactorEnabled,
                             Message = "Geçersiz kod. Lütfen tekrar deneyin."
                         },
                         "Geçersiz kod."
@@ -91,9 +93,10 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Commands.Verify2FA
                     {
                         IsValid = true,
                         TwoFactorEnabled = user.TwoFactorEnabled,
-                        Message = request.IsSetup ? "2FA başarıyla aktif edildi." : "2FA doğrulaması başarılı."
+                        RequiresTwoFactor = user.TwoFactorEnabled,
+                        Message = request.IsSetup ? "Two-factor authentication has been enabled successfully." : "2FA doğrulaması başarılı."
                     },
-                    request.IsSetup ? "2FA başarıyla aktif edildi." : "2FA doğrulaması başarılı."
+                    request.IsSetup ? "Two-factor authentication has been enabled successfully." : "2FA doğrulaması başarılı."
                 );
             }
             catch (Exception ex)

@@ -14,6 +14,7 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public string? ContactEmail { get; set; }
         public string? ContactPhone { get; set; }
         public string? Address { get; set; }
+        public string? TaxOfficeNo { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime? SubscriptionStartDate { get; set; }
         public DateTime? SubscriptionEndDate { get; set; }
@@ -23,6 +24,21 @@ namespace MagicCarRepairAISupported.Domain.Entities
         /// Logo URL veya dosya yolu
         /// </summary>
         public string? LogoUrl { get; set; }
+
+        /// <summary>
+        /// Banner görseli URL (opsiyonel)
+        /// </summary>
+        public string? BannerUrl { get; set; }
+
+        /// <summary>
+        /// Enlem (harita koordinatı)
+        /// </summary>
+        public double? Latitude { get; set; }
+
+        /// <summary>
+        /// Boylam (harita koordinatı)
+        /// </summary>
+        public double? Longitude { get; set; }
         
         /// <summary>
         /// Web sitesi URL

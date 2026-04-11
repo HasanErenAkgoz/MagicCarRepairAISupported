@@ -21,7 +21,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Public tamirhane listesini getirir (sadece aktif ve public profili olanlar)
+        /// Public tamirhane listesini getirir (onaylı / aktif tamirhaneler)
         /// </summary>
         [HttpGet("list")]
         public async Task<IActionResult> GetPublicShopList(

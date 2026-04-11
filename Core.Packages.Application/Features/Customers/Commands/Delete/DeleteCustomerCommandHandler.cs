@@ -1,5 +1,6 @@
 using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Exceptions;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
@@ -36,8 +37,8 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Commands.Dele
                 throw new DomainException("CUSTOMER_NOT_BELONG_TO_CLIENT", new { CustomerId = request.Id });
             }
 
-            // Soft delete (Status = 0)
-            customer.Status = 0;
+            // Soft delete
+            customer.Status = Status.Deleted;
             _customerRepository.Update(customer);
             await _customerRepository.SaveChangesAsync();
 

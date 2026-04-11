@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.StockMovements.Qu
             // Arrange
             var query = new GetStockMovementHistoryQuery();
 
-            _stockMovementRepositoryMock.Setup(x => x.GetListAsync(It.IsAny<CancellationToken>(), null))
+            _stockMovementRepositoryMock.Setup(x => x.GetAllWithDetailsAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<StockMovement>());
 
             // Act

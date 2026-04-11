@@ -1,12 +1,19 @@
+using MagicCarRepairAISupported.Application.Features.Auth.Commands.ImpersonateUser;
+using MagicCarRepairAISupported.Application.Features.Auth.Commands.ImpersonateClient;
 using MagicCarRepairAISupported.Application.Features.Auth.ForgotPassword.Commands;
 using MagicCarRepairAISupported.Application.Features.Auth.Login.Commands;
 using MagicCarRepairAISupported.Application.Features.Auth.Register.Commands;
 using MagicCarRepairAISupported.Application.Features.Auth.ResetPassword;
 using MagicCarRepairAISupported.Application.Features.Auth.ChangePassword;
 using MagicCarRepairAISupported.Application.Features.Auth.Commands.Complete2FALogin;
+using MagicCarRepairAISupported.Application.Features.Auth.Commands.Enable2FA;
+using MagicCarRepairAISupported.Application.Features.Auth.Commands.Disable2FA;
+using MagicCarRepairAISupported.Application.Features.Auth.RefreshToken.Commands;
 using MagicCarRepairAISupported.Application.Features.Email.SendEmail;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Claims;
 using WebAPI.Controllers;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
@@ -17,6 +24,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
     {
         [HttpPost("login")]
         [AllowAnonymous]
+        [EnableRateLimiting("auth")]
         public async Task<IActionResult> Login([FromBody] LoginCommand loginCommand)
         {
             var result = await Mediator.Send(loginCommand);
@@ -67,21 +75,49 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
 
         }
 
+        /// <summary>
+        /// Şifre sıfırlama için OTP gönderir
+        /// </summary>
         [HttpPost("forgot-password")]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordCommand command)
+        [EnableRateLimiting("auth")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
         {
             var result = await Mediator.Send(command);
-            return result.Success ? Ok(result.Message) : BadRequest(result.Message);
+            return GetResponse(result);
         }
 
-        [HttpPost("reset-password")]
+        /// <summary>
+        /// OTP kodunu doğrular ve reset token döner
+        /// </summary>
+        [HttpPost("verify-reset-otp")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
+        public async Task<IActionResult> VerifyResetOtp([FromBody] VerifyResetOtpCommand command)
         {
             var result = await Mediator.Send(command);
-            return result.Success ? Ok(result.Message) : BadRequest(result.Message);
+            return GetResponse(result);
+        }
 
+        /// <summary>
+        /// Reset token ile şifreyi sıfırlar
+        /// </summary>
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
+        {
+            var result = await Mediator.Send(command);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        /// <summary>
+        /// OTP kodunu yeniden gönderir
+        /// </summary>
+        [HttpPost("resend-reset-otp")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResendResetOtp([FromBody] ResendResetOtpCommand command)
+        {
+            var result = await Mediator.Send(command);
+            return GetResponse(result);
         }
 
         [HttpPost("register-shop")]
@@ -117,6 +153,86 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         {
             var result = await Mediator.Send(command);
             return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        /// <summary>
+        /// 2FA'yı aktif eder
+        /// </summary>
+        [HttpPost("enable-2fa")]
+        [Authorize]
+        public async Task<IActionResult> Enable2FA()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { success = false, message = "Unauthorized. Please log in again." });
+            }
+
+            var command = new Enable2FACommand { UserId = userId };
+            var result = await Mediator.Send(command);
+            return GetResponse(result);
+        }
+
+        /// <summary>
+        /// 2FA'yı devre dışı bırakır
+        /// </summary>
+        [HttpPost("disable-2fa")]
+        [Authorize]
+        public async Task<IActionResult> Disable2FA([FromBody] Disable2FARequest? request = null)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { success = false, message = "Unauthorized. Please log in again." });
+            }
+
+            var command = new Disable2FACommand
+            {
+                UserId = userId,
+                Password = request?.Password
+            };
+            var result = await Mediator.Send(command);
+            return GetResponse(result);
+        }
+
+        /// <summary>
+        /// SystemAdmin obtains a token as another user (impersonation).
+        /// Only SystemAdmin (UserType=1) may call.
+        /// </summary>
+        [HttpPost("impersonate")]
+        [Authorize]
+        public async Task<IActionResult> ImpersonateUser([FromBody] ImpersonateUserCommand command)
+        {
+            var userTypeClaim = User.FindFirst("UserType")?.Value;
+            if (userTypeClaim != "1")
+                return Forbid();
+
+            var result = await Mediator.Send(command);
+            return GetResponse(result);
+        }
+    
+        /// <summary>
+        /// SystemAdmin'in shop kullanıcısı olmayan bir tenant için otomatik teknik Manager hesabıyla token almasını sağlar.
+        /// Sadece SystemAdmin (UserType=1) çağırabilir.
+        /// </summary>
+        [HttpPost("impersonate-client")]
+        [Authorize]
+        public async Task<IActionResult> ImpersonateClient([FromBody] ImpersonateClientCommand command)
+        {
+            var userTypeClaim = User.FindFirst("UserType")?.Value;
+            if (userTypeClaim != "1")
+                return Forbid();
+
+            var result = await Mediator.Send(command);
+            return GetResponse(result);
+        }
+
+        [HttpPost("refresh-token")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RefreshToken([FromBody] MagicCarRepairAISupported.Application.Features.Auth.RefreshToken.Commands.RefreshTokenCommand command)
+        {
+            var result = await Mediator.Send(command);
+            return GetResponse(result);
         }
     }
 }

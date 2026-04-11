@@ -52,7 +52,7 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Commands.Crea
                 LastName = request.LastName,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
-                Address = request.Address,
+                Address = request.Address ?? string.Empty,
                 DateTimeOfBirth = request.DateTimeOfBirth,
                 Language = request.Language,
                 IsVip = request.IsVip,

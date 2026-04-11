@@ -1,6 +1,10 @@
 using MagicCarRepairAISupported.Application.Common.Services.Translation;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using UserEntity = MagicCarRepairAISupported.Domain.Entities.User;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
@@ -10,10 +14,17 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
     public class TranslationController : ControllerBase
     {
         private readonly ITranslationService _translationService;
+        private readonly UserManager<UserEntity> _userManager;
+        private readonly IUserRepository _userRepository;
 
-        public TranslationController(ITranslationService translationService)
+        public TranslationController(
+            ITranslationService translationService,
+            UserManager<UserEntity> userManager,
+            IUserRepository userRepository)
         {
             _translationService = translationService;
+            _userManager = userManager;
+            _userRepository = userRepository;
         }
 
         /// <summary>
@@ -34,6 +45,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// </summary>
         /// <returns>Dil kodları listesi</returns>
         [HttpGet("languages")]
+        [AllowAnonymous] // Public endpoint - login öncesi dil seçici için gerekli
         public async Task<IActionResult> GetSupportedLanguages()
         {
             var languages = await _translationService.GetSupportedLanguagesAsync();
@@ -53,7 +65,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Dil değiştirir (cookie olarak kaydeder)
+        /// Dil değiştirir (cookie olarak kaydeder ve User.Language DB'ye kaydeder)
         /// </summary>
         /// <param name="language">Dil kodu</param>
         /// <returns>Başarı mesajı</returns>
@@ -67,6 +79,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
                 return BadRequest(new { Message = $"Desteklenmeyen dil: {language}" });
             }
 
+            // Cookie'ye kaydet (web için)
             Response.Cookies.Append("language", language, new CookieOptions
             {
                 Expires = DateTime.UtcNow.AddYears(1),
@@ -74,6 +87,18 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
                 Secure = true,
                 SameSite = SameSiteMode.Strict
             });
+
+            // User.Language'ı DB'ye kaydet (mobile için kalıcılık)
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out var userId))
+            {
+                var user = await _userManager.FindByIdAsync(userId.ToString());
+                if (user != null)
+                {
+                    user.Language = language;
+                    await _userManager.UpdateAsync(user);
+                }
+            }
 
             return Ok(new { Message = $"Dil {language} olarak değiştirildi" });
         }

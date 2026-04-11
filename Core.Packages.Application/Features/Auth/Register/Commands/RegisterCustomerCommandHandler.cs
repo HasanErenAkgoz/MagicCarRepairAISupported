@@ -3,6 +3,7 @@ using MagicCarRepairAISupported.Application.Features.Customers.Commands.Create;
 using MagicCarRepairAISupported.Application.Shared.Result;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
+using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using UserEntity = MagicCarRepairAISupported.Domain.Entities.User;
@@ -15,17 +16,20 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
         private readonly RoleManager<Role> _roleManager;
         private readonly IMediator _mediator;
         private readonly ITenantService _tenantService;
+        private readonly IVehicleRepository _vehicleRepository;
 
         public RegisterCustomerCommandHandler(
             UserManager<UserEntity> userManager,
             RoleManager<Role> roleManager,
             IMediator mediator,
-            ITenantService tenantService)
+            ITenantService tenantService,
+            IVehicleRepository vehicleRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _mediator = mediator;
             _tenantService = tenantService;
+            _vehicleRepository = vehicleRepository;
         }
 
         public async Task<IDataResult<RegisterCustomerResponse>> Handle(RegisterCustomerCommand request, CancellationToken cancellationToken)
@@ -56,7 +60,8 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
                 UserName = request.Email,
                 PhoneNumber = request.PhoneNumber,
                 Address = request.Address,
-                IdentityNo = request.IdentityNo,
+                IdentityNo = request.IdentityNo ?? string.Empty,
+                Language = request.Language, // Kullanıcının dil tercihi
                 UserType = UserType.Customer,
                 ClientId = clientId
             };
@@ -128,7 +133,36 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
                 return new ErrorDataResult<RegisterCustomerResponse>("Müşteri oluşturulamadı.");
             }
 
-            // 8. Token oluştur (otomatik login için)
+            // 8. Vehicle data varsa, Vehicle oluştur
+            if (!string.IsNullOrWhiteSpace(request.VehicleLicensePlate) && 
+                !string.IsNullOrWhiteSpace(request.VehicleBrand) && 
+                !string.IsNullOrWhiteSpace(request.VehicleModel))
+            {
+                // Vehicle oluştur
+                var vehicle = new Vehicle
+                {
+                    CustomerId = customerResult.Id,
+                    LicensePlate = request.VehicleLicensePlate,
+                    Brand = request.VehicleBrand,
+                    Model = request.VehicleModel,
+                    Year = request.VehicleYear ?? DateTime.UtcNow.Year,
+                    Color = request.VehicleColor ?? "Bilinmiyor",
+                    FuelType = request.VehicleFuelType,
+                    Status = VehicleStatus.Registered,
+                    VehicleType = VehicleType.Unspecified,
+                    ClientId = clientId
+                };
+
+                if (request.VehicleKilometers.HasValue && request.VehicleKilometers.Value > 0)
+                {
+                    vehicle.UpdateKilometers(request.VehicleKilometers.Value);
+                }
+
+                await _vehicleRepository.AddAsync(vehicle, cancellationToken);
+                await _vehicleRepository.SaveChangesAsync();
+            }
+
+            // 9. Token oluştur (otomatik login için)
             // Login işlemi için token oluşturulması gerekiyor
             // Bu kısım LoginCommandHandler'daki gibi yapılabilir
             // Şimdilik token'ı boş bırakıyoruz, frontend'de login yapılacak

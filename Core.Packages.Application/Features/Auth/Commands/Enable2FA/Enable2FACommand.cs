@@ -10,10 +10,12 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Commands.Enable2FA
 
     public class Enable2FAResponse
     {
-        public string Secret { get; set; } = string.Empty;
-        public string QrCodeUrl { get; set; } = string.Empty;
-        public string ManualEntryKey { get; set; } = string.Empty;
-        public List<string> RecoveryCodes { get; set; } = new();
-        public string Message { get; set; } = string.Empty;
+        public bool RequiresTwoFactor { get; set; } = true;
+        public string? QrCodeUrl { get; set; } // Optional: QR code for authenticator app
+        public List<string>? BackupCodes { get; set; } // Optional: Backup codes for recovery
+        public string Secret { get; set; } = string.Empty; // For backward compatibility
+        public string ManualEntryKey { get; set; } = string.Empty; // For backward compatibility
+        public List<string> RecoveryCodes { get; set; } = new(); // For backward compatibility
+        public string Message { get; set; } = string.Empty; // For backward compatibility
     }
 }

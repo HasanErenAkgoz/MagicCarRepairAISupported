@@ -46,6 +46,7 @@ namespace MagicCarRepairAISupported.Domain.Entities
         // Navigation properties
         public virtual PartStock? Stock { get; set; }
         public virtual ICollection<StockMovement> StockMovements { get; set; }
+        public virtual ICollection<PartPhoto> Photos { get; set; } = new List<PartPhoto>();
         
         /// <summary>
         /// Kritik stok seviyesinde mi kontrol eder

@@ -55,16 +55,16 @@ namespace MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.
             return vehicles.Select(v => new GetMyVehiclesResponse
             {
                 Id = v.Id,
-                LicensePlate = v.LicensePlate,
+                Plate = v.LicensePlate,
                 Brand = v.Brand,
                 Model = v.Model,
                 Year = v.Year,
                 Color = v.Color,
+                Vin = v.Vin,
+                FuelType = v.FuelType,
                 Kilometers = v.Kilometers,
-                Status = v.Status.ToString(),
-                StatusName = v.Status.ToString()
+                Status = v.Status.ToString()
             }).ToList();
         }
     }
 }
-

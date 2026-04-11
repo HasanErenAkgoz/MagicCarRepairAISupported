@@ -25,15 +25,20 @@ namespace MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetIn
             {
                 Id = c.Id,
                 ClaimNumber = c.ClaimNumber,
+                InsurancePolicyId = c.InsurancePolicyId,
                 PolicyNumber = c.InsurancePolicy?.PolicyNumber ?? "N/A",
                 InsuranceCompanyName = c.InsurancePolicy?.InsuranceCompany?.CompanyName ?? "N/A",
                 DamageDate = c.DamageDate,
+                DamageDescription = c.DamageDescription,
                 DamageAmount = c.DamageAmount,
                 ApprovedAmount = c.ApprovedAmount,
+                DeductibleAmount = c.DeductibleAmount,
                 PayableAmount = c.PayableAmount,
                 Status = c.Status,
                 ApprovalDate = c.ApprovalDate,
-                PaymentDate = c.PaymentDate
+                PaymentDate = c.PaymentDate,
+                RejectionReason = c.RejectionReason,
+                ClientId = c.ClientId
             }).ToList();
 
             return new GetInsuranceClaimsByWorkOrderResponse

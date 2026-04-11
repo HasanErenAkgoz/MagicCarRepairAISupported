@@ -108,6 +108,12 @@ namespace MagicCarRepairAISupported.Application.Features.Permissions.Commands.Sc
                 }
             }
             
+            // Deduplicate by name (multiple handlers may resolve to the same permission name)
+            newPermissions = newPermissions
+                .GroupBy(p => p.Name)
+                .Select(g => g.First())
+                .ToList();
+
             // Batch insert permissions (single database round-trip)
             if (newPermissions.Any())
             {

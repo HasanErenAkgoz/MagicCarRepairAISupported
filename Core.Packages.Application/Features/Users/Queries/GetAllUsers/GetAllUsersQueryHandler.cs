@@ -1,3 +1,4 @@
+using MagicCarRepairAISupported.Application.Common.Tenant;
 using MagicCarRepairAISupported.Application.Shared.Result;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
@@ -23,6 +24,8 @@ namespace MagicCarRepairAISupported.Application.Features.Users.Queries.GetAllUse
                 .Include(u => u.Client)
                 .AsQueryable();
 
+
+            usersQuery = usersQuery.Where(u => u.Email == null || !u.Email.EndsWith("@" + TenantShadowUser.EmailDomain));
             if (request.ClientId.HasValue)
                 usersQuery = usersQuery.Where(u => u.ClientId == request.ClientId.Value);
 

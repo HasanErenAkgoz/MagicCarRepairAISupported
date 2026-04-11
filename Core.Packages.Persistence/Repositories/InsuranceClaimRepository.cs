@@ -67,6 +67,16 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
                 .ToListAsync(cancellationToken);
         }
 
+        public async Task<List<InsuranceClaim>> GetByCustomerIdAsync(int customerId, CancellationToken cancellationToken = default)
+        {
+            return await Context.Set<InsuranceClaim>()
+                .Include(c => c.InsurancePolicy)
+                    .ThenInclude(p => p.InsuranceCompany)
+                .Where(c => c.InsurancePolicy.CustomerId == customerId)
+                .OrderByDescending(c => c.DamageDate)
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<InsuranceClaim?> GetWithDetailsAsync(int id, CancellationToken cancellationToken = default)
         {
             return await Context.Set<InsuranceClaim>()

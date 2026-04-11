@@ -24,16 +24,16 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
 
             // 2FA Fields
             builder.Property(x => x.TwoFactorEnabled)
-                .HasDefaultValue(false);
-            
+                .IsRequired();
+
             builder.Property(x => x.TwoFactorSecret)
                 .HasMaxLength(500);
-            
+
             builder.Property(x => x.RecoveryCodes)
                 .HasColumnType("nvarchar(max)");
-            
+
             builder.Property(x => x.HasCompletedOnboarding)
-                .HasDefaultValue(false);
+                .IsRequired();
 
             // Indexes
             builder.HasIndex(x => x.UserType);
