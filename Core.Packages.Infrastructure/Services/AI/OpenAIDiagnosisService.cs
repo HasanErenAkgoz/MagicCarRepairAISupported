@@ -1,4 +1,4 @@
-using Azure;
+﻿using Azure;
 using Azure.AI.OpenAI;
 using MagicCarRepairAISupported.Application.Common.Services.AI;
 using MagicCarRepairAISupported.Application.Common.Services.AI.Dtos;
@@ -70,7 +70,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             }
         }
 
-        public async Task<DiagnosisResultDto> DiagnoseFromTextAsync(string complaint, int? vehicleId = null, List<string>? photoUrls = null, CancellationToken cancellationToken = default)
+        public async Task<DiagnosisResultDto> DiagnoseFromTextAsync(string complaint, int? vehicleId = null, List<string>? photoUrls = null, string language = "tr", CancellationToken cancellationToken = default)
         {
             if (_openAIClient == null)
             {
@@ -123,6 +123,8 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
                     }
                 }
 
+                var outputLanguage = language == "en" ? "English" : "Turkish";
+
                 bool hasPhotos = photoUrls != null && photoUrls.Count > 0;
                 if (hasPhotos)
                 {
@@ -147,162 +149,154 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
                     _logger.LogInformation("AI Vision: PhotoCount={PhotoCount}, PhotoHints={PhotoHints}", photoUrls!.Count, string.Join(",", photoHints));
                 }
 
-                // Detect diagnosis type from complaint keywords
-                var diagnosisType = DetectDiagnosisType(complaint);
+                // Detect diagnosis type from complaint keywords + photo presence
+                var diagnosisType = DetectDiagnosisType(complaint, hasPhotos);
 
                 // Build prompt
-                var systemPrompt = @"Sen deneyimli bir oto servis teknisyeni ve kaporta-boya uzmanısın. Görevin müşterinin anlattığı semptomu ve (varsa) paylaşılan araç fotoğraflarını analiz etmek.
+                var systemPrompt = $@"You are an experienced automotive service technician and body shop specialist. Your task is to analyze the customer's described symptom and (if provided) vehicle photos.
 
-FOTOĞRAF ANALİZİ (eğer fotoğraf gönderildiyse):
-- Fotoğraflardaki hasar bölgelerini, çizikleri, ezikleri, kırıkları, boya hasarını dikkatlice incele.
-- Her panel veya bölge için ayrı ayrı değerlendirme yap.
-- Kaporta/Boya hasarını diğer mekanik sorunlardan ayır.
-- FOTOĞRAFLARIN AÇISINI TESPİT ET: ön / arka / sol yan / sağ yan / 3-çeyrek / iç mekan.
-- SADECE GÖRÜNENİ YAZ: Fotoğrafta net görmediğin bir parçayı (ör. kaput/ön tampon) damagedParts'e ekleme.
-- Eğer hasarın yandan olduğu anlaşılıyorsa, ön parçaları varsayma; görünmeyen parçalar için en fazla criticalChecks altında “kontrol edilmesi gerekenler” olarak belirt.
-- Şikayet metni genel (“kaporta hasarı”) ise, fotoğraf kanıtı yoksa sadece genel öneri ver ve “belirsiz” kal.
+PHOTO ANALYSIS (if photos are provided):
+- Carefully examine damage areas, scratches, dents, cracks, and paint damage in the photos.
+- Evaluate each panel or zone separately.
+- Distinguish body/paint damage from mechanical issues.
+- DETECT THE CAMERA ANGLE: front / rear / left side / right side / three-quarter / interior.
+- ONLY DESCRIBE WHAT IS VISIBLE: Do not add parts to damagedParts that are not clearly visible (e.g. hood/front bumper if not in frame).
+- If damage is clearly from the side, do not assume front parts; for invisible areas use criticalChecks only.
+- If complaint is generic (""body damage"") with no photo evidence, give only general advice.
 
-TEMEL KURAL: Yalnızca müşterinin şikayetiyle DOĞRUDAN ilgili arıza ve parçaları öner.
-- Her semptomu kendi ilgili sistemiyle eşleştir.
-- Kaporta hasarında mekanik parçalar önerme; mekanik sorunlarda kaporta parçaları önerme.
+CORE RULE: Only suggest faults and parts DIRECTLY related to the customer's complaint.
+- Match each symptom to its related vehicle system.
+- Do not suggest mechanical parts for body damage; do not suggest body parts for mechanical issues.
 
-Araç sistemleri ve ilgili şikayetler:
-- Cam/Elektrikli Cam Krikosu: cam açılıp kapanmıyor, yavaş çalışıyor, ses çıkarıyor
-- Fren Sistemi: fren sesi, titreme, uzayan fren mesafesi, pedal batması
-- Motor/Yakıt: çalışmıyor, güç kaybı, sarsıntı, aşırı yakıt tüketimi
-- Süspansiyon/Direksiyon: ses, titreme, direksiyon boşluğu, çekme
-- Klima/Isıtma: soğutmuyor, ısıtmıyor, kötü koku, fan sesi
-- Şanzıman: vites geçmiyor, kayma, ses, titreme
-- Elektrik/Aydınlatma: yanmıyor, devamlı yanıyor, akü, marş
-- Egzoz: ses, is, kötü koku
-- Kapı/Kilit/Ayna: açılmıyor, kapanmıyor, kilitlenmiyor
-- Kaporta/Boya (kaza hasarı): ezik, çizik, kırık panel, lamba kırığı, tampon hasarı, boya soyulması
-  * Kaporta işçilikleri: düzeltme (dent repair), boyama, astar, zımparalama, vernik
-  * Kaporta parçaları: ön/arka tampon, kaput, çamurluk, kapı paneli, ön/arka lamba, ayna
+Vehicle systems and related complaints:
+- Window/Electric Window Regulator: not opening/closing, slow, noise
+- Brake System: brake noise, vibration, longer stopping distance, soft pedal
+- Engine/Fuel: won't start, power loss, rough idle, high fuel consumption
+- Suspension/Steering: noise, vibration, steering play, pulling to one side
+- A/C & Heating: not cooling, not heating, bad smell, fan noise
+- Transmission: won't shift, slipping, noise, vibration
+- Electrical/Lighting: not working, stays on, battery, starter
+- Exhaust: noise, smoke, bad smell
+- Door/Lock/Mirror: won't open/close/lock
+- Body/Paint (accident damage): dent, scratch, broken panel, broken light, bumper damage, paint peeling
+  * Body work: straightening (dent repair), painting, primer, sanding, clear coat
+  * Body parts: front/rear bumper, hood, fender, door panel, front/rear lights, mirror
 
-Kaporta/Boya fiyat rehberi (TRY, 2024):
-- Panel boyama: 2.000-8.000₺ (panele göre)
-- Tampon değişimi + boya: 3.000-12.000₺
-- Çamurluk değişimi + boya: 4.000-15.000₺
-- Kaput değişimi + boya: 5.000-20.000₺
-- Kapı paneli değişimi + boya: 5.000-18.000₺
-- Göçük düzeltme (küçük): 500-2.000₺
-- Göçük düzeltme (büyük): 1.500-5.000₺
-- Cam değişimi (ön): 3.000-8.000₺
+Body & Paint price guide (TRY, 2026):
+- Panel paint: 4,000-15,000 TL (varies by panel)
+- Bumper replacement + paint: 6,000-20,000 TL
+- Fender replacement + paint: 8,000-25,000 TL
+- Hood replacement + paint: 10,000-35,000 TL
+- Door panel replacement + paint: 10,000-30,000 TL
+- Minor dent repair: 1,500-5,000 TL
+- Major dent repair: 4,000-10,000 TL
+- Windshield replacement: 8,000-18,000 TL
 
-Olasılık skoru (probabilityScore) kuralları:
-- 85-100: Şikayetle kesinlikle ilgili, fotoğrafta net görünüyor
-- 65-84: Muhtemel neden, kontrol edilmeli
-- 45-64: Olası ama daha az ihtimalli
-- 44 altı: Önerme, listeye ekleme
+Probability score rules:
+- 85-100: Directly related to complaint, clearly visible in photo
+- 65-84: Probable cause, should be checked
+- 45-64: Possible but less likely
+- Below 44: Do not suggest
 
-Sadece probabilityScore >= 55 olan parçaları listeye ekle.
+Only include parts with probabilityScore >= 55.
 
-Yanıtını YALNIZCA JSON formatında döndür (başka metin ekleme):
-{
+Return ONLY as JSON (no extra text):
+{{
   ""possibleIssues"": [
-    {""issueName"": ""Arıza Adı"", ""description"": ""Bu semptomu neden yapıyor veya fotoğrafta ne görüldü"", ""probabilityScore"": 70, ""category"": ""Elektrik|Motor|Fren|Süspansiyon|Klima|Şanzıman|Egzoz|Kaporta|Boya|Diğer""}
+    {{""issueName"": ""Issue Name"", ""description"": ""Why this symptom occurs or what was seen in photo"", ""probabilityScore"": 70, ""category"": ""Electrical|Engine|Brake|Suspension|AC|Transmission|Exhaust|Body|Paint|Other""}}
   ],
   ""recommendedParts"": [
-    {""partName"": ""Parça Adı"", ""category"": ""Kategori"", ""estimatedPrice"": 500, ""quantity"": 1, ""probabilityScore"": 80}
+    {{""partName"": ""Part Name"", ""category"": ""Category"", ""estimatedPrice"": 500, ""quantity"": 1, ""probabilityScore"": 80}}
   ],
   ""recommendedLabors"": [
-    {""laborName"": ""İşçilik Adı"", ""description"": ""Yapılacak işlem"", ""estimatedPrice"": 300, ""estimatedHours"": 1.5, ""probabilityScore"": 90}
+    {{""laborName"": ""Labor Name"", ""description"": ""Work to be done"", ""estimatedPrice"": 300, ""estimatedHours"": 1.5, ""probabilityScore"": 90}}
   ],
   ""estimatedDays"": 1,
   ""estimatedCost"": 1200,
   ""confidenceScore"": 85,
-  ""recommendations"": ""Teknisyen önerisi""
-}";
+  ""recommendations"": ""Technician recommendation""
+}}";
 
                 // Extend prompt for accident mode
                 if (diagnosisType == DiagnosisType.Accident)
                 {
-                    systemPrompt += @"
+                    systemPrompt += $@"
 
-KAZA/HASAR ANALİZİ MODU (Bu şikayet kaza/hasar içeriyor):
-Fotoğraflardaki araç kaza hasarını detaylı analiz et. JSON yanıtına şu ek alanları MUTLAKA ekle.
+ACCIDENT/DAMAGE ANALYSIS MODE (this complaint involves accident/damage):
+Analyze the vehicle accident damage in detail. The following additional fields are MANDATORY in the JSON response.
 
-ÖNCE SAHNE (ZORUNLU): ""sceneDescription"" alanına 3-5 cümle Türkçe yaz:
-- Kamera açısı: ön / arka / sol yan / sağ yan / çapraz (hangisi?)
-- Kadrajda NET görünen karoser bölgeleri (ör. sol ön kapı + sol ön çamurluk)
-- Kadrajda GÖRÜNMEYEN veya NET OLMAYAN bölgeler (ör. kaput/ön tampon kadrajda yoksa açıkça yaz)
-Bu alan yazılmadan damagedParts doldurma.
+SCENE FIRST (REQUIRED): In ""sceneDescription"" write 3-5 sentences:
+- Camera angle: front / rear / left side / right side / diagonal (which?)
+- Body areas CLEARLY VISIBLE in frame (e.g. left front door + left front fender)
+- Areas NOT VISIBLE or NOT CLEAR in frame
+Do not populate damagedParts before completing this field.
 
-ÇOK ÖNEMLİ KURAL (hallucination yok):
-- damagedParts listesine SADECE kadrajda görsel olarak doğrulanabilen parçaları koy.
-- Yan çekimde ön tampon/kaput KADRAJDA YOKSA, bunları damagedParts'e ASLA ekleme.
-- Ön bölge hasarı SADECE ön tampon/kaput/farlar kadrajda görünüyorsa yazılabilir.
-- Görünmeyen riskler için sadece criticalChecks kullan (ör. ""ön darbe şüphesi varsa radyatör kontrolü"" gibi).
+CRITICAL RULE (no hallucination):
+- Only add visually CONFIRMED parts to damagedParts.
+- If hood/front bumper are NOT IN FRAME in a side shot, NEVER add them to damagedParts.
+- Front damage can only be written if front bumper/hood/lights are clearly in frame.
+- For hidden risks use only criticalChecks (e.g. ""check radiator if front impact suspected"").
 
-ÖRNEK ŞEMA (örnekteki parça adları sadece format içindir; sen gerçek görüntüye göre doldur):
+SCHEMA EXAMPLE (part names in example are for format only -- use real observations):
 ""diagnosisType"": 1,
-""sceneDescription"": ""Örnek: Sol yan çekim; sol ön kapı ve sol ön çamurluk görünüyor. Kaput ve ön tampon kadrajda görünmüyor."",
+""sceneDescription"": ""Left side view; left front door and left front fender visible. Hood and front bumper NOT in frame."",
 ""damagedParts"": [
-  {
-    ""partName"": ""Sol ön çamurluk"",
+  {{
+    ""partName"": ""Left front fender"",
     ""damageLevel"": 2,
     ""recommendedAction"": 2,
     ""confidencePercent"": 85,
-    ""estimatedCostMin"": 3000,
-    ""estimatedCostMax"": 8000,
-    ""notes"": ""Kadrajda görülen ezik/çizik; örnek""
-  }
+    ""estimatedCostMin"": 8000,
+    ""estimatedCostMax"": 25000,
+    ""notes"": ""Dent/scratch visible in frame""
+  }}
 ],
 ""criticalChecks"": [
-  {
-    ""componentName"": ""Şase/Longeron (kontrol)"",
+  {{
+    ""componentName"": ""Chassis/Sill (inspection)"",
     ""riskLevel"": 2,
-    ""warning"": ""Yan darbe şiddetine göre şase ölçümü önerilir (fotoğraftan kesin hüküm yok)"",
+    ""warning"": ""Side impact severity warrants chassis measurement (no definitive conclusion from photo)"",
     ""requiresImmediateInspection"": true
-  }
+  }}
 ],
-""estimatedRepairRange"": {
-  ""min"": 5000,
-  ""max"": 15000,
+""estimatedRepairRange"": {{
+  ""min"": 8000,
+  ""max"": 25000,
   ""currency"": ""TRY""
-},
-""mobileDisplayMarkdown"": ""...(aşağıdaki MOBİL ŞABLONU ile doldur, tek string; satır sonları \\n ile)...""
+}},
+""mobileDisplayMarkdown"": ""...(fill with MOBILE TEMPLATE below, single string; use \\n for line breaks)...""
 
-DamageLevel değerleri: None=0, Light=1, Medium=2, Heavy=3, Critical=4
-RepairAction değerleri: None=0, Paint=1, Repair=2, Replace=3
-RiskLevel değerleri: Low=0, Medium=1, High=2, Critical=3
+DamageLevel: None=0, Light=1, Medium=2, Heavy=3, Critical=4
+RepairAction: None=0, Paint=1, Repair=2, Replace=3
+RiskLevel: Low=0, Medium=1, High=2, Critical=3
 
-Panel seçimi: SADECE kadrajda görünenleri değerlendir (kaput, tampon, çamurluk, kapı, far, cam vb.).
-Gizli riskleri criticalChecks'e ekle: radyatör, şase, hava yastığı sistemi vb. (fotoğrafta görünmeyen ama kontrol gerektirebilecekler).
+Panel selection: ONLY evaluate panels visible in frame (bumper, hood, fender, door, light, glass etc.).
+Hidden risks go to criticalChecks: radiator, chassis, airbag system etc.
 
-MOBİL GÖRÜNÜM (ZORUNLU): ""mobileDisplayMarkdown"" alanına, aşağıdaki yapıyı TAKİP EDEN tek bir Markdown metni yaz. Türkçe olacak; kısa, net, madde madde. Tahminleri dürüst belirt.
-Yapı şöyle olmalı (emoji ve başlıkları koru):
+MOBILE DISPLAY (REQUIRED): Fill mobileDisplayMarkdown with a single Markdown string following this template. Use \n for line breaks. Content in {outputLanguage}.
 
-Kısa net analiz:
+[emoji] **Damage Summary**
+- Part: short status -> repair/replace/estimate
 
-🔧 **Hasar Durumu**
-- Parça: kısa durum → düzeltme/değişim/tahmin (ok → kullan)
+⚠️ **Critical Check (most important)**
+- Component names (matching criticalChecks)
 
-⚠️ **Kritik Kontrol (en önemlisi)**
-- Bileşen adları (criticalChecks ile uyumlu)
-
-👉 Bunlar hasarlıysa maliyet uçar
+[emoji] If these are damaged, total cost increases significantly
 
 ---
 
-💰 **Tahmini Masraf (2026 TR)**
-- Ana kalemler: (ör. Kaput, Tampon, Farlar) ve **aralık** (ör. **15–25K** TL bandı, binlik kısaltma K kullan)
+[emoji] **Estimated Cost (2026 TR)**
+- Main items with **range** (use K shorthand e.g. **15-25K** TL)
 
-👉 **TOPLAM:**
+[emoji] **TOTAL:**
 - **Minimum:** ~XK TL
-- **Ortalama:** aralık
-- **Şase/radyatör varsa:** üst band notu
+- **Average:** range
+- **If chassis/radiator involved:** upper band note
 
 ---
 
-🚨 **Yorum (dürüst)**
-Kısa paragraf: hasarın şiddeti, şase/kontrol ihtiyacı.
-
-İstersen:
-👉 İki kısa madde (ör. pert analizi, sigorta vs gerçek hasar)
-
-Bu metin JSON içinde tek string; gerçek satır sonları için \\n kullan.";
+[emoji] **Assessment (honest)**
+Short paragraph: damage severity, chassis/inspection need.";
                 }
 
                 var userPrompt = new StringBuilder();
@@ -752,14 +746,34 @@ Bu metin JSON içinde tek string; gerçek satır sonları için \\n kullan.";
             return best;
         }
 
-        private static DiagnosisType DetectDiagnosisType(string complaint)
+        private static DiagnosisType DetectDiagnosisType(string complaint, bool hasPhotos = false)
         {
             var lower = complaint.ToLowerInvariant();
-            string[] accidentKeywords = ["kaza", "çarptı", "çarpma", "hasar", "göçük", "kaporta", "ezik",
-                "deformasyon", "pert", "kırdı", "kırık", "ezildi", "darbe", "dent", "crash", "accident", "collision", "dented", "damaged"];
-            string[] maintenanceKeywords = ["bakım", "servis", "yağ değişimi", "filtre değişimi", "periyodik", "maintenance", "oil change"];
+            string[] accidentKeywords =
+            [
+                // Kaza / çarpma
+                "kaza", "çarptı", "çarpma", "darbe", "ezildi", "deformasyon", "pert",
+                // Hasar türleri
+                "hasar", "ezik", "göçük", "kırdı", "kırık", "çizik", "soyulma", "soyulmuş",
+                // Karoser bölgeleri (hasarla birlikte kullanılan)
+                "kaporta", "tampon hasarı", "kaput hasarı", "kapı hasarı",
+                "far kırık", "far hasarı", "lamba kırık", "lamba hasarı", "cam kırık",
+                "boya hasarı", "boyası git", "boya soyul",
+                // İngilizce
+                "dent", "dented", "scratch", "scratched", "damaged", "damage",
+                "crash", "accident", "collision", "bump", "smash", "cracked", "broken"
+            ];
+            string[] maintenanceKeywords =
+            [
+                "bakım", "servis", "yağ değişimi", "filtre değişimi", "periyodik",
+                "maintenance", "oil change", "service"
+            ];
 
             if (accidentKeywords.Any(k => lower.Contains(k))) return DiagnosisType.Accident;
+
+            // Fotoğraf gönderilmişse → görsel hasar analizi yap (kaza modu)
+            if (hasPhotos) return DiagnosisType.Accident;
+
             if (maintenanceKeywords.Any(k => lower.Contains(k))) return DiagnosisType.Maintenance;
             return DiagnosisType.Mechanical;
         }
@@ -1111,4 +1125,3 @@ Bu metin JSON içinde tek string; gerçek satır sonları için \\n kullan.";
         }
     }
 }
-

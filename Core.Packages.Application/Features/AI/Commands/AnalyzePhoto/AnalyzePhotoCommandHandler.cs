@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Features.AI.Commands.AnalyzePhot
 
             if (request.MultiplePhotos != null && request.MultiplePhotos.Count > 0)
             {
-                result = await _aiPhotoAnalysisService.AnalyzeMultiplePhotosAsync(request.MultiplePhotos, cancellationToken);
+                result = await _aiPhotoAnalysisService.AnalyzeMultiplePhotosAsync(request.MultiplePhotos, request.Language, cancellationToken);
             }
             else
             {
@@ -29,7 +29,7 @@ namespace MagicCarRepairAISupported.Application.Features.AI.Commands.AnalyzePhot
                     return new ErrorDataResult<PhotoAnalysisResultDto>("Fotoğraf verisi boş olamaz");
                 }
 
-                result = await _aiPhotoAnalysisService.AnalyzePhotoAsync(request.PhotoData, request.FileName, cancellationToken);
+                result = await _aiPhotoAnalysisService.AnalyzePhotoAsync(request.PhotoData, request.FileName, request.Language, cancellationToken);
             }
 
             return new SuccessDataResult<PhotoAnalysisResultDto>(result, "Fotoğraf analizi başarıyla tamamlandı");

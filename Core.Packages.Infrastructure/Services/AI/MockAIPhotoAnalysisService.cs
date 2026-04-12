@@ -17,7 +17,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             _logger = logger;
         }
 
-        public async Task<PhotoAnalysisResultDto> AnalyzePhotoAsync(byte[] photoData, string? fileName = null, CancellationToken cancellationToken = default)
+        public async Task<PhotoAnalysisResultDto> AnalyzePhotoAsync(byte[] photoData, string? fileName = null, string language = "tr", CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("AI Photo Analysis: Analyzing photo. FileName: {FileName}, Size: {Size} bytes", fileName, photoData.Length);
 
@@ -105,7 +105,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             return result;
         }
 
-        public async Task<PhotoAnalysisResultDto> AnalyzeMultiplePhotosAsync(List<byte[]> photoDataList, CancellationToken cancellationToken = default)
+        public async Task<PhotoAnalysisResultDto> AnalyzeMultiplePhotosAsync(List<byte[]> photoDataList, string language = "tr", CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("AI Photo Analysis: Analyzing {Count} photos", photoDataList.Count);
 
@@ -118,7 +118,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
                 throw new ArgumentException("En az bir fotoğraf gerekli", nameof(photoDataList));
             }
 
-            var firstPhotoResult = await AnalyzePhotoAsync(photoDataList[0], null, cancellationToken);
+            var firstPhotoResult = await AnalyzePhotoAsync(photoDataList[0], null, language, cancellationToken);
 
             // Birden fazla fotoğraf varsa, hasarları birleştir
             if (photoDataList.Count > 1)

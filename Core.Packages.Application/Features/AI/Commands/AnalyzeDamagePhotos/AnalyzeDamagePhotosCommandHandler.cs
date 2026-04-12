@@ -60,7 +60,8 @@ namespace MagicCarRepairAISupported.Application.Features.AI.Commands.AnalyzeDama
                 }
 
                 // AI servisini kullanarak fotoğraf analizi yap
-                var analysisResult = await _aiPhotoAnalysisService.AnalyzeMultiplePhotosAsync(photoDataList, cancellationToken);
+                var analysisResult = await _aiPhotoAnalysisService.AnalyzeMultiplePhotosAsync(
+                    photoDataList, request.Language, cancellationToken);
 
                 if (analysisResult == null)
                 {

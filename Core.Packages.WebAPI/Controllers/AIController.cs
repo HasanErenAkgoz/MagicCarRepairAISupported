@@ -118,11 +118,12 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AnalyzeDamagePhotos([FromBody] AnalyzeDamagePhotosCommand command)
         {
+            var acceptLang = Request.Headers["Accept-Language"].FirstOrDefault() ?? "tr";
+            var primaryLang = acceptLang.Split(',')[0].Trim().ToLower();
+            command.Language = primaryLang.StartsWith("en") ? "en" : "tr";
+
             var result = await _mediator.Send(command);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
+            if (result.Success) return Ok(result);
             return BadRequest(result);
         }
     }

@@ -10,6 +10,8 @@ namespace MagicCarRepairAISupported.Application.Features.AI.Commands.AnalyzeDama
         public string? VehicleModel { get; set; }
         public int? VehicleYear { get; set; }
         public string? ProblemDescription { get; set; }
+        /// <summary>ISO 639-1 dil kodu. Varsayılan: "tr"</summary>
+        public string Language { get; set; } = "tr";
     }
 
     public class AnalyzeDamagePhotosResponse

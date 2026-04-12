@@ -9,6 +9,8 @@ namespace MagicCarRepairAISupported.Application.Features.AI.Commands.AnalyzePhot
         public byte[] PhotoData { get; set; } = Array.Empty<byte>();
         public string? FileName { get; set; }
         public List<byte[]>? MultiplePhotos { get; set; }
+        /// <summary>ISO 639-1 dil kodu. Varsayılan: "tr"</summary>
+        public string Language { get; set; } = "tr";
     }
 }
 

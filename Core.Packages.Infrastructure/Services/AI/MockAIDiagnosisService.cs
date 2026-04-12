@@ -141,7 +141,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             await Task.Delay(1000, cancellationToken); // Simüle edilmiş API çağrısı
 
             // Şimdilik text analizi ile aynı sonucu döndür
-            return await DiagnoseFromTextAsync("Sesli şikayet analizi (henüz implement edilmedi)", vehicleId, null, cancellationToken);
+            return await DiagnoseFromTextAsync("Sesli şikayet analizi (henüz implement edilmedi)", vehicleId, null, "tr", cancellationToken);
         }
 
         public Task<GenerateDescriptionResultDto> GenerateShopDescriptionAsync(string shopName, string? address = null, string? phone = null, CancellationToken cancellationToken = default)

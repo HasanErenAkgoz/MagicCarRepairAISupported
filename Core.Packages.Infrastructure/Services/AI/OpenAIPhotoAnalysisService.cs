@@ -1,4 +1,4 @@
-using Azure;
+﻿using Azure;
 using Azure.AI.OpenAI;
 using MagicCarRepairAISupported.Application.Common.Services.AI;
 using MagicCarRepairAISupported.Application.Common.Services.AI.Dtos;
@@ -47,7 +47,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             }
         }
 
-        public async Task<PhotoAnalysisResultDto> AnalyzePhotoAsync(byte[] photoData, string? fileName = null, CancellationToken cancellationToken = default)
+        public async Task<PhotoAnalysisResultDto> AnalyzePhotoAsync(byte[] photoData, string? fileName = null, string language = "tr", CancellationToken cancellationToken = default)
         {
             if (_openAIClient == null)
             {
@@ -61,36 +61,39 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
                     fileName, photoData.Length);
 
                 // Convert image to base64
+                var outputLanguage = language == "en" ? "English" : "Turkish";
                 var imageBase64 = Convert.ToBase64String(photoData);
                 var imageUrl = $"data:image/jpeg;base64,{imageBase64}";
 
-                var systemPrompt = @"Sen bir oto servis uzmanısın. Araç hasar fotoğraflarını analiz edip hasar türlerini, şiddetini ve gerekli onarım maliyetlerini tespit etmelisin.
-Yanıtını JSON formatında döndür. Format:
-{
+                var systemPrompt = $@"You are an automotive damage assessment expert. Analyze vehicle damage photos and identify damage types, severity, and required repair costs.
+Return ONLY valid JSON (no extra text):
+{{
   ""detectedDamages"": [
-    {
-      ""damageType"": ""Çizik|Çökme|Yırtılma|Boyama|vb"",
-      ""location"": ""Ön kaput|Ön tampon|vb"",
+    {{
+      ""damageType"": ""Scratch|Dent|Crack|Paint|etc"",
+      ""location"": ""Front bumper|Hood|etc"",
       ""severityScore"": 70,
       ""estimatedRepairCost"": 500,
-      ""description"": ""Hasar açıklaması"",
-      ""coordinates"": [{""x"": 100, ""y"": 150}, {""x"": 200, ""y"": 250}]
-    }
+      ""description"": ""Damage description"",
+      ""coordinates"": [{{""x"": 100, ""y"": 150}}, {{""x"": 200, ""y"": 250}}]
+    }}
   ],
   ""damageSeverityScore"": 60,
   ""recommendedParts"": [
-    {""partName"": ""Parça Adı"", ""category"": ""Kategori"", ""estimatedPrice"": 500, ""quantity"": 1, ""probabilityScore"": 80}
+    {{""partName"": ""Part Name"", ""category"": ""Category"", ""estimatedPrice"": 500, ""quantity"": 1, ""probabilityScore"": 80}}
   ],
   ""recommendedLabors"": [
-    {""laborName"": ""İşçilik Adı"", ""description"": ""Açıklama"", ""estimatedPrice"": 300, ""estimatedHours"": 2, ""probabilityScore"": 90}
+    {{""laborName"": ""Labor Name"", ""description"": ""Description"", ""estimatedPrice"": 300, ""estimatedHours"": 2, ""probabilityScore"": 90}}
   ],
   ""photoQualityScore"": 85,
-  ""photoQualityNotes"": ""Fotoğraf kalitesi notları"",
-  ""recommendations"": ""Öneriler"",
-  ""insuranceReportJson"": ""{}""
-}";
+  ""photoQualityNotes"": ""Photo quality notes"",
+  ""recommendations"": ""Recommendations"",
+  ""insuranceReportJson"": ""{{}}""
+}}
 
-                var userPrompt = "Bu fotoğraftaki araç hasarını analiz et ve JSON formatında sonuç döndür.";
+Output language: {outputLanguage}";
+
+                var userPrompt = "Analyze the vehicle damage in this photo and return the result as JSON.";
 
                 var deploymentName = _aiOptions.Provider == "AzureOpenAI"
                     ? (_aiOptions.AzureDeploymentName ?? _aiOptions.VisionModel)
@@ -127,7 +130,7 @@ Yanıtını JSON formatında döndür. Format:
             }
         }
 
-        public async Task<PhotoAnalysisResultDto> AnalyzeMultiplePhotosAsync(List<byte[]> photoDataList, CancellationToken cancellationToken = default)
+        public async Task<PhotoAnalysisResultDto> AnalyzeMultiplePhotosAsync(List<byte[]> photoDataList, string language = "tr", CancellationToken cancellationToken = default)
         {
             if (_openAIClient == null || photoDataList == null || photoDataList.Count == 0)
             {
@@ -135,26 +138,67 @@ Yanıtını JSON formatında döndür. Format:
                 return await GetMockResultAsync(photoDataList?.FirstOrDefault() ?? Array.Empty<byte>(), null, cancellationToken);
             }
 
+            if (photoDataList.Count == 1)
+                return await AnalyzePhotoAsync(photoDataList[0], null, language, cancellationToken);
+
             try
             {
-                _logger.LogInformation("AI Photo Analysis: Analyzing {Count} photos", photoDataList.Count);
+                _logger.LogInformation("AI Photo Analysis: Analyzing {Count} photos in a single Vision call", photoDataList.Count);
 
-                // For multiple photos, analyze first photo in detail, then provide summary
-                var firstPhotoResult = await AnalyzePhotoAsync(photoDataList[0], null, cancellationToken);
+                var outputLanguage = language == "en" ? "English" : "Turkish";
+                var systemPrompt = $@"You are an automotive damage assessment expert. You will receive multiple photos of the same vehicle from different angles.
+Analyze ALL photos together to produce a single comprehensive damage report.
+Each photo may show different panels or angles -- combine observations across all images.
+Only list damage that is visually confirmed in at least one photo. Do not hallucinate damage that is not visible.
+Return ONLY valid JSON (no extra text):
+{{
+  ""detectedDamages"": [...],
+  ""damageSeverityScore"": 60,
+  ""recommendedParts"": [...],
+  ""recommendedLabors"": [...],
+  ""photoQualityScore"": 85,
+  ""photoQualityNotes"": ""Photo quality notes"",
+  ""recommendations"": ""Recommendations"",
+  ""insuranceReportJson"": ""{{}}""
+}}
 
-                if (photoDataList.Count > 1)
+Output language: {outputLanguage}";
+
+                var contentItems = new List<ChatMessageContentItem>
                 {
-                    // Add note about multiple photos
-                    firstPhotoResult.Recommendations = $"{firstPhotoResult.Recommendations} Toplam {photoDataList.Count} fotoğraf analiz edildi. İlk fotoğrafın detaylı analizi yukarıda verilmiştir.";
+                    new ChatMessageTextContentItem(
+                        $"Analyze all {photoDataList.Count} vehicle photos below and return a single combined damage report as JSON.")
+                };
 
-                    // Update severity score if multiple photos suggest more extensive damage
-                    var avgSeverity = (firstPhotoResult.DamageSeverityScore + 
-                        (photoDataList.Count > 1 ? 10 : 0)) // Slightly increase for multiple photos
-                        .Clamp(0, 100);
-                    firstPhotoResult.DamageSeverityScore = avgSeverity;
+                for (var i = 0; i < photoDataList.Count; i++)
+                {
+                    var imageBase64 = Convert.ToBase64String(photoDataList[i]);
+                    var imageUrl = $"data:image/jpeg;base64,{imageBase64}";
+                    contentItems.Add(new ChatMessageImageContentItem(new Uri(imageUrl)));
                 }
 
-                return firstPhotoResult;
+                var deploymentName = _aiOptions.Provider == "AzureOpenAI"
+                    ? (_aiOptions.AzureDeploymentName ?? _aiOptions.VisionModel)
+                    : _aiOptions.VisionModel;
+
+                var chatCompletionsOptions = new ChatCompletionsOptions
+                {
+                    DeploymentName = deploymentName,
+                    Messages =
+                    {
+                        new ChatRequestSystemMessage(systemPrompt),
+                        new ChatRequestUserMessage(contentItems.ToArray())
+                    },
+                    Temperature = 0.3f,
+                    MaxTokens = 2500
+                };
+
+                var response = await _openAIClient.GetChatCompletionsAsync(chatCompletionsOptions, cancellationToken);
+                var content = response.Value.Choices[0].Message.Content;
+
+                _logger.LogInformation("AI Photo Analysis: Received combined response for {Count} photos", photoDataList.Count);
+
+                return ParsePhotoAnalysisResponse(content);
             }
             catch (Exception ex)
             {
@@ -297,4 +341,3 @@ Yanıtını JSON formatında döndür. Format:
         }
     }
 }
-

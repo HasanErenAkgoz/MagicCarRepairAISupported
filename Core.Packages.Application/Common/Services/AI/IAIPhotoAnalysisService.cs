@@ -10,12 +10,12 @@ namespace MagicCarRepairAISupported.Application.Common.Services.AI
         /// <summary>
         /// Hasar fotoğrafından analiz yapar
         /// </summary>
-        Task<PhotoAnalysisResultDto> AnalyzePhotoAsync(byte[] photoData, string? fileName = null, CancellationToken cancellationToken = default);
+        Task<PhotoAnalysisResultDto> AnalyzePhotoAsync(byte[] photoData, string? fileName = null, string language = "tr", CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Çoklu fotoğraftan analiz yapar
         /// </summary>
-        Task<PhotoAnalysisResultDto> AnalyzeMultiplePhotosAsync(List<byte[]> photoDataList, CancellationToken cancellationToken = default);
+        Task<PhotoAnalysisResultDto> AnalyzeMultiplePhotosAsync(List<byte[]> photoDataList, string language = "tr", CancellationToken cancellationToken = default);
     }
 }
 
