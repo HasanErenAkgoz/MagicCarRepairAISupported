@@ -72,9 +72,24 @@ namespace MagicCarRepairAISupported.Infrastructure
 
             // AI Services - Config'e göre real veya mock
             var aiProvider = configuration["AIOptions:Provider"] ?? "Mock";
-            
+
             if (aiProvider == "OpenAI" || aiProvider == "AzureOpenAI")
             {
+                var apiKey = configuration["AIOptions:ApiKey"];
+                if (string.IsNullOrWhiteSpace(apiKey))
+                {
+                    throw new InvalidOperationException(
+                        "AIOptions:Provider is OpenAI or AzureOpenAI but AIOptions:ApiKey is empty. " +
+                        "Set User Secrets: dotnet user-secrets set \"AIOptions:ApiKey\" \"sk-...\" " +
+                        "(from Core.Packages.WebAPI folder), or set the environment variable AIOptions__ApiKey.");
+                }
+
+                if (aiProvider == "AzureOpenAI" && string.IsNullOrWhiteSpace(configuration["AIOptions:AzureEndpoint"]))
+                {
+                    throw new InvalidOperationException(
+                        "AIOptions:Provider is AzureOpenAI but AIOptions:AzureEndpoint is missing.");
+                }
+
                 // Real AI implementations
                 services.AddScoped<IAIDiagnosisService, OpenAIDiagnosisService>();
                 services.AddScoped<IAIPhotoAnalysisService, OpenAIPhotoAnalysisService>();
