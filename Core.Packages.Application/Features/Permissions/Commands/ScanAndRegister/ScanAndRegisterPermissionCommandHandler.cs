@@ -87,7 +87,7 @@ namespace MagicCarRepairAISupported.Application.Features.Permissions.Commands.Sc
             var newPermissions = new List<Domain.Entities.Permission>();
             var existingPermissionNames = _permissionRepository.Query()
                 .Select(p => p.Name)
-                .ToList();
+                .ToHashSet();
             
             foreach (var handlerType in handlerTypes)
             {
@@ -130,7 +130,7 @@ namespace MagicCarRepairAISupported.Application.Features.Permissions.Commands.Sc
                 var existingRolePermissions = _rolePermissionRepository.Query()
                     .Where(rp => rp.RoleId == role.Id && rp.ClientId == clientId)
                     .Select(rp => rp.PermissionId)
-                    .ToList();
+                    .ToHashSet();
                 
                 // Create RolePermissions in batch (only for new permissions)
                 var newRolePermissions = insertedPermissions
