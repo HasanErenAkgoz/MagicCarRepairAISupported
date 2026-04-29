@@ -28,6 +28,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IVehicleRepository _vehicleRepository;
         private readonly ITenantService _tenantService;
+        private readonly IPaymentRepository _paymentRepository;
 
         public OpenAICustomerAnalysisService(
             ILogger<OpenAICustomerAnalysisService> logger,
@@ -38,7 +39,8 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             IServiceRatingRepository ratingRepository,
             IAppointmentRepository appointmentRepository,
             IVehicleRepository vehicleRepository,
-            ITenantService tenantService)
+            ITenantService tenantService,
+            IPaymentRepository paymentRepository)
         {
             _logger = logger;
             _aiOptions = aiOptions.Value;
@@ -49,6 +51,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             _appointmentRepository = appointmentRepository;
             _vehicleRepository = vehicleRepository;
             _tenantService = tenantService;
+            _paymentRepository = paymentRepository;
 
             // Initialize OpenAI client
             try
@@ -170,6 +173,12 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
                 .Where(v => v.ClientId == clientId)
                 .ToList() ?? new List<Domain.Entities.Vehicle>();
 
+            // Payments
+            var allPayments = await _paymentRepository.GetByCustomerIdAsync(customerId, cancellationToken);
+            data.Payments = allPayments?
+                .Where(p => p.ClientId == clientId && p.PaymentDate >= startDate && p.PaymentDate <= endDate)
+                .ToList() ?? new List<Domain.Entities.Payment>();
+
             return data;
         }
 
@@ -256,6 +265,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             var workOrders = customerData.WorkOrders;
             var invoices = customerData.Invoices;
             var ratings = customerData.Ratings;
+            var payments = customerData.Payments;
 
             var totalRevenue = workOrders.Sum(wo => wo.TotalAmount);
             var avgWorkOrderAmount = workOrders.Any() ? workOrders.Average(wo => wo.TotalAmount) : 0;
@@ -333,6 +343,41 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             if (customerValue == "Yüksek")
                 recommendations.Add("VIP müşteri programına dahil et");
 
+            // Ortalama ödeme gecikme günü
+            double averagePaymentDelayDays = 0;
+            var paidInvoicesWithDueDate = invoices
+                .Where(inv => inv.Status == InvoiceStatus.Paid && inv.DueDate.HasValue)
+                .ToList();
+
+            if (paidInvoicesWithDueDate.Any())
+            {
+                var totalDelayDays = 0.0;
+                var count = 0;
+
+                foreach (var invoice in paidInvoicesWithDueDate)
+                {
+                    var payment = payments
+                        .Where(p => p.InvoiceId == invoice.Id && p.PaymentStatus == PaymentStatus.Paid)
+                        .OrderByDescending(p => p.PaymentDate)
+                        .FirstOrDefault();
+
+                    if (payment != null)
+                    {
+                        var delay = (payment.PaymentDate - invoice.DueDate.Value).TotalDays;
+                        if (delay > 0)
+                        {
+                            totalDelayDays += delay;
+                        }
+                        count++;
+                    }
+                }
+
+                if (count > 0)
+                {
+                    averagePaymentDelayDays = totalDelayDays / count;
+                }
+            }
+
             var confidenceScore = workOrders.Count >= 5 ? 85 : workOrders.Count >= 2 ? 70 : 50;
 
             return new CustomerAnalysisDto
@@ -352,7 +397,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
                 RiskFactors = riskFactors,
                 Recommendations = recommendations,
                 PaymentBehavior = paymentBehavior,
-                AveragePaymentDelayDays = 0, // TODO: Calculate from invoice dates
+                AveragePaymentDelayDays = averagePaymentDelayDays,
                 Explanation = $"{customerSegment} müşteri segmentinde. {trend} trend gözleniyor. Toplam {totalRevenue:C} gelir.",
                 ConfidenceScore = confidenceScore
             };
@@ -470,6 +515,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             public List<Domain.Entities.ServiceRating> Ratings { get; set; } = new();
             public List<Domain.Entities.Appointment> Appointments { get; set; } = new();
             public List<Domain.Entities.Vehicle> Vehicles { get; set; } = new();
+            public List<Domain.Entities.Payment> Payments { get; set; } = new();
         }
     }
 }
