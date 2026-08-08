@@ -17,7 +17,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             _logger = logger;
         }
 
-        public async Task<DiagnosisResultDto> DiagnoseFromTextAsync(string complaint, int? vehicleId = null, List<string>? photoUrls = null, string language = "tr", CancellationToken cancellationToken = default)
+        public async Task<DiagnosisResultDto> DiagnoseFromTextAsync(string complaint, int? vehicleId = null, List<DiagnosisImage>? images = null, string language = "tr", CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("AI Diagnosis: Analyzing complaint text. VehicleId: {VehicleId}", vehicleId);
 
@@ -154,4 +154,3 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
         }
     }
 }
-

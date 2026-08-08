@@ -149,7 +149,15 @@ void ConfigureMiddleware(WebApplication app)
         app.UseSwaggerUI();
     }
 
-    app.UseStaticFiles();
+    // Uploads may contain vehicle, work-order and customer data. Do not expose
+    // them through the anonymous static-file middleware outside local development.
+    // The legacy flag is an explicit, temporary rollout escape hatch for clients
+    // that still render bare /uploads URLs; its production default is false.
+    var enableLegacyAnonymousUploads = app.Configuration.GetValue<bool>("Media:EnableLegacyAnonymousStaticFiles");
+    if (app.Environment.IsDevelopment() || enableLegacyAnonymousUploads)
+    {
+        app.UseStaticFiles();
+    }
     
     // Development'ta HTTP isteklerine izin ver (HTTPS redirection'ı devre dışı bırak)
     // Production'da HTTPS redirection aktif olacak
@@ -177,5 +185,3 @@ void ConfigureMiddleware(WebApplication app)
 }
 
 public partial class Program { }
-
-

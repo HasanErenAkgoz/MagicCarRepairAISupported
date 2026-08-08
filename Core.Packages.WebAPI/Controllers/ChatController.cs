@@ -32,6 +32,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
             return Ok(result);
         }
 
+
         /// <summary>
         /// İki kullanıcı arasındaki konuşmayı getir
         /// </summary>

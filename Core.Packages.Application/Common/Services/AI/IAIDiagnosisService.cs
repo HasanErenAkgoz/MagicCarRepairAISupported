@@ -2,6 +2,7 @@ using MagicCarRepairAISupported.Application.Common.Services.AI.Dtos;
 
 namespace MagicCarRepairAISupported.Application.Common.Services.AI
 {
+    public sealed record DiagnosisImage(byte[] Bytes, string ContentType);
     /// <summary>
     /// AI destekli arıza tespiti servisi
     /// </summary>
@@ -10,7 +11,7 @@ namespace MagicCarRepairAISupported.Application.Common.Services.AI
         /// <summary>
         /// Müşteri şikayetinden arıza tespiti yapar
         /// </summary>
-        Task<DiagnosisResultDto> DiagnoseFromTextAsync(string complaint, int? vehicleId = null, List<string>? photoUrls = null, string language = "tr", CancellationToken cancellationToken = default);
+        Task<DiagnosisResultDto> DiagnoseFromTextAsync(string complaint, int? vehicleId = null, List<DiagnosisImage>? images = null, string language = "tr", CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sesli şikayetten arıza tespiti yapar (opsiyonel)
@@ -23,4 +24,3 @@ namespace MagicCarRepairAISupported.Application.Common.Services.AI
         Task<GenerateDescriptionResultDto> GenerateShopDescriptionAsync(string shopName, string? address = null, string? phone = null, CancellationToken cancellationToken = default);
     }
 }
-

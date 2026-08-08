@@ -38,6 +38,7 @@ namespace MagicCarRepairAISupported.Persistence.Context
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<Translation> Translations { get; set; }
         public DbSet<UploadedFile> UploadedFiles { get; set; }
+        public DbSet<MediaAsset> MediaAssets { get; set; }
         public DbSet<ErrorMessage> ErrorMessages { get; set; }
         public DbSet<Part> Parts { get; set; }
         public DbSet<PartStock> PartStocks { get; set; }

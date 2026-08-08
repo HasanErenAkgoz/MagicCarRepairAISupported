@@ -120,6 +120,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Uploa
                 Data = new PhotoDto
                 {
                     PhotoId = $"ph{photo.Id}",
+                    MediaUrl = $"/api/media/vehicles/{vehicleId}/photos/{photo.Id}",
                     Url = filePath.StartsWith("/") ? filePath : $"/{filePath}"
                 }
             };

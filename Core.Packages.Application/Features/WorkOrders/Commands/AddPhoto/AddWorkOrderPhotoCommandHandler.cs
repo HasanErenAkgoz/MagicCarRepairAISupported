@@ -73,9 +73,9 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Add
             {
                 PhotoId = photo.Id,
                 WorkOrderId = workOrder.Id,
+                MediaUrl = $"/api/media/work-orders/{workOrder.Id}/photos/{photo.Id}",
                 FilePath = photo.FilePath
             };
         }
     }
 }
-

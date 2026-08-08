@@ -52,6 +52,7 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.AddPhoto
                 PhotoId = photo.Id,
                 PartId = part.Id,
                 FilePath = photo.FilePath,
+                MediaUrl = $"/api/media/parts/{part.Id}/photos/{photo.Id}",
                 DisplayOrder = photo.DisplayOrder,
             };
         }

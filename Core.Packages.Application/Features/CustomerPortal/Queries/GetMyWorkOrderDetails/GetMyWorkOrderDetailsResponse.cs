@@ -68,6 +68,9 @@ namespace MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.
     public class WorkOrderPhotoDto
     {
         public int Id { get; set; }
+        /// <summary>Customer-authorized media endpoint.</summary>
+        public string MediaUrl { get; set; } = string.Empty;
+        /// <summary>Legacy storage path retained only during migration.</summary>
         public string Url { get; set; }
         public int PhotoType { get; set; }
         public string? Description { get; set; }

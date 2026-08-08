@@ -128,6 +128,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetM
                 {
                     Id = p.Id,
                     Url = GetWorkOrderPhotoUrl(p),
+                    MediaUrl = $"/api/media/work-orders/{workOrder.Id}/photos/{p.Id}",
                     PhotoType = (int)p.PhotoType,
                     PhotoTypeName = p.PhotoType.ToString(),
                     Description = p.Description,

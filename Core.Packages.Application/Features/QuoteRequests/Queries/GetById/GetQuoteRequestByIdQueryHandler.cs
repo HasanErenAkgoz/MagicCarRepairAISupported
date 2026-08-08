@@ -88,6 +88,7 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.G
                         response.Photos = photoPaths.Select((path, idx) => new QuoteRequestPhotoDto
                         {
                             Id = idx + 1,
+                            MediaUrl = $"/api/media/quote-requests/{quoteRequest.Id}/photos/{idx + 1}",
                             FilePath = path,
                             UploadDate = quoteRequest.CreatedDate ?? DateTime.UtcNow
                         }).ToList();
@@ -128,4 +129,3 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.G
         }
     }
 }
-

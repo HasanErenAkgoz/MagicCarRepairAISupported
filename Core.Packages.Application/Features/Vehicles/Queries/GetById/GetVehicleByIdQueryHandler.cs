@@ -63,6 +63,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetByI
                 {
                     Id = p.Id,
                     FilePath = !string.IsNullOrWhiteSpace(p.FilePath) ? p.FilePath : (p.UploadedFile?.FilePath ?? string.Empty),
+                    MediaUrl = $"/api/media/vehicles/{vehicle.Id}/photos/{p.Id}",
                     PhotoType = p.PhotoType,
                     Description = p.Description,
                     DisplayOrder = p.DisplayOrder,
@@ -91,4 +92,3 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetByI
         }
     }
 }
-

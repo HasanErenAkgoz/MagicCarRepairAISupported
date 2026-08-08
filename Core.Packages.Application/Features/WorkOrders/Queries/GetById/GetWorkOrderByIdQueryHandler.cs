@@ -161,6 +161,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
             {
                 Id = photo.Id,
                 FilePath = NormalizeFilePath(GetFilePath(photo.FilePath, photo.UploadedFile?.FilePath)),
+                MediaUrl = $"/api/media/vehicles/{photo.VehicleId}/photos/{photo.Id}",
                 Description = photo.Description,
                 PhotoType = photo.PhotoType,
                 UploadDate = photo.UploadDate,
@@ -174,6 +175,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
             {
                 Id = photo.Id,
                 FilePath = NormalizeFilePath(GetFilePath(photo.FilePath, photo.UploadedFile?.FilePath)),
+                MediaUrl = $"/api/media/work-orders/{photo.WorkOrderId}/photos/{photo.Id}",
                 Description = photo.Description,
                 PhotoType = photo.PhotoType,
                 PhotoTypeName = photo.PhotoType.ToString(),
@@ -202,4 +204,3 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
         }
     }
 }
-

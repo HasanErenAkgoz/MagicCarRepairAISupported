@@ -59,7 +59,8 @@ namespace MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.Ge
                     var photo = await _photoRepository.GetByIdAsync(photoId);
                     if (photo != null && !string.IsNullOrEmpty(photo.FilePath))
                     {
-                        photoUrls.Add(photo.FilePath); // File path zaten URL formatında olmalı
+                        // A portfolio is the explicit publication decision; never expose its storage path.
+                        photoUrls.Add($"/api/public-media/clients/{request.ClientId}/portfolios/{portfolio.Id}/photos/{photoId}");
                     }
                 }
 

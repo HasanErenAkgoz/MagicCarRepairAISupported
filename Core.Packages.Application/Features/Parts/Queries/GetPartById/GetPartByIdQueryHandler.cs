@@ -43,6 +43,7 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Queries.GetPartBy
                 {
                     Id = ph.Id,
                     FilePath = ph.FilePath,
+                    MediaUrl = $"/api/media/parts/{part.Id}/photos/{ph.Id}",
                     Description = ph.Description,
                     DisplayOrder = ph.DisplayOrder,
                     UploadDate = ph.UploadDate,
@@ -53,4 +54,3 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Queries.GetPartBy
         }
     }
 }
-

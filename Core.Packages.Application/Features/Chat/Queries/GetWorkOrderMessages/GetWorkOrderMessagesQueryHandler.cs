@@ -23,14 +23,19 @@ namespace MagicCarRepairAISupported.Application.Features.Chat.Queries.GetWorkOrd
         {
             var clientId = _tenantService.GetCurrentClientId() ?? throw new DomainException("CLIENT_ID_REQUIRED");
 
-            var messages = await _chatMessageRepository.GetMessagesByWorkOrderAsync(
-                request.WorkOrderId,
-                request.Skip,
-                request.Take,
-                cancellationToken);
+            var skip = Math.Max(request.Skip ?? 0, 0);
+            var take = Math.Clamp(request.Take ?? 50, 1, 100);
+            var messages = await _chatMessageRepository.Query()
+                .Where(m => m.WorkOrderId == request.WorkOrderId && m.ClientId == clientId)
+                .Include(m => m.Sender)
+                .Include(m => m.Receiver)
+                .OrderByDescending(m => m.SentDate)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync(cancellationToken);
 
             var totalCount = await _chatMessageRepository.Query()
-                .CountAsync(m => m.WorkOrderId == request.WorkOrderId, cancellationToken);
+                .CountAsync(m => m.WorkOrderId == request.WorkOrderId && m.ClientId == clientId, cancellationToken);
 
             var messageDtos = messages.Select(m => new GetConversation.ChatMessageDto
             {

@@ -39,6 +39,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetM
     {
         public int Id { get; set; }
         public string Url { get; set; } = string.Empty;
+        public string MediaUrl { get; set; } = string.Empty;
         public int PhotoType { get; set; }
         public string PhotoTypeName { get; set; } = string.Empty;
         public string? Description { get; set; }

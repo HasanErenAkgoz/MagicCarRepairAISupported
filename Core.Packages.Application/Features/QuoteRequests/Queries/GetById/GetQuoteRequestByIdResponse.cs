@@ -60,9 +60,9 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.G
     public class QuoteRequestPhotoDto
     {
         public int Id { get; set; }
+        public string MediaUrl { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
         public string? Description { get; set; }
         public DateTime UploadDate { get; set; }
     }
 }
-

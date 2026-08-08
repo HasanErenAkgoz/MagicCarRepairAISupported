@@ -118,6 +118,7 @@ namespace MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.
                 Photos = workOrder.Photos?.Select(p => new WorkOrderPhotoDto
                 {
                     Id = p.Id,
+                    MediaUrl = $"/api/customer-media/customers/{currentCustomer.Id}/work-orders/{workOrder.Id}/photos/{p.Id}",
                     Url = p.FilePath,
                     PhotoType = (int)p.PhotoType,
                     Description = p.Description,

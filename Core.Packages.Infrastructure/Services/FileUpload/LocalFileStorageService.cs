@@ -27,21 +27,23 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.FileUpload
 
         public async Task<string> UploadFileAsync(IFormFile file, string containerName, CancellationToken cancellationToken)
         {
-            string folderPath = Path.Combine(_rootPath, containerName);
+            var safeContainerName = GetSafeContainerName(containerName);
+            var safeFileName = GetSafeFileName(file.FileName);
+            string folderPath = Path.Combine(_rootPath, safeContainerName);
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
 
-            string filePath = Path.Combine(folderPath, file.FileName);
+            string filePath = Path.Combine(folderPath, safeFileName);
 
             // Dosyay� kaydet
             using var stream = new FileStream(filePath, FileMode.Create);
             await file.CopyToAsync(stream, cancellationToken);
 
-            string fileUrl = $"/uploads/{containerName}/{file.FileName}";
+            string fileUrl = $"/uploads/{safeContainerName}/{safeFileName}";
 
             var uploadedFile = new UploadedFile
             {
-                FileName = file.FileName,
+                FileName = safeFileName,
                 FilePath = fileUrl,
                 FileType = GetFileType(file.FileName),
             };
@@ -51,7 +53,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.FileUpload
         }
         public async Task<bool> DeleteFileAsync(string fileName, string containerName, CancellationToken cancellationToken)
         {
-            string filePath = Path.Combine(_rootPath, containerName, fileName);
+            string filePath = GetSafeFilePath(fileName, containerName);
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
@@ -62,7 +64,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.FileUpload
 
         public async Task<Stream?> GetFileAsync(string fileName, string containerName)
         {
-            string filePath = Path.Combine(_rootPath, containerName, fileName);
+            string filePath = GetSafeFilePath(fileName, containerName);
             if (!File.Exists(filePath))
                 return null;
 
@@ -80,6 +82,37 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.FileUpload
                 ".pdf" or ".docx" or ".xlsx" => FileType.Document,
                 _ => FileType.Other
             };
+        }
+
+        private string GetSafeFilePath(string fileName, string containerName)
+        {
+            return Path.Combine(_rootPath, GetSafeContainerName(containerName), GetSafeFileName(fileName));
+        }
+
+        private static string GetSafeFileName(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName) || Path.GetFileName(fileName) != fileName)
+            {
+                throw new ArgumentException("Invalid file name.", nameof(fileName));
+            }
+
+            return fileName;
+        }
+
+        private static string GetSafeContainerName(string containerName)
+        {
+            if (string.IsNullOrWhiteSpace(containerName) || Path.IsPathRooted(containerName))
+            {
+                throw new ArgumentException("Invalid container name.", nameof(containerName));
+            }
+
+            var segments = containerName.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            if (segments.Length == 0 || segments.Any(segment => segment is "." or ".." || Path.GetFileName(segment) != segment))
+            {
+                throw new ArgumentException("Invalid container name.", nameof(containerName));
+            }
+
+            return Path.Combine(segments);
         }
     }
 }

@@ -71,6 +71,8 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
     {
         public int Id { get; set; }
         public string FilePath { get; set; }
+        /// <summary>Tenant-authorized vehicle-photo endpoint.</summary>
+        public string MediaUrl { get; set; } = string.Empty;
         public string? Description { get; set; }
         public string? PhotoType { get; set; }
         public DateTime UploadDate { get; set; }
@@ -121,10 +123,10 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
     {
         public int Id { get; set; }
         public string FilePath { get; set; }
+        public string MediaUrl { get; set; } = string.Empty;
         public string? Description { get; set; }
         public WorkOrderPhotoType PhotoType { get; set; }
         public string PhotoTypeName { get; set; }
         public DateTime UploadDate { get; set; }
     }
 }
-

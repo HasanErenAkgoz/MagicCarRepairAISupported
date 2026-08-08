@@ -11,7 +11,10 @@ namespace MagicCarRepairAISupported.Application
     {
         public static IServiceCollection AddCoreApplicationServices(this IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(MappingProfile).Assembly);
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.DisableConstructorMapping();
+            }, typeof(MappingProfile).Assembly);
             services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
             services.AddValidatorsFromAssemblyContaining<RegisterCommandValidator>();
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
@@ -24,11 +27,6 @@ namespace MagicCarRepairAISupported.Application
 
             // Translation Service
             services.AddScoped<ITranslationService, TranslationService>();
-
-            services.AddAutoMapper(cfg =>
-            {
-                cfg.DisableConstructorMapping();
-            });
 
             return services;
         }

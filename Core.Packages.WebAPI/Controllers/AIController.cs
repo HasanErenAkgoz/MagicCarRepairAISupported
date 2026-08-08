@@ -1,5 +1,6 @@
 using MagicCarRepairAISupported.Application.Features.AI.Commands.Chat;
 using MagicCarRepairAISupported.Application.Features.AI.Commands.AnalyzeDamagePhotos;
+using MagicCarRepairAISupported.Application.Features.AI.Commands.UploadDiagnosisAsset;
 using MagicCarRepairAISupported.Application.Features.AI.Commands.Diagnose;
 using MagicCarRepairAISupported.Application.Features.AI.Commands.GenerateDescription;
 using MagicCarRepairAISupported.Application.Features.AI.Queries.OptimizeAppointments;
@@ -22,10 +23,12 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
     public class AIController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IWebHostEnvironment _environment;
 
-        public AIController(IMediator mediator)
+        public AIController(IMediator mediator, IWebHostEnvironment environment)
         {
             _mediator = mediator;
+            _environment = environment;
         }
 
         /// <summary>
@@ -99,6 +102,15 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
             return Ok(result);
         }
 
+        [HttpPost("diagnosis-assets")]
+        [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadDiagnosisAsset([FromForm] UploadDiagnosisAssetCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
         /// <summary>
         /// AI destekli parça önerisi - İş emri veya araç bilgisine göre parça öner
         /// </summary>
@@ -139,10 +151,13 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// AI destekli hasar fotoğrafı analizi - Fotoğraflardan hasar tespiti ve maliyet tahmini
         /// </summary>
         [HttpPost("analyze-damage-photos")]
-        [AllowAnonymous]
-        [EnableRateLimiting("ai-anonymous")]
+        [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
         public async Task<IActionResult> AnalyzeDamagePhotos([FromBody] AnalyzeDamagePhotosCommand command)
         {
+            // The legacy command accepts raw paths. Production must not dereference caller input.
+            if (_environment.IsProduction())
+                return StatusCode(StatusCodes.Status410Gone, new { message = "Damage photo analysis is disabled until authorized media asset IDs are available." });
+
             var acceptLang = Request.Headers["Accept-Language"].FirstOrDefault() ?? "tr";
             var primaryLang = acceptLang.Split(',')[0].Trim().ToLower();
             command.Language = primaryLang.StartsWith("en") ? "en" : "tr";

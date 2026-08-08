@@ -71,7 +71,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             }
         }
 
-        public async Task<DiagnosisResultDto> DiagnoseFromTextAsync(string complaint, int? vehicleId = null, List<string>? photoUrls = null, string language = "tr", CancellationToken cancellationToken = default)
+        public async Task<DiagnosisResultDto> DiagnoseFromTextAsync(string complaint, int? vehicleId = null, List<DiagnosisImage>? images = null, string language = "tr", CancellationToken cancellationToken = default)
         {
             if (_openAIClient == null)
             {
@@ -83,7 +83,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             {
                 complaint = SanitizeOpenAiUserText(complaint);
 
-                _logger.LogInformation("AI Diagnosis: Analyzing complaint text. VehicleId: {VehicleId}, Photos: {PhotoCount}", vehicleId, photoUrls?.Count ?? 0);
+                _logger.LogInformation("AI Diagnosis: Analyzing complaint text. VehicleId: {VehicleId}, Photos: {PhotoCount}", vehicleId, images?.Count ?? 0);
 
                 // Get vehicle context if available
                 string vehicleContext = string.Empty;
@@ -136,28 +136,11 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
 
                 var outputLanguage = language == "en" ? "English" : "Turkish";
 
-                bool hasPhotos = photoUrls != null && photoUrls.Count > 0;
+                bool hasPhotos = images != null && images.Count > 0;
                 if (hasPhotos)
                 {
                     // Helps detect client-side “previous photo still included” issues without logging full URLs.
-                    var photoHints = photoUrls!
-                        .Take(5)
-                        .Select(u =>
-                        {
-                            try
-                            {
-                                if (u.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-                                    return new Uri(u).AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries).LastOrDefault() ?? "<url>";
-                                return Path.GetFileName(u);
-                            }
-                            catch
-                            {
-                                return "<bad-url>";
-                            }
-                        })
-                        .ToArray();
-
-                    _logger.LogInformation("AI Vision: PhotoCount={PhotoCount}, PhotoHints={PhotoHints}", photoUrls!.Count, string.Join(",", photoHints));
+                    _logger.LogInformation("AI Vision: PhotoCount={PhotoCount}", images!.Count);
                 }
 
                 // Detect diagnosis type from complaint keywords + photo presence
@@ -353,12 +336,8 @@ Use this format as guidance — replace with real values from your analysis.";
                 {
                     var contentItems = new List<ChatMessageContentItem> { new ChatMessageTextContentItem(userPrompt.ToString()) };
 
-                    var indexedPhotoTasks = photoUrls!
-                        .Select((photoUrl, index) => TryBuildVisionImageItemAsync(index, photoUrl, imageDetailLevel, cancellationToken))
-                        .ToArray();
-                    var photoResults = await Task.WhenAll(indexedPhotoTasks);
-                    foreach (var item in photoResults.OrderBy(r => r.index).Select(r => r.item).Where(i => i != null))
-                        contentItems.Add(item!);
+                    foreach (var image in images!.Take(5))
+                        contentItems.Add(new ChatMessageImageContentItem(BinaryData.FromBytes(image.Bytes), image.ContentType, imageDetailLevel));
 
                     userMessage = new ChatRequestUserMessage(contentItems);
                 }

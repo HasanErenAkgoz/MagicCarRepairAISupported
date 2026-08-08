@@ -48,11 +48,17 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetByI
     public class VehiclePhotoDto
     {
         public int Id { get; set; }
+        /// <summary>
+        /// Legacy storage path. Kept during the mobile migration; do not use this to request media.
+        /// </summary>
         public string FilePath { get; set; }
+        /// <summary>
+        /// Tenant-authorized URL for this private vehicle photo.
+        /// </summary>
+        public string MediaUrl { get; set; } = string.Empty;
         public string? PhotoType { get; set; }
         public string? Description { get; set; }
         public int DisplayOrder { get; set; }
         public DateTime UploadDate { get; set; }
     }
 }
-

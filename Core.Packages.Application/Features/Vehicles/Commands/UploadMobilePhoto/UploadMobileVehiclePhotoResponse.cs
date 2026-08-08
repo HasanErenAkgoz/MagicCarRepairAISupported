@@ -12,6 +12,9 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Uploa
     public class PhotoDto
     {
         public string PhotoId { get; set; } = string.Empty;
+        /// <summary>Tenant-authorized private-media endpoint.</summary>
+        public string MediaUrl { get; set; } = string.Empty;
+        /// <summary>Legacy path, retained only for backwards compatibility during migration.</summary>
         public string Url { get; set; } = string.Empty;
     }
 }

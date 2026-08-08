@@ -39,9 +39,9 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Queries.GetPartBy
     {
         public int Id { get; set; }
         public string FilePath { get; set; }
+        public string MediaUrl { get; set; } = string.Empty;
         public string? Description { get; set; }
         public int DisplayOrder { get; set; }
         public DateTime UploadDate { get; set; }
     }
 }
-
