@@ -60,6 +60,7 @@
 | 2026-08-09 | AppSec + Frontend + QA | AI Markdown renderer, Expo SDK 55 uyumlu `react-native-markdown-renderer@4.1.1` ile değiştirildi | React 19.2/RN 0.83.2 peer uyumu ve lockfile dry-run doğrulandı; `markdown-it@14.3.0`/`linkify-it@5.0.2` eski yüksek bulguları kaldırdı. Production audit: 31 toplam, 21 high, 0 critical (önce 33/22/0). Renderer, mevcut root React Native bulgusunun peer-effect zincirinde görünür; ek RN kopyası veya renderer özel advisory yok. 17/17 Jest suite, 81/81 test, lint 0 error/188 warning, `tsc --noEmit` geçti. |
 | 2026-08-09 | Frontend + QA | WorkOrderEdit maliyet özeti tam, tipli `WorkOrderCostSummary` sunum bileşenine ayrıldı | Toplamlar ve KDV state/callback'i ekran sahipliğinde kaldı; 17/17 Jest suite, lint ve `tsc --noEmit` geçti. |
 | 2026-08-09 | Frontend + QA | WorkOrderEdit teknisyen seçici tam, tipli `WorkOrderTechnicianSelector` bileşenine ayrıldı | Picker state ve seçim callback'leri ekran sahipliğinde kaldı; 17/17 Jest suite, lint ve `tsc --noEmit` geçti. |
+| 2026-08-09 | Frontend + QA | WorkOrderEdit parça satırı tam, tipli `WorkOrderPartItem` bileşenine ayrıldı | Form state ve değişiklik/silme callback'leri ekran sahipliğinde kaldı; 17/17 Jest suite, lint ve `tsc --noEmit` geçti. |
 
 ## Açık riskler ve kararlar
 
