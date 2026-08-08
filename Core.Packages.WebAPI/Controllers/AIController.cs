@@ -7,9 +7,12 @@ using MagicCarRepairAISupported.Application.Features.AI.Queries.ForecastStock;
 using MagicCarRepairAISupported.Application.Features.AI.Queries.AnalyzeCustomers;
 using MagicCarRepairAISupported.Application.Features.AI.Queries.AnalyzeEmployeePerformance;
 using MagicCarRepairAISupported.Application.Features.AI.Queries.SuggestParts;
+using MagicCarRepairAISupported.Application.Features.AI.Queries.ResolvePartPrices;
 using MediatR;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
@@ -29,6 +32,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// AI Chatbot ile konuş
         /// </summary>
         [HttpPost("chat")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> Chat([FromBody] ChatCommand command)
         {
             var result = await _mediator.Send(command);
@@ -39,6 +43,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// AI destekli randevu optimizasyonu - En uygun randevu saatlerini öner
         /// </summary>
         [HttpGet("optimize-appointments")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> OptimizeAppointments([FromQuery] OptimizeAppointmentsQuery query)
         {
             var result = await _mediator.Send(query);
@@ -49,6 +54,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// AI destekli stok tahmini - Parça stok tüketimini tahmin et
         /// </summary>
         [HttpGet("forecast-stock")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> ForecastStock([FromQuery] ForecastStockQuery query)
         {
             var result = await _mediator.Send(query);
@@ -59,6 +65,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// AI destekli müşteri analizi - Müşteri davranışını ve değerini analiz et
         /// </summary>
         [HttpGet("analyze-customers")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> AnalyzeCustomers([FromQuery] AnalyzeCustomersQuery query)
         {
             var result = await _mediator.Send(query);
@@ -69,6 +76,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// AI destekli personel performans analizi - Personel performansını analiz et
         /// </summary>
         [HttpGet("analyze-employee-performance")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> AnalyzeEmployeePerformance([FromQuery] AnalyzeEmployeePerformanceQuery query)
         {
             var result = await _mediator.Send(query);
@@ -79,6 +87,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// AI destekli arıza teşhisi - Müşteri şikayetine göre olası arızaları, gerekli parça ve işçilikleri tahmin et
         /// </summary>
         [HttpPost("diagnose")]
+        [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
         public async Task<IActionResult> Diagnose([FromBody] DiagnoseCommand command)
         {
             // Read Accept-Language from request header; default to "tr"
@@ -94,6 +103,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// AI destekli parça önerisi - İş emri veya araç bilgisine göre parça öner
         /// </summary>
         [HttpGet("suggest-parts")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> SuggestParts([FromQuery] SuggestPartsQuery query)
         {
             var result = await _mediator.Send(query);
@@ -105,6 +115,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// </summary>
         [HttpPost("generate-description")]
         [AllowAnonymous]
+        [EnableRateLimiting("ai-anonymous")]
         public async Task<IActionResult> GenerateDescription([FromBody] GenerateDescriptionCommand command)
         {
             var result = await _mediator.Send(command);
@@ -112,10 +123,24 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         }
 
         /// <summary>
+        /// AI teşhis sonrası çapraz servis envanterinde parça fiyatı çözümleme.
+        /// Tüm aktif ve public-profile açık servisler taranır; fiyat + güven skoru döner.
+        /// </summary>
+        [HttpGet("resolve-part-prices")]
+        [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
+        public async Task<IActionResult> ResolvePartPrices([FromQuery] ResolvePartPricesQuery query)
+        {
+            var result = await _mediator.Send(query);
+            if (result.Success) return Ok(result);
+            return BadRequest(result);
+        }
+
+        /// <summary>
         /// AI destekli hasar fotoğrafı analizi - Fotoğraflardan hasar tespiti ve maliyet tahmini
         /// </summary>
         [HttpPost("analyze-damage-photos")]
         [AllowAnonymous]
+        [EnableRateLimiting("ai-anonymous")]
         public async Task<IActionResult> AnalyzeDamagePhotos([FromBody] AnalyzeDamagePhotosCommand command)
         {
             var acceptLang = Request.Headers["Accept-Language"].FirstOrDefault() ?? "tr";

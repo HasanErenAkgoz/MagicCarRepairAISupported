@@ -15,7 +15,8 @@ namespace MagicCarRepairAISupported.Application.Features.Invoices.Profiles
         public InvoiceMappingProfile()
         {
             CreateMap<InvoiceEntity, CreateInvoiceResponse>();
-            CreateMap<InvoiceEntity, GenerateInvoiceFromWorkOrderResponse>();
+            CreateMap<InvoiceEntity, GenerateInvoiceFromWorkOrderResponse>()
+                .ForMember(d => d.InvoiceId, opt => opt.MapFrom(s => s.Id));
             CreateMap<InvoiceEntity, UpdateInvoiceStatusResponse>();
             CreateMap<InvoiceEntity, GetAllInvoicesResponse>();
             CreateMap<InvoiceItem, GetByIdInvoiceItemDto>();

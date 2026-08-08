@@ -34,7 +34,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetM
                 throw new DomainException("INVALID_WORK_ORDER_ID", new { Id = request.Id });
             }
 
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // AsSplitQuery: büyük Include zincirinde kartezyen çarpım önlenir
             // AsNoTracking: read-only sorgu, change tracking overhead'i yok

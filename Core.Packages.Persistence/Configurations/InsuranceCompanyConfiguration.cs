@@ -39,7 +39,7 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasMaxLength(500); // Encrypted in production
 
             builder.Property(i => i.SupportedInsuranceTypes)
-                .HasColumnType("nvarchar(max)"); // JSON
+                .HasColumnType("text"); // JSON
 
             builder.Property(i => i.IsActive)
                 .IsRequired()

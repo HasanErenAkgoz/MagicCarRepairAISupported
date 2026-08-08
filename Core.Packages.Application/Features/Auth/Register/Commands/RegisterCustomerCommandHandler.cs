@@ -4,6 +4,7 @@ using MagicCarRepairAISupported.Application.Shared.Result;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories;
+using MagicCarRepairAISupported.Domain.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using UserEntity = MagicCarRepairAISupported.Domain.Entities.User;
@@ -16,6 +17,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
         private readonly RoleManager<Role> _roleManager;
         private readonly IMediator _mediator;
         private readonly ITenantService _tenantService;
+        private readonly IClientRepository _clientRepository;
         private readonly IVehicleRepository _vehicleRepository;
 
         public RegisterCustomerCommandHandler(
@@ -23,12 +25,14 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
             RoleManager<Role> roleManager,
             IMediator mediator,
             ITenantService tenantService,
+            IClientRepository clientRepository,
             IVehicleRepository vehicleRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _mediator = mediator;
             _tenantService = tenantService;
+            _clientRepository = clientRepository;
             _vehicleRepository = vehicleRepository;
         }
 
@@ -47,9 +51,17 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
                 return new ErrorDataResult<RegisterCustomerResponse>("Şifreler eşleşmiyor.");
             }
 
-            // 3. ClientId - Müşteriler için default 1 (genel platform) veya null olabilir
-            // Eğer müşteri bir tamirhaneye bağlı değilse, ClientId = 1 (sistem client'ı)
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            // 3. ClientId — tenant yoksa varsayılan 1; FK hatası önlemek için Clients tablosunda satır olmalı
+            var resolvedClientId = _tenantService.GetClientIdOrDefault();
+            var clientRow = await _clientRepository.GetByIdAsync(resolvedClientId, cancellationToken);
+            if (clientRow == null)
+            {
+                return new ErrorDataResult<RegisterCustomerResponse>(
+                    "Kayıt için geçerli bir servis kaydı bulunamadı. Sistemde en az bir client olmalı veya istek doğru tenant ile gönderilmeli.");
+            }
+
+            var clientId = clientRow.Id;
+            _tenantService.SetCurrentClientId(clientId);
 
             // 4. User oluştur
             var user = new UserEntity
@@ -60,7 +72,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
                 UserName = request.Email,
                 PhoneNumber = request.PhoneNumber,
                 Address = request.Address,
-                IdentityNo = request.IdentityNo ?? string.Empty,
+                IdentityNo = RequiredStringDefaults.ResolveIdentityNo(request.IdentityNo),
                 Language = request.Language, // Kullanıcının dil tercihi
                 UserType = UserType.Customer,
                 ClientId = clientId
@@ -106,7 +118,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                IdentityNo = request.IdentityNo ?? string.Empty,
+                IdentityNo = RequiredStringDefaults.ResolveIdentityNo(request.IdentityNo),
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
                 Address = request.Address,

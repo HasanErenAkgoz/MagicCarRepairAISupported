@@ -26,6 +26,15 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.ErrorMessage
         public async Task<string> GetMessageAsync(string errorCode, string? language = null, object? parameters = null)
         {
             language ??= _tenantService.GetCurrentLanguage();
+
+            // Normalize cases where callers pass exception message text instead of pure error code.
+            // Example: DomainException base message is "Translation key: SOME_CODE"
+            const string translationKeyPrefix = "Translation key: ";
+            if (!string.IsNullOrWhiteSpace(errorCode) &&
+                errorCode.StartsWith(translationKeyPrefix, StringComparison.Ordinal))
+            {
+                errorCode = errorCode[translationKeyPrefix.Length..].Trim();
+            }
             
             var cacheKey = $"{CACHE_KEY_PREFIX}{language}_{errorCode}";
             

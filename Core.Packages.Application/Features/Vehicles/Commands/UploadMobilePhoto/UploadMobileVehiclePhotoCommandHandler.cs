@@ -47,7 +47,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Uploa
                 throw new DomainException("INVALID_VEHICLE_ID", new { Id = request.VehicleId });
             }
 
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Vehicle kontrolü
             var vehicle = await _vehicleRepository.GetByIdAsync(vehicleId);

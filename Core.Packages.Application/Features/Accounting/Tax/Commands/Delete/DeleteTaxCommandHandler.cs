@@ -21,7 +21,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Tax.Commands
 
         public async Task<DeleteTaxResponse> Handle(DeleteTaxCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Tax'ı bul
             var tax = await _taxRepository.GetByIdAsync(request.Id);

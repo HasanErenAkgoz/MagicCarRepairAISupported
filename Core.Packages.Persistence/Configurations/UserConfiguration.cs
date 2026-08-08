@@ -30,7 +30,7 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasMaxLength(500);
 
             builder.Property(x => x.RecoveryCodes)
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(x => x.HasCompletedOnboarding)
                 .IsRequired();

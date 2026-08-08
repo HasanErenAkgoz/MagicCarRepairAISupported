@@ -19,7 +19,7 @@ namespace MagicCarRepairAISupported.Application.Features.Audit.Queries.GetDataCh
 
         public async Task<GetDataChangeHistoryResponse> Handle(GetDataChangeHistoryQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var logs = await _auditLogRepository.GetByEntityAsync(request.EntityName, request.EntityId, cancellationToken);
 

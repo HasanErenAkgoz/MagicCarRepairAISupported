@@ -1,11 +1,14 @@
+using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Common.Services.FileUpload;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Repositories;
+using MagicCarRepairAISupported.Persistence.Services;
 using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MagicCarRepairAISupported.Domain.UnitOfWork;
 using MagicCarRepairAISupported.Infrastructure.Configurations.Token;
 using MagicCarRepairAISupported.Infrastructure.Services.FileUpload;
 using MagicCarRepairAISupported.Persistence.Context;
+using MagicCarRepairAISupported.Persistence.Database;
 using MagicCarRepairAISupported.Persistence.Filters;
 using MagicCarRepairAISupported.Persistence.Repositories;
 using MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCore;
@@ -29,6 +32,7 @@ namespace MagicCarRepairAISupported.Persistence
             where TContext : DbContext
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IShopTrustService, ShopTrustService>();
             services.AddScoped<IPermissionRepository, PermissionRepositoriy>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
@@ -50,6 +54,9 @@ namespace MagicCarRepairAISupported.Persistence
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<IUserDeviceTokenRepository, UserDeviceTokenRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            // Tenant-aware customer reads (IgnoreQueryFilters + ClientId); do not use generic EfEntityRepository for Customer.
+            services.AddScoped<IEntityRepository<Customer, int>>(sp =>
+                sp.GetRequiredService<ICustomerRepository>());
             services.AddScoped<IVehicleRepository, VehicleRepository>();
             services.AddScoped<IIncomeRepository, IncomeRepository>();
             services.AddScoped<IExpenseRepository, ExpenseRepository>();
@@ -76,7 +83,6 @@ namespace MagicCarRepairAISupported.Persistence
             
             // Generic repositories for entities
             services.AddScoped(typeof(IEntityRepository<Vehicle, int>), typeof(EfEntityRepository<Vehicle, BaseDbContext>));
-            services.AddScoped(typeof(IEntityRepository<Customer, int>), typeof(EfEntityRepository<Customer, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<Employee, int>), typeof(EfEntityRepository<Employee, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<Part, int>), typeof(EfEntityRepository<Part, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<PartStock, int>), typeof(EfEntityRepository<PartStock, BaseDbContext>));
@@ -115,17 +121,18 @@ namespace MagicCarRepairAISupported.Persistence
             
             services.AddDbContext<TContext>(options =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                options.UseMagicCarRepairDatabase(configuration);
+                options.AddInterceptors(new Interceptors.RequiredStringSaveInterceptor());
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
-
             });
            
             services.AddIdentityCoreService(configuration);
             services.AddJwtAuthentication(configuration);
             services.AddSwaggerServices(configuration);
-            services.AddHostedService<Persistence.Startup.HostedServices.PermissionInitializerHostedService>();
+            // DatabaseSeed must run first: roles reference Clients (FK_Roles_Clients_ClientId).
             services.AddHostedService<Persistence.Startup.HostedServices.DatabaseSeedHostedService>();
+            services.AddHostedService<Persistence.Startup.HostedServices.PermissionInitializerHostedService>();
             services.AddHostedService<Persistence.Startup.HostedServices.StockAlertMonitoringHostedService>();
             services.AddHostedService<Infrastructure.Startup.HostedServices.AppointmentReminderHostedService>();
             services.AddHostedService<Infrastructure.Startup.HostedServices.InsuranceReminderHostedService>();
@@ -230,6 +237,9 @@ namespace MagicCarRepairAISupported.Persistence
             {
                 throw new InvalidOperationException("Security key must be at least 256 bits (32 characters) long.");
             }
+
+            // IOptions<TokenOptions> (e.g. TokenTestController); disambiguate from Microsoft.AspNetCore.Identity.TokenOptions
+            services.Configure<MagicCarRepairAISupported.Infrastructure.Configurations.Token.TokenOptions>(configuration.GetSection("TokenOptions"));
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenOptions.SecurityKey));
 

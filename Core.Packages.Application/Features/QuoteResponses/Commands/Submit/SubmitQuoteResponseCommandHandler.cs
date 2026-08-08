@@ -35,7 +35,7 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteResponses.Commands
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 // QuoteRequest kontrolü
                 var quoteRequest = await _quoteRequestRepository.GetQuoteRequestDetailsAsync(request.QuoteRequestId, cancellationToken);
@@ -63,6 +63,10 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteResponses.Commands
                     return new ErrorDataResult<SubmitQuoteResponseResponse>("You cannot submit a quote for your own request");
                 }
 
+                // AI-generated taleplerde teklif geçerliliği 1 gün; normalden 30 gün.
+                var defaultValidityDays = quoteRequest.IsAiGenerated ? 1 : 30;
+                var validUntilDate = request.ValidUntilDate ?? DateTime.UtcNow.AddDays(defaultValidityDays);
+
                 // QuoteResponse oluştur
                 var quoteResponse = new QuoteResponse
                 {
@@ -76,7 +80,7 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteResponses.Commands
                     WarrantyMonths = request.WarrantyMonths,
                     Status = QuoteResponseStatus.Pending.ToString(),
                     QuoteDate = DateTime.UtcNow,
-                    ValidUntilDate = request.ValidUntilDate ?? DateTime.UtcNow.AddDays(30),
+                    ValidUntilDate = validUntilDate,
                     Notes = request.Notes
                 };
 

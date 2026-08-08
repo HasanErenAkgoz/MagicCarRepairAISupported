@@ -29,5 +29,10 @@ namespace MagicCarRepairAISupported.Domain.Repositories
         /// Mesajları okundu olarak işaretle
         /// </summary>
         Task MarkMessagesAsReadAsync(int userId, int? senderId = null, int? workOrderId = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Kullanıcı silinmeden önce: gönderen veya alıcı olduğu tüm mesajları kaldırır (FK çakışmasını önler).
+        /// </summary>
+        Task DeleteAllInvolvingUserAsync(int userId, CancellationToken cancellationToken = default);
     }
 }

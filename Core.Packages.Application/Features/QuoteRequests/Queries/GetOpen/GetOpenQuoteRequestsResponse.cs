@@ -14,6 +14,10 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.G
         public DateTime QuoteDeadline { get; set; }
         public DateTime? CreatedDate { get; set; }
         public int DaysRemaining { get; set; }
+        /// <summary>AI tahmini bütçe alt ucu (müşterinin AI teşhisinden gelen tahmin)</summary>
+        public decimal? EstimatedCostMin { get; set; }
+        /// <summary>AI tahmini bütçe üst ucu</summary>
+        public decimal? EstimatedCostMax { get; set; }
     }
 }
 

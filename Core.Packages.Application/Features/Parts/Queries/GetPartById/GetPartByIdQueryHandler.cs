@@ -1,4 +1,5 @@
 using AutoMapper;
+using MagicCarRepairAISupported.Application.Features.Parts.Utils;
 using MagicCarRepairAISupported.Domain.Exceptions;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
@@ -30,6 +31,11 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Queries.GetPartBy
             response.StockLocation = part.Stock?.Location;
             response.IsLowStock = part.IsLowStock();
             response.SupplierName = part.Supplier?.CompanyName;
+            response.CompatibleVehicleBrands = PartFitmentJson.DeserializeStringArray(part.CompatibleVehicleBrands);
+            response.CompatibleVehicleModels = PartFitmentJson.DeserializeStringArray(part.CompatibleVehicleModels);
+            response.CompatibleYearFrom = part.CompatibleYearFrom;
+            response.CompatibleYearTo = part.CompatibleYearTo;
+            response.AdditionalOemCodes = PartFitmentJson.DeserializeStringArray(part.AdditionalOemCodes);
             response.Photos = (part.Photos ?? [])
                 .OrderBy(ph => ph.DisplayOrder)
                 .ThenBy(ph => ph.UploadDate)

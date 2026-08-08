@@ -3,10 +3,13 @@ using MagicCarRepairAISupported.Infrastructure;
 using MagicCarRepairAISupported.Persistence;
 using MagicCarRepairAISupported.Persistence.Context;
 using MagicCarRepairAISupported.Persistence.Middlewares;
-using MagicCarRepairAISupported.Persistence.Seeds;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using MagicCarRepairAISupported.WebAPI.Extensions;
 using MagicCarRepairAISupported.WebAPI.Hubs;
 using Microsoft.AspNetCore.RateLimiting;
+
+// SQL Server often used Unspecified/Local DateTime; allow until seed/handlers are fully UTC.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,14 +47,25 @@ builder.Services.AddRateLimiter(options =>
         opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
         opt.QueueLimit = 0;
     });
+    options.AddFixedWindowLimiter("ai-anonymous", opt =>
+    {
+        opt.PermitLimit = 10;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
     options.RejectionStatusCode = 429;
 });
 
+var defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+if (!string.IsNullOrWhiteSpace(defaultConnection))
+{
+    builder.Services.AddHealthChecks()
+        .AddNpgSql(defaultConnection, name: "postgresql");
+}
+
 ConfigureServices(builder);
 var app = builder.Build();
-
-// ── Startup seed: Araç fotoğrafları yoksa DB'ye ekle ─────────────────────
-await VehiclePhotoDataSeeder.SeedAsync(app.Services);
 
 ConfigureMiddleware(app);
 app.Run();
@@ -112,6 +126,7 @@ void ConfigureServices(WebApplicationBuilder builder)
     builder.Services.AddSignalRServices();
     
     builder.Services.AddCoreApplicationServices();
+    builder.Services.AddMagicCarRepairAuthorization();
     builder.Services.AddCoreInfrastructureServices(builder.Configuration);
     // AddSwaggerServices burada çağrılıyor (AddCorePersistenceServices içinde)
     builder.Services.AddCorePersistenceServices<BaseDbContext>(builder.Configuration);
@@ -152,6 +167,7 @@ void ConfigureMiddleware(WebApplication app)
 
     app.UseEndpoints(endpoints =>
     {
+        endpoints.MapHealthChecks("/health");
         endpoints.MapControllers();
         endpoints.MapHub<NotificationHub>("/hubs/notifications");
         endpoints.MapHub<WorkOrderHub>("/hubs/workorders");
@@ -160,6 +176,6 @@ void ConfigureMiddleware(WebApplication app)
     });
 }
 
-
+public partial class Program { }
 
 

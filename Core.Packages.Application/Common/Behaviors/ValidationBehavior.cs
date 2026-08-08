@@ -11,7 +11,8 @@ namespace MagicCarRepairAISupported.Application.Common.Behaviors
 
         public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
         {
-            _validators = validators;
+            // Some DI scenarios can pass null for IEnumerable<>; Any() on null throws NRE.
+            _validators = validators ?? Array.Empty<IValidator<TRequest>>();
         }
 
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)

@@ -26,6 +26,12 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Queries.GetAllPar
         public int MinimumStockLevel { get; set; }
         public bool IsLowStock { get; set; }
         public string? SupplierName { get; set; }
+
+        public string[]? CompatibleVehicleBrands { get; set; }
+        public string[]? CompatibleVehicleModels { get; set; }
+        public int? CompatibleYearFrom { get; set; }
+        public int? CompatibleYearTo { get; set; }
+        public string[]? AdditionalOemCodes { get; set; }
     }
 }
 

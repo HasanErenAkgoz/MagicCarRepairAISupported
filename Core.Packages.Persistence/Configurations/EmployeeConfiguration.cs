@@ -53,7 +53,7 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasDefaultValue(EmploymentStatus.Active);
 
             builder.Property(e => e.Specializations)
-                .HasColumnType("nvarchar(max)"); // JSON
+                .HasColumnType("text"); // JSON
 
             builder.Property(e => e.Address)
                 .HasMaxLength(500);

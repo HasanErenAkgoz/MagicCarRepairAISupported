@@ -2,6 +2,7 @@ using MagicCarRepairAISupported.Application.Features.Notifications.Commands.Mark
 using MagicCarRepairAISupported.Application.Features.Notifications.Commands.Send;
 using MagicCarRepairAISupported.Application.Features.Notifications.Commands.SendPushNotification;
 using MagicCarRepairAISupported.Application.Features.Notifications.Queries.GetByUser;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Bildirim gönderir
         /// </summary>
         [HttpPost]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> Send([FromBody] SendNotificationCommand command)
         {
             var result = await _mediator.Send(command);
@@ -79,6 +81,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Push notification gönderir
         /// </summary>
         [HttpPost("push")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> SendPushNotification([FromBody] SendPushNotificationCommand command)
         {
             var result = await _mediator.Send(command);

@@ -6,13 +6,15 @@ using MagicCarRepairAISupported.Application.Features.Accounting.Tax.Queries.GetA
 using MagicCarRepairAISupported.Application.Features.Accounting.Tax.Queries.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class TaxesController : ControllerBase
     {
         private readonly IMediator _mediator;

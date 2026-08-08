@@ -22,6 +22,13 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
             return await Context.Clients.FindAsync(id);
         }
 
+        public async Task<Client?> GetByIdForAuthAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await Context.Clients
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+        }
+
         public async Task<Client?> GetByCodeAsync(string code)
         {
             return await Context.Clients
@@ -39,9 +46,54 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
             return !await Context.Clients.AnyAsync(c => c.Code == code);
         }
 
+        /// <inheritdoc />
+        public async Task PrepareForClientUserDeletionAsync(int clientId, IReadOnlyList<int> userIds, CancellationToken cancellationToken)
+        {
+            // ChatMessage: Restrict on SenderId / ReceiverId — must go before AspNetUsers delete.
+            // IgnoreQueryFilters: IClientEntity global filter uses current tenant; target client may differ (e.g. system admin).
+            if (userIds.Count > 0)
+            {
+                await Context.ChatMessages
+                    .IgnoreQueryFilters()
+                    .Where(m =>
+                        m.ClientId == clientId
+                        || userIds.Contains(m.SenderId)
+                        || (m.ReceiverId != null && userIds.Contains(m.ReceiverId.Value)))
+                    .ExecuteDeleteAsync(cancellationToken);
+            }
+            else
+            {
+                await Context.ChatMessages.IgnoreQueryFilters().Where(m => m.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            }
+
+            // Reminder: Restrict on UserId
+            if (userIds.Count > 0)
+            {
+                await Context.Reminders
+                    .IgnoreQueryFilters()
+                    .Where(r => r.ClientId == clientId || userIds.Contains(r.UserId))
+                    .ExecuteDeleteAsync(cancellationToken);
+            }
+            else
+            {
+                await Context.Reminders.IgnoreQueryFilters().Where(r => r.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            }
+
+            // Customer / Employee optional UserId — default FK is non-cascade; clear before Identity delete
+            await Context.Customers
+                .IgnoreQueryFilters()
+                .Where(c => c.ClientId == clientId && c.UserId != null)
+                .ExecuteUpdateAsync(s => s.SetProperty(c => c.UserId, (int?)null), cancellationToken);
+
+            await Context.Employees
+                .IgnoreQueryFilters()
+                .Where(e => e.ClientId == clientId && e.UserId != null)
+                .ExecuteUpdateAsync(s => s.SetProperty(e => e.UserId, (int?)null), cancellationToken);
+        }
+
         /// <summary>
         /// Cascade-deletes all data belonging to a client in FK-safe order.
-        /// UserManager.DeleteAsync() for Identity users must be called separately BEFORE this method.
+        /// Call <see cref="PrepareForClientUserDeletionAsync"/> then UserManager.DeleteAsync for each user, then this method.
         /// </summary>
         public async Task DeleteCascadeAsync(int clientId, IEnumerable<int> userIds, CancellationToken cancellationToken)
         {
@@ -54,74 +106,92 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
                     .ExecuteDeleteAsync(cancellationToken);
 
             // --- Level 1: WorkOrder children ---
-            await Context.WorkOrderPhotos.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.WorkOrderItems.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.WorkOrderLabors.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.WorkOrderTimelines.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.WorkOrderPhotos.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.WorkOrderItems.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.WorkOrderLabors.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.WorkOrderTimelines.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
 
             // --- Level 1: Vehicle children ---
-            await Context.VehiclePhotos.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.VehiclePhotos.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
 
             // --- Level 1: QuoteRequest children ---
-            await Context.QuoteRequestPhotos.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.QuoteResponses.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.QuoteRequestPhotos.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.QuoteResponses.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
 
             // --- Level 1: Invoice children ---
-            await Context.InvoiceItems.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.InvoiceItems.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
 
             // --- Level 1: Part / stock children ---
-            await Context.PartPhotos.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.PartSuppliers.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.StockMovements.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.StockAlerts.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.AutoOrders.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.PartPhotos.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            // Invoice.SupplierId -> PartSupplier is Restrict; clear before deleting suppliers (Parts use SetNull on supplier delete)
+            await Context.Invoices.IgnoreQueryFilters()
+                .Where(x => x.ClientId == clientId && x.SupplierId != null)
+                .ExecuteUpdateAsync(s => s.SetProperty(i => i.SupplierId, (int?)null), cancellationToken);
+            await Context.PartSuppliers.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.StockMovements.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.StockAlerts.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.AutoOrders.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
 
             // --- Level 1: Insurance children ---
-            await Context.InsuranceClaims.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.InsuranceClaims.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
 
             // --- Level 1: Subscription children (table may not exist if migration pending) ---
-            await TryDeleteAsync(() => Context.SubscriptionPayments.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken), "SubscriptionPayments");
-            await Context.SalaryPayments.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await TryDeleteAsync(() => Context.SubscriptionPayments.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken), "SubscriptionPayments");
+            await Context.SalaryPayments.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
 
             // --- Level 1: User-device / session data ---
-            await Context.UserDeviceTokens.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.UserDevices.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.UserSessions.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.UserDeviceTokens.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.UserDevices.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.UserSessions.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+
+            // ServicePortfolios.WorkOrderId -> WorkOrders (Restrict) — must delete before WorkOrders
+            await Context.ServicePortfolios.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            // ServiceRatings.WorkOrderId -> WorkOrders (Restrict) — must delete before WorkOrders
+            await Context.ServiceRatings.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            // Commissions.PaymentId -> Payments (Restrict)
+            await TryDeleteAsync(() => Context.Commissions.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken), "Commissions");
+            // Payments: WorkOrderId, InvoiceId, CustomerId -> parents (Restrict) — delete before WorkOrders / Invoices / Customers
+            await Context.Payments.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            // Incomes.WorkOrderId, CustomerId -> WorkOrders, Customers (Restrict)
+            await Context.Incomes.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
 
             // --- Level 2: Parent entities ---
-            await Context.WorkOrders.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Vehicles.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.QuoteRequests.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Invoices.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.PartStocks.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Parts.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.InsurancePolicies.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await TryDeleteAsync(() => Context.Subscriptions.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken), "Subscriptions");
-            await Context.Employees.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Customers.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.Invoices.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.WorkOrders.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.InsurancePolicies.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.Vehicles.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.QuoteRequests.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.PartStocks.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.Parts.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            // Policies reference InsuranceCompanies; companies reference Client — delete after policies
+            await Context.InsuranceCompanies.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await TryDeleteAsync(() => Context.Subscriptions.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken), "Subscriptions");
+            await Context.Employees.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            // Appointments.CustomerId -> Customers (Restrict) — must delete before Customers
+            await Context.Appointments.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            // LoyaltyPoints.CustomerId -> Customers (Restrict) — must delete before Customers
+            await Context.LoyaltyPoints.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.Customers.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
 
             // --- Level 3: Standalone client-level entities ---
-            await Context.Appointments.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Payments.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Incomes.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Expenses.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Taxes.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await TryDeleteAsync(() => Context.Commissions.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken), "Commissions");
-            await Context.ServiceRatings.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.ChatMessages.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Notifications.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.AuditLogs.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.LoyaltyPoints.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Rewards.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Reminders.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.HelpArticles.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.ServicePortfolios.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.Certificates.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await Context.FacilityPhotos.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
-            await TryDeleteAsync(() => Context.UsageTracking.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken), "UsageTracking");
-            await Context.NotificationTemplates.Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.Expenses.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.Taxes.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.ChatMessages.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.Notifications.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.AuditLogs.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.Rewards.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.Reminders.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.HelpArticles.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.Certificates.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.FacilityPhotos.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await TryDeleteAsync(() => Context.UsageTracking.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken), "UsageTracking");
+            await Context.NotificationTemplates.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
 
-            // --- Level 4: Client itself ---
+            // Roles.ClientId -> Clients (Restrict); RolePermissions.RoleId -> Roles (Restrict) — before Client delete
+            await Context.RolePermissions.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+            await Context.Roles.IgnoreQueryFilters().Where(x => x.ClientId == clientId).ExecuteDeleteAsync(cancellationToken);
+
+            // --- Level 4: Client itself (no tenant filter on Client entity) ---
             await Context.Clients.Where(x => x.Id == clientId).ExecuteDeleteAsync(cancellationToken);
         }
 

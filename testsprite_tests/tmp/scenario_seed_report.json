@@ -1,0 +1,33 @@
+{
+  "targets": {
+    "customers": 8,
+    "vehicles_per_customer": 1,
+    "work_orders": 10,
+    "work_orders_for_invoice": 3,
+    "parts": 10,
+    "employees": 3,
+    "portal_test_users": 1,
+    "manager_test_users": 1
+  },
+  "actions": [],
+  "counts": {
+    "customers": 166,
+    "parts": 12,
+    "work_orders": 67,
+    "employees": 45,
+    "invoices": 35
+  },
+  "anchor_customer": {
+    "action": "insert_or_exists",
+    "customerId": 1
+  },
+  "manager_user": {
+    "email": "manager@magiccar.com",
+    "action": "login"
+  },
+  "portal_user": {
+    "email": "testsprite_portal_scenario@example.com",
+    "password": "TestSprite1!",
+    "action": "login"
+  }
+}

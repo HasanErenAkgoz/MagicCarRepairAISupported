@@ -14,13 +14,15 @@ using MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetInsura
 using MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetInsuranceClaimById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/insurance")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class InsuranceController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -37,7 +39,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         public async Task<IActionResult> GetAllInsuranceCompanies([FromQuery] GetAllInsuranceCompaniesQuery query)
         {
             var result = await _mediator.Send(query);
-            return Ok(result);
+            return Ok(new { success = true, data = result.Companies, meta = new { result.TotalCount, result.PageNumber, result.PageSize } });
         }
 
         /// <summary>
@@ -79,7 +81,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         {
             var query = new GetExpiringPoliciesQuery { DaysBeforeExpiration = daysBeforeExpiration };
             var result = await _mediator.Send(query);
-            return Ok(result);
+            return Ok(new { success = true, data = result.Policies, meta = new { result.TotalCount } });
         }
 
         /// <summary>
@@ -111,7 +113,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         {
             var query = new GetInsurancePoliciesByVehicleQuery { VehicleId = vehicleId };
             var result = await _mediator.Send(query);
-            return Ok(result);
+            return Ok(new { success = true, data = result.Policies });
         }
 
         /// <summary>
@@ -122,7 +124,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         {
             var query = new GetInsurancePoliciesByCustomerQuery { CustomerId = customerId, ActiveOnly = activeOnly };
             var result = await _mediator.Send(query);
-            return Ok(result);
+            return Ok(new { success = true, data = result.Policies });
         }
 
         /// <summary>
@@ -144,7 +146,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         {
             var query = new GetInsuranceClaimsByWorkOrderQuery { WorkOrderId = workOrderId };
             var result = await _mediator.Send(query);
-            return Ok(result);
+            return Ok(new { success = true, data = result.Claims });
         }
 
         /// <summary>
@@ -177,7 +179,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         {
             var query = new GetInsuranceClaimByIdQuery { Id = id };
             var result = await _mediator.Send(query);
-            return Ok(result);
+            return Ok(new { success = true, data = result });
         }
     }
 }

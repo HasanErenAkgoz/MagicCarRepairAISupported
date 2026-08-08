@@ -10,13 +10,15 @@ using MagicCarRepairAISupported.Application.Features.Invoices.Queries.GetById;
 using MagicCarRepairAISupported.Application.Features.Invoices.Queries.GetOverdue;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class InvoicesController : ControllerBase
     {
         private readonly IMediator _mediator;

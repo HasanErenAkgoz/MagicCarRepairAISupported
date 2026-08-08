@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.SalaryPaymen
 
         public async Task<GetAllSalaryPaymentsResponse> Handle(GetAllSalaryPaymentsQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var query = _salaryPaymentRepository.Query()
                 .Include(s => s.Employee)

@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.Expo
 
         public async Task<byte[]> Handle(ExportWorkOrdersQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var query = _workOrderRepository.Query()
                 .Include(wo => wo.Customer)

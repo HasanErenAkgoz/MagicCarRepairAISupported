@@ -3,12 +3,13 @@ using MagicCarRepairAISupported.Application.Common.Services.Payment;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/mobile-payments")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
     public class MobilePaymentsController : ControllerBase
     {
         private readonly IMediator _mediator;

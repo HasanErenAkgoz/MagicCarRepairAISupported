@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetIn
             GetInsuranceClaimsByCustomerQuery request,
             CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var claims = await _insuranceClaimRepository.GetByCustomerIdAsync(
                 request.CustomerId, cancellationToken);

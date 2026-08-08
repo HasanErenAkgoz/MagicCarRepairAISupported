@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Expense.Quer
 
         public async Task<GetExpenseByIdResponse> Handle(GetExpenseByIdQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Gideri bul (Employee'ı da dahil et)
             var expense = await _expenseRepository.Query()

@@ -3,6 +3,7 @@ using MagicCarRepairAISupported.Application.Features.Payments.Commands.Initializ
 using MagicCarRepairAISupported.Application.Features.Payments.Commands.Refund;
 using MagicCarRepairAISupported.Application.Features.Payments.Queries.GetInstallmentOptions;
 using MagicCarRepairAISupported.Application.Features.Payments.Queries.GetPaymentHistory;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class PaymentsController : ControllerBase
     {
         private readonly IMediator _mediator;

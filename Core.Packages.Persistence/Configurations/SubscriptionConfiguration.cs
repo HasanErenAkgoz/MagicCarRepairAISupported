@@ -50,7 +50,7 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasDefaultValue(0);
 
             builder.Property(s => s.Features)
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(s => s.AutoRenew)
                 .IsRequired()

@@ -3,6 +3,7 @@ using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Exceptions;
 using MagicCarRepairAISupported.Domain.Repositories;
+using MagicCarRepairAISupported.Domain.Utils;
 using MediatR;
 
 namespace MagicCarRepairAISupported.Application.Features.Customers.Commands.Create
@@ -25,36 +26,47 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Commands.Crea
 
         public async Task<CreateCustomerResponse> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
+
+            var identityNo = RequiredStringDefaults.ResolveIdentityNo(request.IdentityNo);
+            var firstName = RequiredStringDefaults.Coalesce(request.FirstName);
+            var lastName = RequiredStringDefaults.Coalesce(request.LastName);
+            var email = RequiredStringDefaults.Coalesce(request.Email);
+            var phoneNumber = RequiredStringDefaults.Coalesce(request.PhoneNumber);
+            var address = RequiredStringDefaults.Coalesce(request.Address);
+            var language = RequiredStringDefaults.Coalesce(request.Language, "tr");
+            var dateOfBirth = request.DateTimeOfBirth == default
+                ? new DateTime(1990, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                : request.DateTimeOfBirth;
 
             // Business Rule: IdentityNo benzersiz olmalı (ClientId ile birlikte)
-            var existingCustomer = await _customerRepository.GetByIdentityNoAsync(request.IdentityNo, cancellationToken);
+            var existingCustomer = await _customerRepository.GetByIdentityNoAsync(identityNo, cancellationToken);
             if (existingCustomer != null && existingCustomer.ClientId == clientId)
             {
-                throw new DomainException("CUSTOMER_IDENTITY_NO_EXISTS", new { IdentityNo = request.IdentityNo });
+                throw new DomainException("CUSTOMER_IDENTITY_NO_EXISTS", new { IdentityNo = identityNo });
             }
 
             // Business Rule: Email benzersiz olmalı (opsiyonel kontrol)
-            if (!string.IsNullOrEmpty(request.Email))
+            if (!string.IsNullOrEmpty(email))
             {
-                var existingEmail = await _customerRepository.GetByEmailAsync(request.Email, cancellationToken);
+                var existingEmail = await _customerRepository.GetByEmailAsync(email, cancellationToken);
                 if (existingEmail != null && existingEmail.ClientId == clientId)
                 {
-                    throw new DomainException("CUSTOMER_EMAIL_EXISTS", new { Email = request.Email });
+                    throw new DomainException("CUSTOMER_EMAIL_EXISTS", new { Email = email });
                 }
             }
 
             // Entity oluştur
             var customer = new Customer
             {
-                IdentityNo = request.IdentityNo,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email,
-                PhoneNumber = request.PhoneNumber,
-                Address = request.Address ?? string.Empty,
-                DateTimeOfBirth = request.DateTimeOfBirth,
-                Language = request.Language,
+                IdentityNo = identityNo,
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email,
+                PhoneNumber = phoneNumber,
+                Address = address,
+                DateTimeOfBirth = dateOfBirth,
+                Language = language,
                 IsVip = request.IsVip,
                 UserId = request.UserId,
                 ClientId = clientId

@@ -21,13 +21,13 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasMaxLength(50);
 
             builder.Property(a => a.OldValues)
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(a => a.NewValues)
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(a => a.ChangedProperties)
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(a => a.IpAddress)
                 .HasMaxLength(50);

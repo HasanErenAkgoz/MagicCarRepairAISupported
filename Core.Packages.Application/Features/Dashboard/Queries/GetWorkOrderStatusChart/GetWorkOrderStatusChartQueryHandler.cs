@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetWo
 
         public async Task<List<GetWorkOrderStatusChartResponse>> Handle(GetWorkOrderStatusChartQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var workOrders = await _workOrderRepository.Query()
                 .Where(wo => wo.ClientId == clientId)

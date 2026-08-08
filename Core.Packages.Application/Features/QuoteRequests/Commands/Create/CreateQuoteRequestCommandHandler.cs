@@ -64,6 +64,9 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Commands.
             var photoPathsJson = JsonSerializer.Serialize(request.PhotoPaths ?? new List<string>());
 
             // 5. QuoteRequest oluştur
+            // AI-generated taleplerde teklif penceresi 1 gün; normal taleplerde 7 gün.
+            var quoteDeadline = DateTime.UtcNow.AddDays(request.IsAiGenerated ? 1 : 7);
+
             var quoteRequest = new QuoteRequest
             {
                 CustomerId = request.CustomerId,
@@ -72,8 +75,14 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Commands.
                 Description = request.Description,
                 Status = QuoteStatus.Open,
                 EstimatedCost = request.EstimatedCost,
+                EstimatedCostMin = request.EstimatedCostMin,
+                EstimatedCostMax = request.EstimatedCostMax,
                 EstimatedDescription = request.EstimatedDescription,
-                ClientId = clientId
+                ClientId = clientId,
+                RequestType = request.RequestType,
+                UrgencyLevel = request.UrgencyLevel,
+                IsAiGenerated = request.IsAiGenerated,
+                QuoteDeadline = quoteDeadline,
             };
 
             await _quoteRequestRepository.AddAsync(quoteRequest, cancellationToken);

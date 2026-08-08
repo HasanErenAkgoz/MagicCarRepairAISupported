@@ -30,7 +30,7 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.DeletePh
 
         public async Task<IResult> Handle(DeletePartPhotoCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var part = await _partRepository.GetByIdAsync(request.PartId);
             if (part == null)

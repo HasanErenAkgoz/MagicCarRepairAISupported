@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Features.Invoices.Queries.GetByI
 
         public async Task<GetInvoiceByIdResponse> Handle(GetInvoiceByIdQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetCurrentClientId() ?? throw new DomainException("CLIENT_ID_REQUIRED");
 
             // Faturayı bul (Items, WorkOrder, Customer, Supplier dahil)
             var invoice = await _invoiceRepository.Query()

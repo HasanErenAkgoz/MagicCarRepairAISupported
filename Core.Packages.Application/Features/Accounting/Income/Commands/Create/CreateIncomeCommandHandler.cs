@@ -28,7 +28,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Income.Comma
 
         public async Task<CreateIncomeResponse> Handle(CreateIncomeCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // WorkOrder kontrolü (eğer belirtilmişse)
             if (request.WorkOrderId.HasValue)

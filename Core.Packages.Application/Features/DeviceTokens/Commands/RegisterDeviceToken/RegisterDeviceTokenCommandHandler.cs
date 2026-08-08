@@ -1,4 +1,3 @@
-using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Shared.Result;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Repositories;
@@ -13,20 +12,17 @@ namespace MagicCarRepairAISupported.Application.Features.DeviceTokens.Commands.R
     {
         private readonly IUserDeviceTokenRepository _deviceTokenRepository;
         private readonly IUserRepository _userRepository;
-        private readonly ITenantService _tenantService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public RegisterDeviceTokenCommandHandler(
             IUserDeviceTokenRepository deviceTokenRepository,
             IUserRepository userRepository,
-            ITenantService tenantService,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor httpContextAccessor)
         {
             _deviceTokenRepository = deviceTokenRepository;
             _userRepository = userRepository;
-            _tenantService = tenantService;
             _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -42,7 +38,14 @@ namespace MagicCarRepairAISupported.Application.Features.DeviceTokens.Commands.R
                     return new ErrorDataResult<RegisterDeviceTokenResponse>("Kullanıcı bilgisi bulunamadı.");
                 }
 
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var userEntity = await _userRepository.GetByIdAsync(userId, cancellationToken);
+                if (userEntity == null)
+                {
+                    return new ErrorDataResult<RegisterDeviceTokenResponse>("Kullanıcı bulunamadı.");
+                }
+
+                // AspNetUsers.ClientId FK — kullanıcı kaydındaki client; tenant??1 yanlış/eksik client ile FK kırılmasını önler
+                var clientId = userEntity.ClientId;
 
                 // Token zaten var mı kontrol et
                 var existingToken = await _deviceTokenRepository.GetByTokenAsync(request.Token, cancellationToken);

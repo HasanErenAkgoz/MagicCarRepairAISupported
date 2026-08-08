@@ -2,6 +2,7 @@ using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MagicCarRepairAISupported.Application.Features.Parts.Utils;
 
 namespace MagicCarRepairAISupported.Application.Features.Parts.Queries.GetAllParts
 {
@@ -80,7 +81,12 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Queries.GetAllPar
                     StockQuantity = p.Stock?.Quantity,
                     MinimumStockLevel = p.MinimumStockLevel,
                     IsLowStock = p.IsLowStock(),
-                    SupplierName = p.Supplier?.CompanyName
+                    SupplierName = p.Supplier?.CompanyName,
+                    CompatibleVehicleBrands = PartFitmentJson.DeserializeStringArray(p.CompatibleVehicleBrands),
+                    CompatibleVehicleModels = PartFitmentJson.DeserializeStringArray(p.CompatibleVehicleModels),
+                    CompatibleYearFrom = p.CompatibleYearFrom,
+                    CompatibleYearTo = p.CompatibleYearTo,
+                    AdditionalOemCodes = PartFitmentJson.DeserializeStringArray(p.AdditionalOemCodes),
                 }).ToList(),
                 TotalCount = totalCount,
                 PageNumber = request.PageNumber,

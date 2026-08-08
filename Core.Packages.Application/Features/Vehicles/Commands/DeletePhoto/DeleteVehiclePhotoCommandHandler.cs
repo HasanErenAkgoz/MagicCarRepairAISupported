@@ -30,7 +30,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Delet
 
         public async Task<IResult> Handle(DeleteVehiclePhotoCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var vehicle = await _vehicleRepository.GetByIdAsync(request.VehicleId);
             if (vehicle == null)

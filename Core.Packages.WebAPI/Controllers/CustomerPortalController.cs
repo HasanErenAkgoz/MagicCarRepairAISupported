@@ -11,12 +11,13 @@ using MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.GetMy
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/customer-portal")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
     public class CustomerPortalController : ControllerBase
     {
         private readonly IMediator _mediator;

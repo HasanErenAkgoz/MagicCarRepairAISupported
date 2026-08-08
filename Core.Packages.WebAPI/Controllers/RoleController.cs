@@ -6,12 +6,13 @@ using MagicCarRepairAISupported.Application.Features.RolePermissions.Delete;
 using MagicCarRepairAISupported.Application.Features.UseRoles.Commands.AssignToUser;
 using MagicCarRepairAISupported.Application.Features.UseRoles.Commands.RemoveFromUser;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Controllers;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     [Route("api/[controller]")]
     [ApiController]
     public class RoleController : BaseApiController

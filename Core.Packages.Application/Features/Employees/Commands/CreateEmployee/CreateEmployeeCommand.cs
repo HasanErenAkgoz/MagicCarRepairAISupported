@@ -5,7 +5,6 @@ namespace MagicCarRepairAISupported.Application.Features.Employees.Commands.Crea
 {
     public class CreateEmployeeCommand : IRequest<CreateEmployeeResponse>
     {
-        public string EmployeeNo { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string? NationalId { get; set; }
@@ -21,7 +20,10 @@ namespace MagicCarRepairAISupported.Application.Features.Employees.Commands.Crea
         public string? EmergencyContact { get; set; }
         public string? EmergencyPhone { get; set; }
         public string? Notes { get; set; }
-        public int? UserId { get; set; } // Opsiyonel: Eğer bu personelin bir User hesabı varsa
+        public string? Biography { get; set; }
+        public string? ProfilePhotoUrl { get; set; }
+        public bool IsPublic { get; set; } = false;
+        public int DisplayOrder { get; set; } = 0;
     }
 }
 

@@ -1,3 +1,4 @@
+using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Features.Permissions.Commands.ScanAndRegister;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Persistence.Context;
@@ -31,17 +32,40 @@ namespace MagicCarRepairAISupported.Persistence.Startup.HostedServices
                     var context = scope.ServiceProvider.GetRequiredService<BaseDbContext>();
                     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
                     var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                    var tenantService = scope.ServiceProvider.GetRequiredService<ITenantService>();
 
-                    // Test database connection
                     if (!await context.Database.CanConnectAsync(cancellationToken))
                     {
                         _logger.LogError("Failed to connect to database. Please check your connection string and ensure the database exists.");
                         return;
                     }
 
+                    if (context.Database.IsRelational())
+                    {
+                        await context.Database.MigrateAsync(cancellationToken);
+                    }
+
                     await SeedRolesAsync(context, roleManager, cancellationToken);
-                    
-                    await mediator.Send(new ScanAndRegisterPermissionsCommand(), cancellationToken);
+
+                    var clientIds = await context.Clients.AsNoTracking()
+                        .Select(c => c.Id)
+                        .ToListAsync(cancellationToken);
+
+                    await mediator.Send(
+                        new ScanAndRegisterPermissionsCommand { PermissionsOnly = true },
+                        cancellationToken);
+
+                    foreach (var clientId in clientIds)
+                    {
+                        tenantService.SetCurrentClientId(clientId);
+                        await mediator.Send(
+                            new ScanAndRegisterPermissionsCommand
+                            {
+                                ClientId = clientId,
+                                SkipBootstrapUser = true
+                            },
+                            cancellationToken);
+                    }
                 }
             }
             catch (Exception ex)
@@ -59,8 +83,16 @@ namespace MagicCarRepairAISupported.Persistence.Startup.HostedServices
                 var demoRoles = RolePermissionSeedData.GetDemoClientRoles();
                 var testRoles = RolePermissionSeedData.GetTestClientRoles();
 
+                var clientIds = await context.Clients.AsNoTracking().Select(c => c.Id).ToHashSetAsync(cancellationToken);
+
                 foreach (var seedRole in demoRoles.Concat(testRoles))
                 {
+                    if (!clientIds.Contains(seedRole.ClientId))
+                    {
+                        _logger.LogDebug("Skipping role {RoleName}: ClientId {ClientId} not in database yet", seedRole.Name, seedRole.ClientId);
+                        continue;
+                    }
+
                     var existing = existingRoles.FirstOrDefault(r => r.Name == seedRole.Name && r.ClientId == seedRole.ClientId);
                     if (existing == null)
                     {

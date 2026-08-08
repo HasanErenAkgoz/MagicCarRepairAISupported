@@ -47,8 +47,8 @@ namespace MagicCarRepairAISupported.Application.Features.CustomerPortal.Commands
             }
 
             // Find customer by UserId
-            var customers = await _customerRepository.GetListAsync(cancellationToken, c => c.UserId == userId && c.ClientId == clientId.Value);
-            var currentCustomer = customers.FirstOrDefault();
+            var currentCustomer = await _customerRepository.GetByUserIdForTenantAsync(
+                userId, clientId.Value, cancellationToken);
             
             if (currentCustomer == null)
             {

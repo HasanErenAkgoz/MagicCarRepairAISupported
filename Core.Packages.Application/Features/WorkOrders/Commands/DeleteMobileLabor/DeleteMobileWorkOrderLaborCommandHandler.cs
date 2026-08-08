@@ -38,7 +38,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Del
                 throw new DomainException("INVALID_LABOR_ID", new { Id = request.LaborId });
             }
 
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // WorkOrder kontrolü
             var workOrder = await _workOrderRepository.Query()

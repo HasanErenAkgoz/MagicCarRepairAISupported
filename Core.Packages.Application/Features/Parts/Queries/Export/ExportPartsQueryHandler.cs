@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Queries.Export
 
         public async Task<byte[]> Handle(ExportPartsQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var query = _partRepository.Query()
                 .Include(p => p.Stock)

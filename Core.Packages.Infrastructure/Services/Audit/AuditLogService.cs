@@ -37,7 +37,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Audit
             long? durationMs = null,
             CancellationToken cancellationToken = default)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var httpContext = _httpContextAccessor.HttpContext;
             var userId = httpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;

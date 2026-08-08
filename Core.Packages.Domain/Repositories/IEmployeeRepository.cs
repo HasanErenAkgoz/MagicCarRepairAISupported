@@ -10,6 +10,8 @@ namespace MagicCarRepairAISupported.Domain.Repositories
         Task<List<Employee>> GetByPositionAsync(EmployeePosition position, CancellationToken cancellationToken = default);
         Task<List<Employee>> GetActiveEmployeesAsync(CancellationToken cancellationToken = default);
         Task<bool> IsEmployeeNoExistsAsync(string employeeNo, CancellationToken cancellationToken = default);
+        Task DeleteAllByClientIdAsync(int clientId, CancellationToken cancellationToken = default);
+        Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default);
     }
 }
 

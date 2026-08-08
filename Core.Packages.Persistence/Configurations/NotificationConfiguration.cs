@@ -19,7 +19,7 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
 
             builder.Property(n => n.Content)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(n => n.RecipientEmail)
                 .HasMaxLength(255);
@@ -34,7 +34,7 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasMaxLength(100);
 
             builder.Property(n => n.ExtraData)
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(n => n.Type)
                 .HasConversion<int>()

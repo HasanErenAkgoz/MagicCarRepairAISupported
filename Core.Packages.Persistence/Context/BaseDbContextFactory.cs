@@ -1,3 +1,4 @@
+using MagicCarRepairAISupported.Persistence.Database;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -19,7 +20,7 @@ namespace MagicCarRepairAISupported.Persistence.Context
                 .Build();
 
             var optionsBuilder = new DbContextOptionsBuilder<BaseDbContext>();
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            optionsBuilder.UseMagicCarRepairDatabase(configuration);
 
             var mockHttpContextAccessor = new MockHttpContextAccessor();
 

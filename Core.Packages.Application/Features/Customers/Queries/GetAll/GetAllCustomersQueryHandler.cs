@@ -4,6 +4,7 @@ using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MagicCarRepairAISupported.Application.Features.Customers.Queries.GetAll
@@ -29,7 +30,7 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Queries.GetAl
 
         public async Task<List<GetAllCustomersResponse>> Handle(GetAllCustomersQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Query oluştur — her zaman clientId filtresi uygula (dashboard ile tutarlı)
             // WorkOrders ve Vehicles ilişkilerini dahil et (sayım için)
@@ -78,8 +79,9 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Queries.GetAl
             // Performans için ayrı sorgu ile toplu hesaplama
             var customerIds = response.Select(r => r.Id).ToList();
             
-            // Active work order statuses
-            var activeStatuses = new[]
+            // Active work order statuses — use List<T> (not T[]) so Contains does not bind to ReadOnlySpan
+            // overloads that break EF Core expression compilation on .NET 9+.
+            var activeStatuses = new List<WorkOrderStatus>
             {
                 WorkOrderStatus.VehicleEntered,
                 WorkOrderStatus.InProgress,

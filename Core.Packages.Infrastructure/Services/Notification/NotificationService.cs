@@ -6,7 +6,9 @@ using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories;
+using MagicCarRepairAISupported.Infrastructure.Configurations.Messaging;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 
 namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
@@ -21,6 +23,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
         private readonly IUserDeviceTokenRepository _deviceTokenRepository;
         private readonly ITenantService _tenantService;
         private readonly ILogger<NotificationService> _logger;
+        private readonly IOptions<MessagingOptions> _messagingOptions;
 
         public NotificationService(
             INotificationRepository notificationRepository,
@@ -30,7 +33,8 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
             IFCMNotificationService fcmService,
             IUserDeviceTokenRepository deviceTokenRepository,
             ITenantService tenantService,
-            ILogger<NotificationService> logger)
+            ILogger<NotificationService> logger,
+            IOptions<MessagingOptions> messagingOptions)
         {
             _notificationRepository = notificationRepository;
             _emailService = emailService;
@@ -40,13 +44,17 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
             _deviceTokenRepository = deviceTokenRepository;
             _tenantService = tenantService;
             _logger = logger;
+            _messagingOptions = messagingOptions;
         }
+
+        private bool UseWhatsAppForPhone =>
+            string.Equals(_messagingOptions.Value.PhoneChannel, "WhatsApp", StringComparison.OrdinalIgnoreCase);
 
         public async Task<bool> SendEmailNotificationAsync(int? userId, string email, string title, string content, string? relatedEntityType = null, int? relatedEntityId = null, Dictionary<string, object>? extraData = null)
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 // Notification kaydı oluştur
                 var notification = new Domain.Entities.Notification
@@ -97,15 +105,15 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 // Notification kaydı oluştur
                 var notification = new Domain.Entities.Notification
                 {
-                    Type = NotificationType.Sms,
+                    Type = UseWhatsAppForPhone ? NotificationType.WhatsApp : NotificationType.Sms,
                     UserId = userId,
                     RecipientPhone = phoneNumber,
-                    Title = "SMS Notification",
+                    Title = UseWhatsAppForPhone ? "WhatsApp Notification" : "SMS Notification",
                     Content = message,
                     Status = NotificationStatus.Pending,
                     RelatedEntityType = relatedEntityType,
@@ -148,7 +156,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 // Notification kaydı oluştur
                 var notification = new Domain.Entities.Notification
@@ -215,12 +223,12 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 // Notification kaydı oluştur (WhatsApp için özel bir tip yok, SMS olarak kaydedelim veya yeni tip ekleyelim)
                 var notification = new Domain.Entities.Notification
                 {
-                    Type = NotificationType.Sms, // WhatsApp için şimdilik SMS tipini kullanıyoruz
+                    Type = NotificationType.WhatsApp,
                     UserId = userId,
                     RecipientPhone = phoneNumber,
                     Title = "WhatsApp Notification",
@@ -268,6 +276,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
             {
                 NotificationType.Email => await SendEmailNotificationAsync(userId, email ?? string.Empty, title, content, relatedEntityType, relatedEntityId, extraData),
                 NotificationType.Sms => await SendSmsNotificationAsync(userId, phoneNumber ?? string.Empty, content, relatedEntityType, relatedEntityId, extraData),
+                NotificationType.WhatsApp => await SendWhatsAppNotificationAsync(userId, phoneNumber ?? string.Empty, content, relatedEntityType, relatedEntityId, extraData),
                 NotificationType.Push => userId.HasValue ? await SendPushNotificationAsync(userId.Value, title, content, relatedEntityType, relatedEntityId, extraData) : false,
                 _ => false
             };

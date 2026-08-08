@@ -58,8 +58,8 @@ namespace MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.
             // If user is Customer type, try to get Customer record
             if (user.UserType == Domain.Enums.UserType.Customer)
             {
-                var customers = await _customerRepository.GetListAsync(cancellationToken, c => c.UserId == userId && c.ClientId == clientId.Value);
-                var currentCustomer = customers.FirstOrDefault();
+                var currentCustomer = await _customerRepository.GetByUserIdForTenantAsync(
+                    userId, clientId.Value, cancellationToken);
                 
                 // If customer doesn't exist, create one from User data
                 if (currentCustomer == null)

@@ -1,6 +1,8 @@
 using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Common.Services.Commission;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Controllers;
 
@@ -8,7 +10,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class CommissionController : BaseApiController
     {
         private readonly ICommissionService _commissionService;

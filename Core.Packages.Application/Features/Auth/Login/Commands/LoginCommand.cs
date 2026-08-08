@@ -4,6 +4,7 @@ using MagicCarRepairAISupported.Application.Shared.Result;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MagicCarRepairAISupported.Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -30,6 +31,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
         private readonly ITokenService _tokenService;
         private readonly IConfiguration _configuration;
         private readonly IClientRepository _clientRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IUserDeviceRepository _userDeviceRepository;
         private readonly IUserSessionRepository _userSessionRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -40,6 +42,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
             ITokenService tokenService,
             IConfiguration configuration,
             IClientRepository clientRepository,
+            IUserRepository userRepository,
             IUserDeviceRepository userDeviceRepository,
             IUserSessionRepository userSessionRepository,
             IHttpContextAccessor httpContextAccessor,
@@ -49,6 +52,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
             _tokenService = tokenService;
             _configuration = configuration;
             _clientRepository = clientRepository;
+            _userRepository = userRepository;
             _userDeviceRepository = userDeviceRepository;
             _userSessionRepository = userSessionRepository;
             _httpContextAccessor = httpContextAccessor;
@@ -57,8 +61,10 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
 
         public async Task<IDataResult<AccessToken>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            
+            var user = await _userRepository.FindByEmailForAuthAsync(
+                _userManager.NormalizeEmail(request.Email),
+                cancellationToken);
+
             if (user == null)
             {
                 return new ErrorDataResult<AccessToken>("User not found or password is incorrect");
@@ -68,7 +74,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
             // Customer ve SystemAdmin bu kontrolden muaf
             if ((user.UserType == UserType.Manager || user.UserType == UserType.Employee) && user.ClientId > 0)
             {
-                var client = await _clientRepository.GetByIdAsync(user.ClientId, cancellationToken);
+                var client = await _clientRepository.GetByIdForAuthAsync(user.ClientId, cancellationToken);
                 if (client != null && !client.IsActive)
                 {
                     return new ErrorDataResult<AccessToken>("ACCOUNT_PENDING_APPROVAL");
@@ -149,10 +155,15 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
             var tokens = await _tokenService.CreateToken<AccessToken>(user, request.RememberMe);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            // Refresh token'ı DB'ye kaydet
-            user.RefreshToken = tokens.RefreshToken;
-            user.RefreshTokenExpiryTime = request.RememberMe ? DateTime.UtcNow.AddDays(30) : DateTime.UtcNow.AddDays(7);
-            await _userManager.UpdateAsync(user);
+            var refreshTokenExpiration = request.RememberMe
+                ? DateTime.UtcNow.AddDays(30)
+                : DateTime.UtcNow.AddDays(7);
+
+            await _userRepository.UpdateRefreshTokenAsync(
+                user.Id,
+                tokens.RefreshToken,
+                refreshTokenExpiration,
+                cancellationToken);
 
             // Token'dan JTI (JWT ID) claim'ini al - Session tracking için
             var handler = new JwtSecurityTokenHandler();
@@ -164,26 +175,10 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
             var ipAddress = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
             var userAgent = _httpContextAccessor.HttpContext?.Request?.Headers["User-Agent"].ToString();
 
-            // Device tracking - DeviceId varsa kaydet
             if (!string.IsNullOrEmpty(request.DeviceId))
             {
-                var existingDevice = await _userDeviceRepository.GetByUserIdAndDeviceIdAsync(user.Id, request.DeviceId, cancellationToken);
-                
-                if (existingDevice != null)
-                {
-                    // Mevcut device'ı güncelle
-                    existingDevice.LastLoginAt = DateTime.UtcNow;
-                    existingDevice.IsTrusted = request.RememberMe; // Remember Me durumunu güncelle
-                    if (!string.IsNullOrEmpty(request.DeviceName))
-                    {
-                        existingDevice.DeviceName = request.DeviceName;
-                    }
-                    _userDeviceRepository.Update(existingDevice);
-                }
-                else
-                {
-                    // Yeni device kaydet
-                    var newDevice = new UserDevice
+                await _userDeviceRepository.UpsertLoginDeviceAsync(
+                    new UserDevice
                     {
                         UserId = user.Id,
                         DeviceId = request.DeviceId,
@@ -194,15 +189,11 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Login.Commands
                         Status = Status.Active,
                         CreatedDate = DateTime.UtcNow,
                         CreatedBy = user.Id
-                    };
-                    await _userDeviceRepository.AddAsync(newDevice, cancellationToken);
-                }
+                    },
+                    cancellationToken);
             }
 
             // Session Management - Her login'de yeni session kaydet
-            var refreshTokenExpiration = request.RememberMe 
-                ? DateTime.UtcNow.AddDays(30)  // Remember Me: 30 gün
-                : DateTime.UtcNow.AddDays(7);  // Normal: 7 gün
 
             var userSession = new UserSession
             {

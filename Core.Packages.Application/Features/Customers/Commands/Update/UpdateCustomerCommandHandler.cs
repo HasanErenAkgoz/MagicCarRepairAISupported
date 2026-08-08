@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Commands.Upda
 
         public async Task<UpdateCustomerResponse> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Müşteriyi bul
             var customer = await _customerRepository.GetByIdAsync(request.Id);

@@ -10,6 +10,8 @@ using MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetByCusto
 using MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GenerateQrCode;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +19,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class VehiclesController : ControllerBase
     {
         private readonly IMediator _mediator;

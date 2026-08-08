@@ -52,7 +52,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Upd
                 throw new DomainException("INVALID_WORK_ORDER_ID", new { Id = request.Id });
             }
 
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // WorkOrder'ı bul
             var workOrder = await _workOrderRepository.Query()

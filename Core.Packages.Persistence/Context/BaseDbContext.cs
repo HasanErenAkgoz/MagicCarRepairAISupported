@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace MagicCarRepairAISupported.Persistence.Context
@@ -18,6 +17,11 @@ namespace MagicCarRepairAISupported.Persistence.Context
     {
         private readonly IHttpContextAccessor? _httpContextAccessor;
         private readonly ITenantService? _tenantService;
+
+        /// <summary>
+        /// Evaluated per query — do not capture tenant id in OnModelCreating.
+        /// </summary>
+        public int? CurrentClientId => _tenantService?.GetCurrentClientId();
         
         public BaseDbContext(DbContextOptions options, IHttpContextAccessor? httpContextAccessor = null, ITenantService? tenantService = null) : base(options)
         {
@@ -109,27 +113,24 @@ namespace MagicCarRepairAISupported.Persistence.Context
         
         private void ApplyGlobalFilters(ModelBuilder builder)
         {
-            // Apply filter to all entities implementing IClientEntity
             foreach (var entityType in builder.Model.GetEntityTypes())
             {
                 if (typeof(IClientEntity).IsAssignableFrom(entityType.ClrType))
                 {
-                    var parameter = Expression.Parameter(entityType.ClrType, "e");
-                    var property = Expression.Property(parameter, nameof(IClientEntity.ClientId));
-                    
-                    // Get current client id
-                    var clientId = _tenantService?.GetCurrentClientId();
-                    
-                    if (clientId.HasValue)
-                    {
-                        var constantValue = Expression.Constant(clientId.Value);
-                        var equals = Expression.Equal(property, constantValue);
-                        var lambda = Expression.Lambda(equals, parameter);
-                        
-                        builder.Entity(entityType.ClrType).HasQueryFilter(lambda);
-                    }
+                    var method = typeof(BaseDbContext).GetMethod(
+                        nameof(ConfigureClientQueryFilter),
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+                        .MakeGenericMethod(entityType.ClrType);
+                    method.Invoke(this, new object[] { builder });
                 }
             }
+        }
+
+        private void ConfigureClientQueryFilter<TEntity>(ModelBuilder builder)
+            where TEntity : class, IClientEntity
+        {
+            builder.Entity<TEntity>().HasQueryFilter(e =>
+                CurrentClientId == null || e.ClientId == CurrentClientId);
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -38,7 +38,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Stock
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 var alert = await _stockAlertRepository.GetByIdAsync(stockAlertId);
                 if (alert == null || alert.ClientId != clientId)
@@ -200,7 +200,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Stock
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 return await _autoOrderRepository.Query()
                     .Where(ao => ao.ClientId == clientId && ao.Status == AutoOrderStatus.Pending)

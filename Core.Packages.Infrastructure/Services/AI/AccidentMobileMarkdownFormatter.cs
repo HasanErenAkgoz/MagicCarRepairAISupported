@@ -14,6 +14,14 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
             var sb = new StringBuilder();
             sb.AppendLine("Kısa net analiz:");
             sb.AppendLine();
+
+            if (!string.IsNullOrWhiteSpace(r.SceneDescription))
+            {
+                sb.AppendLine("📷 **Kadraj / görünüm**");
+                sb.AppendLine(r.SceneDescription.Trim());
+                sb.AppendLine();
+            }
+
             sb.AppendLine("🔧 **Hasar Durumu**");
 
             if (r.DamagedParts.Count == 0)

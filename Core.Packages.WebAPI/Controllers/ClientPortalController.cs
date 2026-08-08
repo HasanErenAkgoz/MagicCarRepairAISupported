@@ -10,6 +10,8 @@ using MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.GetMyP
 using MagicCarRepairAISupported.Application.Features.ClientPortal.Queries.GetMyFacilityPhotos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
@@ -19,7 +21,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
     /// </summary>
     [ApiController]
     [Route("api/client-portal")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class ClientPortalController : ControllerBase
     {
         private readonly IMediator _mediator;

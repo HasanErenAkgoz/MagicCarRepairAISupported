@@ -1,4 +1,5 @@
 using MagicCarRepairAISupported.Application.Shared.Result;
+using MagicCarRepairAISupported.Domain.Enums;
 using MediatR;
 
 namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Commands.Create
@@ -10,7 +11,17 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Commands.
         public List<string> PhotoPaths { get; set; } = new List<string>();
         public string? Description { get; set; }
         public decimal? EstimatedCost { get; set; }
+        public decimal? EstimatedCostMin { get; set; }
+        public decimal? EstimatedCostMax { get; set; }
         public string? EstimatedDescription { get; set; }
-        public List<int>? TargetClientIds { get; set; } // Hangi tamirhanelere gönderilecek (null ise tüm public tamirhanelere)
+        /// <summary>Hangi tamirhanelere gönderilecek (null ise tüm public tamirhanelere)</summary>
+        public List<int>? TargetClientIds { get; set; }
+        public QuoteRequestType RequestType { get; set; } = QuoteRequestType.Other;
+        public UrgencyLevel UrgencyLevel { get; set; } = UrgencyLevel.Normal;
+        /// <summary>
+        /// AI teşhis ekranından oluşturuldu mu?
+        /// true → QuoteDeadline = +1 gün, shop teklifleri de 1 gün geçerli.
+        /// </summary>
+        public bool IsAiGenerated { get; set; } = false;
     }
 }

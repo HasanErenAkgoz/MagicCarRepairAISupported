@@ -15,7 +15,11 @@ using MagicCarRepairAISupported.Application.Common.Services.Stock;
 using MagicCarRepairAISupported.Application.Common.Services.WhatsApp;
 using MagicCarRepairAISupported.Application.Common.Services.Subscription;
 using MagicCarRepairAISupported.Infrastructure.Configurations.AI;
+using MagicCarRepairAISupported.Infrastructure.Configurations.Email;
+using MagicCarRepairAISupported.Infrastructure.Configurations.Messaging;
+using MagicCarRepairAISupported.Infrastructure.Configurations.WhatsApp;
 using MagicCarRepairAISupported.Infrastructure.Middlewares;
+using MagicCarRepairAISupported.Infrastructure.Services;
 using MagicCarRepairAISupported.Infrastructure.Services.AI;
 using MagicCarRepairAISupported.Infrastructure.Services.Auth;
 using MagicCarRepairAISupported.Infrastructure.Services.Cache;
@@ -31,6 +35,7 @@ using MagicCarRepairAISupported.Infrastructure.Services.Payment;
 using MagicCarRepairAISupported.Infrastructure.Services.SMS;
 using MagicCarRepairAISupported.Infrastructure.Services.Subscription;
 using MagicCarRepairAISupported.Infrastructure.Services.Stock;
+using MagicCarRepairAISupported.Infrastructure.Services.Templating;
 using MagicCarRepairAISupported.Infrastructure.Services.Tenant;
 using MagicCarRepairAISupported.Infrastructure.Services.WhatsApp;
 using MagicCarRepairAISupported.Infrastructure.Redis;
@@ -51,6 +56,10 @@ namespace MagicCarRepairAISupported.Infrastructure
         {
             // Configuration Options
             services.Configure<AIOptions>(configuration.GetSection("AIOptions"));
+            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+            services.Configure<WhatsAppSettings>(configuration.GetSection("WhatsAppSettings"));
+            services.Configure<IyzicoOptions>(configuration.GetSection("Iyzico"));
+            services.Configure<MessagingOptions>(configuration.GetSection("Messaging"));
 
             // Memory Cache (for ErrorMessageService, TranslationService)
             services.AddMemoryCache();
@@ -122,8 +131,11 @@ namespace MagicCarRepairAISupported.Infrastructure
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ITwoFactorService, TwoFactorService>();
             services.AddScoped<IErrorMessageService, ErrorMessageService>();
+            services.AddScoped<IDomainErrorResponseWriter, DomainErrorResponseWriter>();
             services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<Application.Common.Services.Email.IEmailTemplateRenderer, FileTemplateRenderer>();
+            services.AddScoped<Application.Common.Services.Web.IHtmlTemplateRenderer, FileTemplateRenderer>();
             
             // SMS Settings Configuration
             services.Configure<SmsSettings>(configuration.GetSection("SmsSettings"));
@@ -132,8 +144,10 @@ namespace MagicCarRepairAISupported.Infrastructure
             services.AddScoped<NetgsmSmsService>();
             services.AddScoped<TwilioSmsService>();
             
-            // Wrapper service - Configuration'a göre doğru provider'ı seçer
-            services.AddScoped<ISmsService, SmsServiceWrapper>();
+            // Netgsm/Twilio seçimi
+            services.AddScoped<SmsServiceWrapper>();
+            // Messaging:PhoneChannel = WhatsApp ise WhatsApp Cloud API'ye yönlendirir (aynı ISmsService sözleşmesi)
+            services.AddScoped<ISmsService, ChannelSelectingPhoneService>();
             
             services.AddScoped<IWhatsAppService, WhatsAppService>();
             services.AddScoped<INotificationService, NotificationService>();

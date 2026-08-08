@@ -30,7 +30,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Reports.Quer
 
         public async Task<GetYearlySummaryResponse> Handle(GetYearlySummaryQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Tarih aralığı
             var startDate = new DateTime(request.Year, 1, 1);

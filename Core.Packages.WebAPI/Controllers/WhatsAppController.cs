@@ -1,13 +1,15 @@
 using MagicCarRepairAISupported.Application.Features.Notifications.Commands.SendWhatsAppMessage;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class WhatsAppController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -4,24 +4,29 @@ using MagicCarRepairAISupported.Application.Features.Customers.Commands.Import;
 using MagicCarRepairAISupported.Application.Features.Customers.Commands.Update;
 using MagicCarRepairAISupported.Application.Features.Customers.Queries.Export;
 using MagicCarRepairAISupported.Application.Features.Customers.Queries.GetAll;
+using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Features.Customers.Queries.GetById;
 using MagicCarRepairAISupported.Application.Features.Customers.Queries.GetImportTemplate;
+using MagicCarRepairAISupported.WebAPI.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class CustomersController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IDomainErrorResponseWriter _domainErrorResponseWriter;
 
-        public CustomersController(IMediator mediator)
+        public CustomersController(IMediator mediator, IDomainErrorResponseWriter domainErrorResponseWriter)
         {
             _mediator = mediator;
+            _domainErrorResponseWriter = domainErrorResponseWriter;
         }
 
         /// <summary>
@@ -51,7 +56,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         {
             var query = new GetCustomerByIdQuery { Id = id };
             var result = await _mediator.Send(query);
-            return Ok(result);
+            return await result.ToActionResultAsync(_domainErrorResponseWriter, HttpContext);
         }
 
         /// <summary>

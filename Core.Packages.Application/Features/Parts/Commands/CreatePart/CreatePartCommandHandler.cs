@@ -1,8 +1,10 @@
 using AutoMapper;
 using MagicCarRepairAISupported.Application.Common.Services.Cache;
+using MagicCarRepairAISupported.Application.Features.Parts.Utils;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Exceptions;
 using MagicCarRepairAISupported.Domain.Repositories;
+using MagicCarRepairAISupported.Domain.Utils;
 using MediatR;
 
 namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.CreatePart
@@ -31,11 +33,12 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.CreatePa
 
         public async Task<CreatePartResponse> Handle(CreatePartCommand request, CancellationToken cancellationToken)
         {
-            // Business Rule: PartCode benzersiz olmalı
-            var existingPart = await _partRepository.GetByPartCodeAsync(request.PartCode, cancellationToken);
+            var partCode = RequiredStringDefaults.ResolveCode(request.PartCode, "PRT", 50);
+
+            var existingPart = await _partRepository.GetByPartCodeAsync(partCode, cancellationToken);
             if (existingPart != null)
             {
-                throw new DomainException("PART_CODE_EXISTS", new { PartCode = request.PartCode });
+                throw new DomainException("PART_CODE_EXISTS", new { PartCode = partCode });
             }
 
             // Supplier kontrolü
@@ -51,7 +54,7 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.CreatePa
             // Part entity oluştur
             var part = new Part
             {
-                PartCode = request.PartCode,
+                PartCode = partCode,
                 Name = request.Name,
                 Description = request.Description,
                 Category = request.Category,
@@ -67,7 +70,12 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.CreatePa
                 SupplierId = request.SupplierId,
                 Unit = request.Unit,
                 WarrantyMonths = request.WarrantyMonths,
-                Notes = request.Notes
+                Notes = request.Notes,
+                CompatibleVehicleBrands = PartFitmentJson.SerializeStringArray(request.CompatibleVehicleBrands),
+                CompatibleVehicleModels = PartFitmentJson.SerializeStringArray(request.CompatibleVehicleModels),
+                CompatibleYearFrom = request.CompatibleYearFrom,
+                CompatibleYearTo = request.CompatibleYearTo,
+                AdditionalOemCodes = PartFitmentJson.SerializeStringArray(request.AdditionalOemCodes),
             };
 
             // Part'ı kaydet

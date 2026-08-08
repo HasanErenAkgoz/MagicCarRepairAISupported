@@ -45,6 +45,12 @@ namespace MagicCarRepairAISupported.Infrastructure.Redis
             await _distributedCache.SetStringAsync(key, value);
         }
 
+        public async Task SetCacheValueAsync(string key, string value, TimeSpan expiry)
+        {
+            var options = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = expiry };
+            await _distributedCache.SetStringAsync(key, value, options);
+        }
+
         public async Task<string?> GetCacheValueAsync(string key)
         {
             return await _distributedCache.GetStringAsync(key);

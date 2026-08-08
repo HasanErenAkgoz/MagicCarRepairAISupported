@@ -66,7 +66,7 @@ namespace MagicCarRepairAISupported.WebAPI.Hubs
                 return;
             }
 
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Mesajı veritabanına kaydet
             var chatMessage = new ChatMessage
@@ -120,7 +120,7 @@ namespace MagicCarRepairAISupported.WebAPI.Hubs
                 return;
             }
 
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Mesajı veritabanına kaydet (receiverId null - grup mesajı)
             var chatMessage = new ChatMessage

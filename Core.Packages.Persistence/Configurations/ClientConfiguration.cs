@@ -82,7 +82,7 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasMaxLength(500);
 
             builder.Property(c => c.AboutUs)
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(c => c.WorkingHours)
                 .HasMaxLength(1000);

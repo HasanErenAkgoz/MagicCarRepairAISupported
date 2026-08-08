@@ -1,7 +1,7 @@
 using MagicCarRepairAISupported.Application.Common.Models.JWT;
 using MagicCarRepairAISupported.Application.Common.Services.JWT;
 using MagicCarRepairAISupported.Application.Shared.Result;
-using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,11 +24,16 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.RefreshToken.Comma
     public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, IDataResult<RefreshTokenResponse>>
     {
         private readonly UserManager<UserEntity> _userManager;
+        private readonly IUserRepository _userRepository;
         private readonly ITokenService _tokenService;
 
-        public RefreshTokenCommandHandler(UserManager<UserEntity> userManager, ITokenService tokenService)
+        public RefreshTokenCommandHandler(
+            UserManager<UserEntity> userManager,
+            IUserRepository userRepository,
+            ITokenService tokenService)
         {
             _userManager = userManager;
+            _userRepository = userRepository;
             _tokenService = tokenService;
         }
 
@@ -52,7 +57,9 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.RefreshToken.Comma
             if (string.IsNullOrEmpty(email))
                 return new ErrorDataResult<RefreshTokenResponse>("Token geçersiz.");
 
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userRepository.FindByEmailForAuthAsync(
+                _userManager.NormalizeEmail(email),
+                cancellationToken);
             if (user == null)
                 return new ErrorDataResult<RefreshTokenResponse>("Kullanıcı bulunamadı.");
 
@@ -65,10 +72,11 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.RefreshToken.Comma
             // Yeni token üret
             var newTokens = await _tokenService.CreateToken<AccessToken>(user);
 
-            // Refresh token rotasyonu — her kullanımda yeni refresh token
-            user.RefreshToken = newTokens.RefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            await _userManager.UpdateAsync(user);
+            await _userRepository.UpdateRefreshTokenAsync(
+                user.Id,
+                newTokens.RefreshToken,
+                DateTime.UtcNow.AddDays(7),
+                cancellationToken);
 
             return new SuccessDataResult<RefreshTokenResponse>(new RefreshTokenResponse
             {

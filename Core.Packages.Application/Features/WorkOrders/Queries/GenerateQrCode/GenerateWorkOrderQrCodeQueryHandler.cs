@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.Gene
 
         public async Task<byte[]> Handle(GenerateWorkOrderQrCodeQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var workOrder = await _workOrderRepository.GetByIdAsync(request.WorkOrderId);
             if (workOrder == null || workOrder.ClientId != clientId)

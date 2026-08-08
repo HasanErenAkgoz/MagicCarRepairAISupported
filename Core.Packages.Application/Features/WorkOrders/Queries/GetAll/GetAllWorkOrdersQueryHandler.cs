@@ -23,7 +23,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetA
 
         public async Task<List<GetAllWorkOrdersResponse>> Handle(GetAllWorkOrdersQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             List<Domain.Entities.WorkOrder> workOrders;
 

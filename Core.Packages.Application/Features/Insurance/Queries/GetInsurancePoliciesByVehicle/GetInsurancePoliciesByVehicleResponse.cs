@@ -16,6 +16,8 @@ namespace MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetIn
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal PremiumAmount { get; set; }
+        public decimal DeductiblePercentage { get; set; }
+        public decimal? DeductibleAmount { get; set; }
         public InsuranceStatus Status { get; set; }
         public int DaysUntilExpiration { get; set; }
     }

@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Features.UseRoles.Commands.Assig
 
         public async Task<IResult> Handle(AssignRoleToUserCommand request, CancellationToken cancellationToken)
         {
-            var clientId = request.ClientId ?? _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = request.ClientId ?? _tenantService.GetRequiredClientId();
 
             var role = await _roleManager.FindByIdAsync(request.RoleId.ToString());
             if (role == null)

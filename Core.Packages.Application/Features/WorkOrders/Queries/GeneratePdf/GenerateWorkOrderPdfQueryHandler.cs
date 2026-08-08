@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.Gene
 
         public async Task<byte[]> Handle(GenerateWorkOrderPdfQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // WorkOrder kontrolü
             var workOrder = await _workOrderRepository.GetByIdAsync(request.WorkOrderId);

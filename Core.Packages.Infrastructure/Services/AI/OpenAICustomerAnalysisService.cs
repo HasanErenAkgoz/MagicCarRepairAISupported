@@ -76,7 +76,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
                 var endDate = DateTime.UtcNow;
                 var startDate = endDate.AddDays(-request.AnalysisPeriodDays);
 

@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Income.Queri
 
         public async Task<GetIncomeByIdResponse> Handle(GetIncomeByIdQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Geliri bul (WorkOrder ve Customer'ı da dahil et)
             var income = await _incomeRepository.Query()

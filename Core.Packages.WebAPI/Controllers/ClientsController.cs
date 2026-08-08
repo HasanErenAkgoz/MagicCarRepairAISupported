@@ -7,6 +7,8 @@ using MagicCarRepairAISupported.Application.Features.Clients.Queries.GetAllClien
 using MagicCarRepairAISupported.Application.Features.Clients.Queries.GetClientById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers

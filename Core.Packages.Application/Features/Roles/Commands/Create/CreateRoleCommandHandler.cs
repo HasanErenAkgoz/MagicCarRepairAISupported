@@ -5,6 +5,7 @@ using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace MagicCarRepairAISupported.Application.Features.Roles.Commands.Create
 {
@@ -30,17 +31,15 @@ namespace MagicCarRepairAISupported.Application.Features.Roles.Commands.Create
             try
             {
                 // Get current ClientId (default to 1 if not set, for system operations)
-                var clientId = request.ClientId ?? _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = request.ClientId ?? _tenantService.GetRequiredClientId();
                 
-                // Check if role exists with same Name and ClientId (multi-tenant unique constraint)
-                // RoleManager.FindByNameAsync uses NormalizedName and may bypass global query filter
-                // But we need to check ClientId manually, so we use repository with IgnoreQueryFilters equivalent
-                // Since Query() applies global filter, we need to check by NormalizedName first, then ClientId
                 var normalizedName = request.Name.ToUpperInvariant();
-                var existingRole = await _roleManager.FindByNameAsync(normalizedName);
-                
-                // If role exists, verify it belongs to current client
-                if (existingRole != null && existingRole.ClientId == clientId)
+                var existingRole = await _roleRepository.Query()
+                    .IgnoreQueryFilters()
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(r => r.NormalizedName == normalizedName && r.ClientId == clientId, cancellationToken);
+
+                if (existingRole != null)
                 {
                     return new ErrorDataResult<int>(existingRole.Id, "Role already exists");
                 }

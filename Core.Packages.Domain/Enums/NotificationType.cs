@@ -10,6 +10,8 @@ namespace MagicCarRepairAISupported.Domain.Enums
     {
         Email,
         Sms,
-        Push
+        Push,
+        /// <summary>WhatsApp Business API ile gönderim (kayıt / raporlama için)</summary>
+        WhatsApp
     }
 }

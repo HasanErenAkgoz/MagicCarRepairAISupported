@@ -23,7 +23,7 @@ namespace MagicCarRepairAISupported.Application.Features.Appointments.Commands.C
 
         public async Task<CreateAppointmentResponse> Handle(CreateAppointmentCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Customer kontrolü
             var customer = await _customerRepository.GetByIdAsync(request.CustomerId);

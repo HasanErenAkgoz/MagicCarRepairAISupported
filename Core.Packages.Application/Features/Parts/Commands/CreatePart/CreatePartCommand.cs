@@ -24,6 +24,12 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.CreatePa
         public string? Notes { get; set; }
         public int InitialStockQuantity { get; set; } = 0; // İlk stok miktarı
         public string? StockLocation { get; set; } // İlk stok konumu
+
+        public string[]? CompatibleVehicleBrands { get; set; }
+        public string[]? CompatibleVehicleModels { get; set; }
+        public int? CompatibleYearFrom { get; set; }
+        public int? CompatibleYearTo { get; set; }
+        public string[]? AdditionalOemCodes { get; set; }
     }
 }
 

@@ -31,7 +31,7 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetRe
 
         public async Task<List<GetRecentActivitiesResponse>> Handle(GetRecentActivitiesQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
             var activities = new List<GetRecentActivitiesResponse>();
 
             // Son İş Emirleri

@@ -53,7 +53,8 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
 
         public async Task<List<WorkOrder>> GetActiveWorkOrdersAsync(CancellationToken cancellationToken = default)
         {
-            var activeStatuses = new[]
+            // List<T> avoids array.Contains → ReadOnlySpan binding (EF Core + .NET 9+ TypeLoadException).
+            var activeStatuses = new List<WorkOrderStatus>
             {
                 WorkOrderStatus.AppointmentScheduled,
                 WorkOrderStatus.VehicleEntered,
@@ -98,6 +99,7 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         public async Task<List<WorkOrder>> GetByCustomerIdAsync(int customerId, CancellationToken cancellationToken = default)
         {
             return await Context.Set<WorkOrder>()
+                .IgnoreQueryFilters()
                 .Include(w => w.Vehicle)
                 .Include(w => w.Customer)
                 .Include(w => w.AssignedEmployee)

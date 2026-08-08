@@ -3,6 +3,7 @@ using MagicCarRepairAISupported.Application.Common.Services.Import;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Exceptions;
 using MagicCarRepairAISupported.Domain.Repositories;
+using MagicCarRepairAISupported.Domain.Utils;
 using MediatR;
 
 namespace MagicCarRepairAISupported.Application.Features.Customers.Commands.Import
@@ -65,14 +66,16 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Commands.Impo
                     // Create new customer
                     var customer = new Customer
                     {
-                        IdentityNo = dto.IdentityNo,
-                        FirstName = dto.FirstName,
-                        LastName = dto.LastName,
-                        Email = dto.Email,
-                        PhoneNumber = dto.PhoneNumber,
-                        Address = dto.Address,
-                        DateTimeOfBirth = dto.DateTimeOfBirth,
-                        Language = dto.Language ?? "tr",
+                        IdentityNo = RequiredStringDefaults.ResolveIdentityNo(dto.IdentityNo),
+                        FirstName = RequiredStringDefaults.Coalesce(dto.FirstName),
+                        LastName = RequiredStringDefaults.Coalesce(dto.LastName),
+                        Email = RequiredStringDefaults.Coalesce(dto.Email),
+                        PhoneNumber = RequiredStringDefaults.Coalesce(dto.PhoneNumber),
+                        Address = RequiredStringDefaults.Coalesce(dto.Address),
+                        DateTimeOfBirth = dto.DateTimeOfBirth == default
+                            ? new DateTime(1990, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                            : dto.DateTimeOfBirth,
+                        Language = RequiredStringDefaults.Coalesce(dto.Language, "tr"),
                         ClientId = clientId
                     };
 

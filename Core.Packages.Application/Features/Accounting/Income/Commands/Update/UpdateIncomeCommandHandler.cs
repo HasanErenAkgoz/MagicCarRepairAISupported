@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Income.Comma
 
         public async Task<UpdateIncomeResponse> Handle(UpdateIncomeCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Geliri bul
             var income = await _incomeRepository.GetByIdAsync(request.Id);

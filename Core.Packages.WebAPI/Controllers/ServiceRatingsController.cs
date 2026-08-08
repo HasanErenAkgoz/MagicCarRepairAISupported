@@ -2,13 +2,15 @@ using MagicCarRepairAISupported.Application.Features.Ratings.Commands.CreateRati
 using MagicCarRepairAISupported.Application.Features.Ratings.Queries.GetRatingsByClient;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/service-ratings")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class ServiceRatingsController : ControllerBase
     {
         private readonly IMediator _mediator;

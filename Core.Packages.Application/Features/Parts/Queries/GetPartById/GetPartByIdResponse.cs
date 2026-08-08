@@ -27,6 +27,12 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Queries.GetPartBy
         public string? StockLocation { get; set; }
         public bool IsLowStock { get; set; }
         public List<PartPhotoItem> Photos { get; set; } = new();
+
+        public string[]? CompatibleVehicleBrands { get; set; }
+        public string[]? CompatibleVehicleModels { get; set; }
+        public int? CompatibleYearFrom { get; set; }
+        public int? CompatibleYearTo { get; set; }
+        public string[]? AdditionalOemCodes { get; set; }
     }
 
     public class PartPhotoItem

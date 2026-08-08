@@ -8,6 +8,7 @@ using MagicCarRepairAISupported.Application.Features.QuoteResponses.Commands.Sub
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
@@ -27,6 +28,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Yeni teklif talebi oluşturur (Müşteri)
         /// </summary>
         [HttpPost]
+        [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
         public async Task<IActionResult> Create([FromBody] CreateQuoteRequestCommand command)
         {
             var result = await _mediator.Send(command);
@@ -41,6 +43,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Teklif talebi detayını getirir
         /// </summary>
         [HttpGet("{id}")]
+        [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
         public async Task<IActionResult> GetById(int id)
         {
             var query = new GetQuoteRequestByIdQuery { Id = id };
@@ -56,6 +59,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Tüm teklif taleplerini getirir (Filtreleme ile)
         /// </summary>
         [HttpGet]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> GetAll([FromQuery] GetAllQuoteRequestsQuery query)
         {
             var result = await _mediator.Send(query);
@@ -66,6 +70,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Açık teklif taleplerini getirir (Servisler için - teklif verebilecekleri)
         /// </summary>
         [HttpGet("open")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> GetOpen([FromQuery] GetOpenQuoteRequestsQuery query)
         {
             var result = await _mediator.Send(query);
@@ -76,6 +81,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Teklif talebine teklif verir (Servis)
         /// </summary>
         [HttpPost("{quoteRequestId}/quotes")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> SubmitQuote(int quoteRequestId, [FromBody] SubmitQuoteResponseCommand command)
         {
             command.QuoteRequestId = quoteRequestId;
@@ -91,6 +97,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Teklifi kabul eder (Müşteri)
         /// </summary>
         [HttpPost("{quoteRequestId}/quotes/{quoteResponseId}/accept")]
+        [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
         public async Task<IActionResult> AcceptQuote(int quoteRequestId, int quoteResponseId)
         {
             var command = new AcceptQuoteResponseCommand
@@ -110,6 +117,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Teklifi reddeder (Müşteri)
         /// </summary>
         [HttpPost("{quoteRequestId}/quotes/{quoteResponseId}/reject")]
+        [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
         public async Task<IActionResult> RejectQuote(int quoteRequestId, int quoteResponseId, [FromBody] RejectQuoteResponseCommand? command = null)
         {
             if (command == null)

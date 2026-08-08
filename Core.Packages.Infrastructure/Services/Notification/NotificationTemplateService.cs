@@ -38,7 +38,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Notification
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 // Şablonu bul
                 var template = await _templateRepository.Query()

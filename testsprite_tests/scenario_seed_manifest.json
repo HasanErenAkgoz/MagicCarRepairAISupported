@@ -1,0 +1,27 @@
+{
+  "description": "Minimum DB entities per test area (API seed before run_all_modules / TestSprite)",
+  "targets": {
+    "customers": 8,
+    "vehicles_per_customer": 1,
+    "work_orders": 10,
+    "work_orders_for_invoice": 3,
+    "parts": 10,
+    "employees": 3,
+    "portal_test_users": 1,
+    "manager_test_users": 1
+  },
+  "modules": {
+    "M04_customers": ["customers"],
+    "M05_vehicles": ["customers", "vehicles"],
+    "M06_workorders": ["customers", "vehicles", "work_orders"],
+    "M07_parts_stock": ["parts"],
+    "M10_invoices": ["work_orders_for_invoice"],
+    "M13_employees": ["employees"],
+    "M19_portals": ["portal_test_users"],
+    "M03_rbac": ["manager_test_users"]
+  },
+  "notes": {
+    "auth_negative": "No seed — uses invalid credentials",
+    "lists_empty_ok": ["M08_appointments", "M09_quotes", "M14_insurance", "M16_notifications"]
+  }
+}

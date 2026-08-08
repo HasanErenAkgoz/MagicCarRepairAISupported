@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.SalaryPaymen
 
         public async Task<DeleteSalaryPaymentResponse> Handle(DeleteSalaryPaymentCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // SalaryPayment'ı bul
             var salaryPayment = await _salaryPaymentRepository.GetByIdAsync(request.Id);

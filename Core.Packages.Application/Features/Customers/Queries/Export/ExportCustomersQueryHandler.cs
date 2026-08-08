@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Queries.Expor
 
         public async Task<byte[]> Handle(ExportCustomersQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var customers = await _customerRepository.Query()
                 .Where(c => c.ClientId == clientId)

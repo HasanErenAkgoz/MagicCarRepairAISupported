@@ -1,5 +1,6 @@
 using AutoMapper;
 using MagicCarRepairAISupported.Application.Common.Services;
+using MagicCarRepairAISupported.Domain.Enums;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,9 @@ namespace MagicCarRepairAISupported.Application.Features.Employees.Queries.GetAl
 
             // Query oluştur
             var query = _employeeRepository.Query();
+
+            // Soft-deleted kayıtları listeleme
+            query = query.Where(e => e.Status != Status.Deleted);
 
             // Sadece kendi clientına ait çalışanları getir
             if (clientId.HasValue)

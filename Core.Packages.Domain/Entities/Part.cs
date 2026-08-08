@@ -38,7 +38,32 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public int? WarrantyMonths { get; set; } // Garanti süresi (ay)
         
         public string? Notes { get; set; }
-        
+
+        // ── Araç uyumluluk alanları ──────────────────────────────────────
+        /// <summary>
+        /// Uyumlu araç markaları — JSON dizi: ["BMW","MINI"]
+        /// Boşsa tüm markalara uyumlu kabul edilir.
+        /// </summary>
+        public string? CompatibleVehicleBrands { get; set; }
+
+        /// <summary>
+        /// Uyumlu araç modelleri — JSON dizi: ["3 Serisi","5 Serisi"]
+        /// Boşsa CompatibleVehicleBrands içindeki tüm modellere uyumlu.
+        /// </summary>
+        public string? CompatibleVehicleModels { get; set; }
+
+        /// <summary>En düşük uyumlu model yılı (dahil). Null = kısıtlama yok.</summary>
+        public int? CompatibleYearFrom { get; set; }
+
+        /// <summary>En yüksek uyumlu model yılı (dahil). Null = kısıtlama yok.</summary>
+        public int? CompatibleYearTo { get; set; }
+
+        /// <summary>
+        /// Ek OEM/parça kodları — JSON dizi: ["51647393613","51647220285"]
+        /// Birden fazla OEM kodu desteklemek için (OEMNumber tek değer için kalır).
+        /// </summary>
+        public string? AdditionalOemCodes { get; set; }
+
         // Multi-tenant support
         public int ClientId { get; set; }
         public virtual Client Client { get; set; }

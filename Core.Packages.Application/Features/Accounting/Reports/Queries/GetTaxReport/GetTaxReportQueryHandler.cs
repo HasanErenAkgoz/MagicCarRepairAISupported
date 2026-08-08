@@ -21,7 +21,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Reports.Quer
 
         public async Task<GetTaxReportResponse> Handle(GetTaxReportQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var query = _taxRepository.Query()
                 .Where(t => t.ClientId == clientId);

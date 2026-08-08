@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.SalaryPaymen
 
         public async Task<GetSalaryPaymentByIdResponse> Handle(GetSalaryPaymentByIdQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var salaryPayment = await _salaryPaymentRepository.GetByIdAsync(request.Id);
             if (salaryPayment == null)

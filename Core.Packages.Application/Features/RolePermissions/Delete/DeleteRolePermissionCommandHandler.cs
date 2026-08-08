@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Features.RolePermissions.Delete
 
         public async Task<IResult> Handle(DeleteRolePermissionCommand request, CancellationToken cancellationToken)
         {
-            var clientId = request.ClientId ?? _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = request.ClientId ?? _tenantService.GetRequiredClientId();
 
             var role = await _roleManager.FindByIdAsync(request.RoleId.ToString());
             if (role == null)

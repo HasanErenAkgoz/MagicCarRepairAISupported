@@ -1,5 +1,6 @@
 using AutoMapper;
 using MagicCarRepairAISupported.Application.Common.Services.Cache;
+using MagicCarRepairAISupported.Application.Features.Parts.Utils;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Exceptions;
 using MagicCarRepairAISupported.Domain.Repositories;
@@ -73,6 +74,11 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.UpdatePa
             part.Unit = request.Unit;
             part.WarrantyMonths = request.WarrantyMonths;
             part.Notes = request.Notes;
+            part.CompatibleVehicleBrands = PartFitmentJson.SerializeStringArray(request.CompatibleVehicleBrands);
+            part.CompatibleVehicleModels = PartFitmentJson.SerializeStringArray(request.CompatibleVehicleModels);
+            part.CompatibleYearFrom = request.CompatibleYearFrom;
+            part.CompatibleYearTo = request.CompatibleYearTo;
+            part.AdditionalOemCodes = PartFitmentJson.SerializeStringArray(request.AdditionalOemCodes);
 
             // Stok konumunu güncelle (Stock kaydı varsa)
             if (part.Stock != null && request.StockLocation != null)

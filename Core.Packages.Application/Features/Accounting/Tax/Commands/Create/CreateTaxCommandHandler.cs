@@ -27,7 +27,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Tax.Commands
 
         public async Task<CreateTaxResponse> Handle(CreateTaxCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Validasyon
             if (request.Year < 2000 || request.Year > 2100)

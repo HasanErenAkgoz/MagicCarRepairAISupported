@@ -65,6 +65,9 @@ namespace MagicCarRepairAISupported.Domain.Entities
         /// Sıralama (ekip listesinde)
         /// </summary>
         public int DisplayOrder { get; set; } = 0;
+
+        public static string GenerateEmployeeNo()
+            => $"EMP-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..4].ToUpper()}";
     }
 }
 

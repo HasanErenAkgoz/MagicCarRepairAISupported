@@ -3,13 +3,15 @@ using MagicCarRepairAISupported.Application.Features.AutoOrders.Commands.Create;
 using MagicCarRepairAISupported.Application.Features.AutoOrders.Queries.GetPending;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class AutoOrdersController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -22,11 +22,11 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
 
             builder.Property(t => t.TitleTemplate)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(t => t.ContentTemplate)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(t => t.RelatedEntityType)
                 .HasMaxLength(100);

@@ -27,7 +27,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Expense.Comm
 
         public async Task<CreateExpenseResponse> Handle(CreateExpenseCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Employee kontrolü (eğer belirtilmişse)
             if (request.EmployeeId.HasValue)

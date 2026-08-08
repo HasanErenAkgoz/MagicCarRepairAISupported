@@ -29,7 +29,7 @@ namespace MagicCarRepairAISupported.Application.Features.Reminders.Queries.GetRe
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 var reminder = await _reminderRepository.GetByIdAsync(request.Id, cancellationToken);
 

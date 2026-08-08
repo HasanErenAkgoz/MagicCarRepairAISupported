@@ -15,8 +15,32 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
 
         public async Task<UserDevice?> GetByUserIdAndDeviceIdAsync(int userId, string deviceId, CancellationToken cancellationToken = default)
         {
-            return await Context.Set<UserDevice>()
+            return await Context.UserDevices
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(ud => ud.UserId == userId && ud.DeviceId == deviceId, cancellationToken);
+        }
+
+        public async Task UpsertLoginDeviceAsync(UserDevice device, CancellationToken cancellationToken = default)
+        {
+            var existing = await Context.UserDevices
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(
+                    ud => ud.UserId == device.UserId && ud.DeviceId == device.DeviceId,
+                    cancellationToken);
+
+            if (existing == null)
+            {
+                await Context.UserDevices.AddAsync(device, cancellationToken);
+            }
+            else
+            {
+                existing.LastLoginAt = device.LastLoginAt;
+                existing.IsTrusted = device.IsTrusted;
+                if (!string.IsNullOrEmpty(device.DeviceName))
+                    existing.DeviceName = device.DeviceName;
+            }
+
+            await Context.SaveChangesAsync(cancellationToken);
         }
     }
 }

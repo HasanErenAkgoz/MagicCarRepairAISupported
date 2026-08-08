@@ -1,4 +1,6 @@
 using MagicCarRepairAISupported.Application.Common.Services;
+using MagicCarRepairAISupported.Domain.Enums;
+using MagicCarRepairAISupported.Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 
@@ -27,15 +29,41 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Tenant
                 return clientId;
             }
 
-            // Try to get from headers
-            var clientIdHeader = _httpContextAccessor.HttpContext?.Request.Headers["X-Client-Id"].FirstOrDefault();
-            if (!string.IsNullOrEmpty(clientIdHeader) && int.TryParse(clientIdHeader, out var headerClientId))
+            // X-Client-Id is only honored for SystemAdmin (tenant switching / impersonation)
+            if (GetCurrentUserType() == UserType.SystemAdmin)
             {
-                _currentClientId = headerClientId;
-                return headerClientId;
+                var clientIdHeader = _httpContextAccessor.HttpContext?.Request.Headers["X-Client-Id"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(clientIdHeader) && int.TryParse(clientIdHeader, out var headerClientId))
+                {
+                    _currentClientId = headerClientId;
+                    return headerClientId;
+                }
             }
 
             return null;
+        }
+
+        public int GetRequiredClientId()
+        {
+            var clientId = GetCurrentClientId();
+            if (!clientId.HasValue)
+                throw new DomainException("CLIENT_ID_REQUIRED");
+            return clientId.Value;
+        }
+
+        public int GetClientIdOrDefault(int defaultClientId = 1)
+        {
+            return GetCurrentClientId() ?? defaultClientId;
+        }
+
+        public UserType? GetCurrentUserType()
+        {
+            var claim = _httpContextAccessor.HttpContext?.User?.FindFirst("UserType")?.Value;
+            if (string.IsNullOrEmpty(claim) || !int.TryParse(claim, out var userTypeInt))
+                return null;
+            if (!Enum.IsDefined(typeof(UserType), userTypeInt))
+                return null;
+            return (UserType)userTypeInt;
         }
 
         public void SetCurrentClientId(int clientId)
@@ -48,7 +76,6 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Tenant
             if (!string.IsNullOrEmpty(_currentLanguage))
                 return _currentLanguage;
 
-            // 1. Try to get from user claims (JWT token - highest priority)
             var languageClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("Language");
             if (languageClaim != null && !string.IsNullOrEmpty(languageClaim.Value))
             {
@@ -56,11 +83,9 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Tenant
                 return _currentLanguage;
             }
 
-            // 2. Try to get from headers (Accept-Language)
             var languageHeader = _httpContextAccessor.HttpContext?.Request.Headers["Accept-Language"].FirstOrDefault();
             if (!string.IsNullOrEmpty(languageHeader))
             {
-                // Parse Accept-Language header (e.g., "en-US,en;q=0.9,tr;q=0.8")
                 var language = languageHeader.Split(',').FirstOrDefault()?.Split('-').FirstOrDefault()?.Trim();
                 if (!string.IsNullOrEmpty(language))
                 {
@@ -69,14 +94,13 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Tenant
                 }
             }
 
-            // 3. Try to get from cookie
-            if (_httpContextAccessor.HttpContext?.Request.Cookies.TryGetValue("language", out var cookieLang) == true && !string.IsNullOrEmpty(cookieLang))
+            if (_httpContextAccessor.HttpContext?.Request.Cookies.TryGetValue("language", out var cookieLang) == true
+                && !string.IsNullOrEmpty(cookieLang))
             {
                 _currentLanguage = cookieLang;
                 return cookieLang;
             }
 
-            // 4. Default to Turkish
             _currentLanguage = "tr";
             return _currentLanguage;
         }
@@ -87,4 +111,3 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.Tenant
         }
     }
 }
-

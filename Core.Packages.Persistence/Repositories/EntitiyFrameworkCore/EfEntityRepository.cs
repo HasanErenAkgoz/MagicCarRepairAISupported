@@ -1,4 +1,4 @@
-using MagicCarRepairAISupported.Domain.Common;
+using MagicCarRepairAISupported.Domain.Interfaces;
 using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MagicCarRepairAISupported.Domain.UnitOfWork;
 using EFCore.BulkExtensions;
@@ -20,6 +20,7 @@ namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCor
             Context = context;
             _unitOfWork = unitOfWork;
         }
+
         public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken)
         {
             await Context.AddAsync(entity, cancellationToken);
@@ -34,7 +35,6 @@ namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCor
 
             try
             {
-                // Try using EFCore.BulkExtensions for better performance
                 var bulkConfig = new BulkConfig
                 {
                     SetOutputIdentity = true,
@@ -46,7 +46,6 @@ namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCor
             }
             catch (InvalidOperationException ex) when (ex.Message.Contains("DbServer") || ex.Message.Contains("Failed to create"))
             {
-                // Fallback to standard EF Core AddRange if BulkExtensions fails
                 await Context.AddRangeAsync(entities);
                 await _unitOfWork.SaveChangesAsync();
             }
@@ -56,8 +55,18 @@ namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCor
 
         public TEntity Update(TEntity entity)
         {
-            Context.Update(entity);
-            Context.SaveChanges();
+            ApplyUpdate(entity);
+
+            try
+            {
+                Context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                ReloadAndApplyValues(entity);
+                Context.SaveChanges();
+            }
+
             return entity;
         }
 
@@ -73,7 +82,6 @@ namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCor
             Context.Remove(entity);
             Context.SaveChanges();
             return entity;
-
         }
 
         public async Task<List<TEntity>> BulkDeleteAsync(List<TEntity> entities)
@@ -97,6 +105,7 @@ namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCor
         {
             return await Context.Set<TEntity>().FirstOrDefaultAsync(expression, cancellationToken);
         }
+
         public async Task<int> GetCountAsync(CancellationToken cancellationToken = default, Expression<Func<TEntity, bool>> expression = null)
         {
             IQueryable<TEntity> query = Context.Set<TEntity>();
@@ -122,20 +131,15 @@ namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCor
             return Context.Set<TEntity>();
         }
 
-        // IEntityRepository<TEntity, TId> implementation
         public async Task<TEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            // Try to find entity by Id property using reflection
-            var entityType = typeof(TEntity);
-            var idProperty = entityType.GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
+            var idProperty = typeof(TEntity).GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
             
             if (idProperty != null)
             {
-                // Use FindAsync if available (works for entities with Id property)
                 return await Context.Set<TEntity>().FindAsync(new object[] { id }, cancellationToken);
             }
             
-            // Fallback: query by Id property
             var parameter = Expression.Parameter(typeof(TEntity), "e");
             var property = Expression.Property(parameter, "Id");
             var constant = Expression.Constant(id);
@@ -143,6 +147,48 @@ namespace MagicCarRepairAISupported.Persistence.Repositories.EntitiyFrameworkCor
             var lambda = Expression.Lambda<Func<TEntity, bool>>(equal, parameter);
             
             return await Context.Set<TEntity>().FirstOrDefaultAsync(lambda, cancellationToken);
+        }
+
+        private void ApplyUpdate(TEntity entity)
+        {
+            var entry = Context.Entry(entity);
+            if (entry.State != EntityState.Detached)
+                return;
+
+            if (entity is IClientEntity)
+            {
+                ReloadAndApplyValues(entity);
+                return;
+            }
+
+            Context.Update(entity);
+        }
+
+        private void ReloadAndApplyValues(TEntity entity)
+        {
+            var id = GetEntityId(entity);
+            var existing = Context.Set<TEntity>()
+                .IgnoreQueryFilters()
+                .FirstOrDefault(e => EF.Property<int>(e, "Id") == id);
+
+            if (existing == null)
+                throw new DbUpdateConcurrencyException(
+                    $"Cannot update {typeof(TEntity).Name} id={id}: row not found (tenant filter or deleted).");
+
+            var concurrencyStamp = typeof(TEntity).GetProperty("ConcurrencyStamp");
+            var stampBefore = concurrencyStamp?.GetValue(existing);
+
+            Context.Entry(existing).CurrentValues.SetValues(entity);
+
+            if (concurrencyStamp != null && stampBefore != null)
+                concurrencyStamp.SetValue(existing, stampBefore);
+        }
+
+        private static int GetEntityId(TEntity entity)
+        {
+            var idProperty = typeof(TEntity).GetProperty("Id", BindingFlags.Public | BindingFlags.Instance)
+                ?? throw new InvalidOperationException($"{typeof(TEntity).Name} has no Id property.");
+            return (int)idProperty.GetValue(entity)!;
         }
     }
 }

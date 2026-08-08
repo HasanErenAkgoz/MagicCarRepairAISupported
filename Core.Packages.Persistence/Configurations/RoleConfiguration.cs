@@ -11,7 +11,15 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
             builder.ToTable("Roles");
             builder.Property(x => x.Name).IsRequired().HasMaxLength(50);
             
-            // Multi-tenant: Role names should be unique per client
+            // Multi-tenant: replace Identity's global NormalizedName unique index
+            builder.HasIndex(x => x.NormalizedName)
+                .HasDatabaseName("RoleNameIndex")
+                .IsUnique(false);
+
+            builder.HasIndex(x => new { x.NormalizedName, x.ClientId })
+                .IsUnique()
+                .HasDatabaseName("IX_Roles_NormalizedName_ClientId");
+
             builder.HasIndex(x => new { x.Name, x.ClientId }).IsUnique();
             builder.HasIndex(x => x.ClientId);
             

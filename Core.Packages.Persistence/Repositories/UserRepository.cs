@@ -18,9 +18,16 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
             return await Context.Set<User>().FindAsync(id);
         }
 
+        public async Task<User?> FindByEmailForAuthAsync(string normalizedEmail, CancellationToken cancellationToken = default)
+        {
+            return await Context.Users
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(u => u.NormalizedEmail == normalizedEmail, cancellationToken);
+        }
+
         public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
-            return await Context.Set<User>()
+            return await Context.Users
                 .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
         }
 
@@ -40,6 +47,22 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         {
             return await Context.Set<User>()
                 .AnyAsync(u => u.IdentityNo == identityNo, cancellationToken);
+        }
+
+        public async Task UpdateRefreshTokenAsync(
+            int userId,
+            string refreshToken,
+            DateTime refreshTokenExpiryTime,
+            CancellationToken cancellationToken = default)
+        {
+            await Context.Users
+                .IgnoreQueryFilters()
+                .Where(u => u.Id == userId)
+                .ExecuteUpdateAsync(
+                    setters => setters
+                        .SetProperty(u => u.RefreshToken, refreshToken)
+                        .SetProperty(u => u.RefreshTokenExpiryTime, refreshTokenExpiryTime),
+                    cancellationToken);
         }
     }
 }

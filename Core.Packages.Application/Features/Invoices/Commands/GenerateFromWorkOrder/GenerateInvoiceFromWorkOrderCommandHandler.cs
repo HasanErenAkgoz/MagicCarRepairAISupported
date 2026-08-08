@@ -29,7 +29,7 @@ namespace MagicCarRepairAISupported.Application.Features.Invoices.Commands.Gener
 
         public async Task<GenerateInvoiceFromWorkOrderResponse> Handle(GenerateInvoiceFromWorkOrderCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // WorkOrder'ı getir (Items ve Labors dahil)
             var workOrder = await _workOrderRepository.Query()
@@ -110,6 +110,7 @@ namespace MagicCarRepairAISupported.Application.Features.Invoices.Commands.Gener
 
             // Response
             var response = _mapper.Map<GenerateInvoiceFromWorkOrderResponse>(invoice);
+            response.InvoiceId = invoice.Id;
             response.WorkOrderNumber = workOrder.WorkOrderNumber;
             response.StatusName = invoice.Status.ToString();
 

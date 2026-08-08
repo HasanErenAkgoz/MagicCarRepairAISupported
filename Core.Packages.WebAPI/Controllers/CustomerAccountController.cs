@@ -1,8 +1,11 @@
 using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Features.Customers.Commands.Create;
 using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Controllers;
@@ -19,28 +22,38 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         private readonly RoleManager<Role> _roleManager;
         private readonly IMediator _mediator;
         private readonly ITenantService _tenantService;
+        private readonly IClientRepository _clientRepository;
 
         public CustomerAccountController(
             UserManager<UserEntity> userManager,
             RoleManager<Role> roleManager,
             IMediator mediator,
-            ITenantService tenantService)
+            ITenantService tenantService,
+            IClientRepository clientRepository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _mediator = mediator;
             _tenantService = tenantService;
+            _clientRepository = clientRepository;
         }
 
         /// <summary>
         /// Müşteri hesabı oluşturur (User + Customer + Customer Role)
         /// </summary>
         [HttpPost("create")]
-        public async Task<IActionResult> CreateCustomerAccount([FromBody] CreateCustomerAccountRequest request)
+        public async Task<IActionResult> CreateCustomerAccount([FromBody] CreateCustomerAccountRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var resolvedClientId = _tenantService.GetClientIdOrDefault();
+                var clientRow = await _clientRepository.GetByIdAsync(resolvedClientId, cancellationToken);
+                if (clientRow == null)
+                {
+                    return BadRequest(new { message = "Geçerli bir servis (client) bulunamadı. Veritabanında ilgili tenant kaydı olmalı." });
+                }
+
+                var clientId = clientRow.Id;
 
                 // 1. Email kontrolü
                 var existingUser = await _userManager.FindByEmailAsync(request.Email);

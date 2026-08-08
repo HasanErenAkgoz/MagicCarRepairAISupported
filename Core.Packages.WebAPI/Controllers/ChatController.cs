@@ -4,6 +4,7 @@ using MagicCarRepairAISupported.Application.Features.Chat.Queries.GetConversatio
 using MagicCarRepairAISupported.Application.Features.Chat.Queries.GetUnreadCount;
 using MagicCarRepairAISupported.Application.Features.Chat.Queries.GetWorkOrderMessages;
 using MediatR;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +12,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class ChatController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -3,13 +3,15 @@ using MagicCarRepairAISupported.Application.Features.Appointments.Commands.Creat
 using MagicCarRepairAISupported.Application.Features.Appointments.Queries.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class AppointmentsController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -88,5 +88,12 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
 
             await Context.SaveChangesAsync();
         }
+
+        public async Task DeleteAllInvolvingUserAsync(int userId, CancellationToken cancellationToken = default)
+        {
+            await Context.Set<ChatMessage>()
+                .Where(m => m.SenderId == userId || m.ReceiverId == userId)
+                .ExecuteDeleteAsync(cancellationToken);
+        }
     }
 }

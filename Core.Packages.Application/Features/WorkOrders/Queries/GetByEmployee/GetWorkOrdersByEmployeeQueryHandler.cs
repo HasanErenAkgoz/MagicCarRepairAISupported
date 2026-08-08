@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
 
         public async Task<GetWorkOrdersByEmployeeResponse> Handle(GetWorkOrdersByEmployeeQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Personel kontrolü
             var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId);

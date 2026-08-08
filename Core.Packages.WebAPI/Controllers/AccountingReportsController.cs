@@ -7,13 +7,15 @@ using MagicCarRepairAISupported.Application.Features.Accounting.Reports.Queries.
 using MagicCarRepairAISupported.Application.Features.Accounting.Reports.Queries.GetYearlySummary;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/accounting-reports")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class AccountingReportsController : ControllerBase
     {
         private readonly IMediator _mediator;

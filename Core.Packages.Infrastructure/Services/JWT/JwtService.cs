@@ -23,10 +23,11 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.JWT
         public JwtService(UserManager<User> userManager, Microsoft.Extensions.Configuration.IConfiguration configuration, IRolePermissionRepository rolePermissionRepository)
         {
             _userManager = userManager;
-            _tokenOptions = configuration.GetSection("TokenOptions").Get<TokenOptions>();
+            _tokenOptions = configuration.GetSection("TokenOptions").Get<TokenOptions>()
+                ?? throw new InvalidOperationException("TokenOptions configuration is missing or invalid. Check appsettings.json TokenOptions section.");
             _rolePermissionRepository = rolePermissionRepository;
 
-            if (_tokenOptions.SecurityKey.Length < 32)
+            if (string.IsNullOrEmpty(_tokenOptions.SecurityKey) || _tokenOptions.SecurityKey.Length < 32)
                 throw new InvalidOperationException("Security key must be at least 256 bits (32 characters) long.");
         }
 
@@ -104,8 +105,10 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.JWT
         {
             var userRoles = await _userManager.GetRolesAsync(user);
             return await _rolePermissionRepository.Query()
+                .IgnoreQueryFilters()
                 .Include(rp => rp.Permission)
-                .Where(rp => userRoles.Contains(rp.Role.Name))
+                .Include(rp => rp.Role)
+                .Where(rp => rp.ClientId == user.ClientId && userRoles.Contains(rp.Role.Name))
                 .Select(rp => rp.Permission.Name)
                 .Distinct()
                 .ToListAsync();

@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Queries.GetB
 
         public async Task<GetWorkOrderByIdResponse> Handle(GetWorkOrderByIdQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var workOrder = await _workOrderRepository.GetWithDetailsAsync(request.Id, cancellationToken);
             if (workOrder == null)

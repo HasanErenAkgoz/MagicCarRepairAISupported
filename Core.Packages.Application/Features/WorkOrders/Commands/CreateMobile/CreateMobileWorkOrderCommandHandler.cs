@@ -53,7 +53,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Cre
 
         public async Task<CreateMobileWorkOrderResponse> Handle(CreateMobileWorkOrderCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
             var userId = GetCurrentUserId();
 
             // Validation
@@ -110,6 +110,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Cre
             {
                 // Mobil listeden seçildi — direkt ID ile çek
                 customer = await _customerRepository.Query()
+                    .IgnoreQueryFilters()
                     .FirstOrDefaultAsync(c => c.Id == request.CustomerId.Value && c.ClientId == clientId, cancellationToken)
                     ?? throw new DomainException("CUSTOMER_NOT_FOUND", new { CustomerId = request.CustomerId.Value });
             }

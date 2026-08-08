@@ -51,8 +51,14 @@ namespace MagicCarRepairAISupported.Infrastructure.Configurations.AI
         public int TimeoutSeconds { get; set; } = 60;
 
         /// <summary>
-        /// Server base URL used to construct absolute photo URLs for Vision API
-        /// (e.g. https://api.magiccarrepair.com or http://localhost:5169 for local dev)
+        /// Public HTTP(S) base URL of this API (no trailing slash). Used for Vision photo URLs
+        /// and for employee invite email links (<c>GET /api/Auth/set-password</c>).
+        /// <para>
+        /// Local caveat: <c>http://localhost:5169</c> works only on the same PC browser.
+        /// A phone opening the mail cannot reach your PC’s localhost — use your LAN IP
+        /// (e.g. <c>http://192.168.1.10:5169</c>), ngrok, or Android emulator host alias
+        /// <c>http://10.0.2.2:5169</c> plus <c>adb reverse</c> as appropriate.
+        /// </para>
         /// </summary>
         public string? ServerBaseUrl { get; set; }
     }

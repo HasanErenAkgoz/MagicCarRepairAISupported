@@ -46,7 +46,7 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasMaxLength(1000);
 
             builder.Property(c => c.Photos)
-                .HasColumnType("nvarchar(max)"); // JSON
+                .HasColumnType("text"); // JSON
 
             builder.Property(c => c.Notes)
                 .HasMaxLength(2000);

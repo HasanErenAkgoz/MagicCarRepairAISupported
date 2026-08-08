@@ -23,7 +23,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Reports.Quer
 
         public async Task<GetCashFlowResponse> Handle(GetCashFlowQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Başlangıç bakiyesi (başlangıç tarihinden önceki tüm gelir - gider)
             var openingIncomes = await _incomeRepository.Query()

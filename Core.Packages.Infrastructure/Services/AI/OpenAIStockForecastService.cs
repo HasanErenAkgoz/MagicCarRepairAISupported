@@ -67,7 +67,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 // Parçaları getir
                 var parts = request.PartId.HasValue

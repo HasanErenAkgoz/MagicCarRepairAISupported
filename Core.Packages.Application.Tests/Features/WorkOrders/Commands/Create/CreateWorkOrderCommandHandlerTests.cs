@@ -19,7 +19,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
     {
         private readonly Mock<IWorkOrderRepository> _workOrderRepositoryMock;
         private readonly Mock<IEntityRepository<Vehicle, int>> _vehicleRepositoryMock;
-        private readonly Mock<IEntityRepository<Customer, int>> _customerRepositoryMock;
+        private readonly Mock<ICustomerRepository> _customerRepositoryMock;
         private readonly Mock<IEntityRepository<Employee, int>> _employeeRepositoryMock;
         private readonly Mock<IInsurancePolicyRepository> _insurancePolicyRepositoryMock;
         private readonly Mock<ITenantService> _tenantServiceMock;
@@ -32,7 +32,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
         {
             _workOrderRepositoryMock = new Mock<IWorkOrderRepository>();
             _vehicleRepositoryMock = new Mock<IEntityRepository<Vehicle, int>>();
-            _customerRepositoryMock = new Mock<IEntityRepository<Customer, int>>();
+            _customerRepositoryMock = new Mock<ICustomerRepository>();
             _employeeRepositoryMock = new Mock<IEntityRepository<Employee, int>>();
             _insurancePolicyRepositoryMock = new Mock<IInsurancePolicyRepository>();
             _tenantServiceMock = new Mock<ITenantService>();

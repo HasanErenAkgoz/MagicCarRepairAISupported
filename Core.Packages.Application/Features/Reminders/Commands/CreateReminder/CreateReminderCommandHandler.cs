@@ -28,7 +28,7 @@ namespace MagicCarRepairAISupported.Application.Features.Reminders.Commands.Crea
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 var reminder = new Reminder
                 {

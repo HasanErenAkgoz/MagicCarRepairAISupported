@@ -57,6 +57,8 @@ namespace MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetIn
                 EndDate = p.EndDate,
                 PremiumAmount = p.PremiumAmount,
                 CoverageAmount = p.CoverageAmount,
+                DeductiblePercentage = p.DeductiblePercentage,
+                DeductibleAmount = p.DeductibleAmount,
                 Status = p.Status,
                 DaysUntilExpiration = p.DaysUntilExpiration(),
                 IsValid = p.IsValid()

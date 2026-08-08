@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.11.35327.3
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11626.88 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D30E9AC0-DD46-4D20-9770-4C45F88E683B}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\..\Downloads\Readme.md = ..\..\..\..\Downloads\Readme.md
+		..\..\Downloads\Readme.md = ..\..\Downloads\Readme.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicCarRepairAISupported.Application", "Core.Packages.Application\MagicCarRepairAISupported.Application.csproj", "{ABF4828B-F9E6-4368-8012-DE4CE802525A}"

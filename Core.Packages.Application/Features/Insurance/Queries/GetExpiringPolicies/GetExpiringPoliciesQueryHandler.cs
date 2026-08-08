@@ -25,12 +25,21 @@ namespace MagicCarRepairAISupported.Application.Features.Insurance.Queries.GetEx
             {
                 Id = p.Id,
                 PolicyNumber = p.PolicyNumber,
-                VehicleLicensePlate = p.Vehicle?.LicensePlate ?? "N/A",
-                VehicleBrandModel = $"{p.Vehicle?.Brand} {p.Vehicle?.Model}",
-                CustomerName = $"{p.Customer?.FirstName} {p.Customer?.LastName}",
-                InsuranceCompanyName = p.InsuranceCompany?.CompanyName ?? "N/A",
+                VehicleId = p.VehicleId,
+                VehicleBrand = p.Vehicle?.Brand ?? string.Empty,
+                VehicleModel = p.Vehicle?.Model ?? string.Empty,
+                VehicleLicensePlate = p.Vehicle?.LicensePlate ?? string.Empty,
+                CustomerId = p.CustomerId,
+                CustomerName = p.Customer != null ? $"{p.Customer.FirstName} {p.Customer.LastName}" : string.Empty,
+                InsuranceCompanyName = p.InsuranceCompany?.CompanyName ?? string.Empty,
                 InsuranceType = p.InsuranceType,
+                StartDate = p.StartDate,
                 EndDate = p.EndDate,
+                PremiumAmount = p.PremiumAmount,
+                CoverageAmount = p.CoverageAmount,
+                DeductiblePercentage = p.DeductiblePercentage,
+                DeductibleAmount = p.DeductibleAmount,
+                Status = p.Status,
                 DaysUntilExpiration = p.DaysUntilExpiration()
             }).ToList();
 

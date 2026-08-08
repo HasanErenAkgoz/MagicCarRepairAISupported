@@ -32,7 +32,7 @@ namespace MagicCarRepairAISupported.Application.Features.Invoices.Commands.Creat
 
         public async Task<CreateInvoiceResponse> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // WorkOrder kontrolü (eğer belirtilmişse)
             if (request.WorkOrderId.HasValue)

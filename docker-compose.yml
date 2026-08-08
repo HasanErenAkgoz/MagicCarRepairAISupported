@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: magiccarrepair-postgres
+    restart: unless-stopped
+    ports:
+      # Host 5434 avoids conflict with other PostgreSQL instances on 5432/5433
+      - "${POSTGRES_PORT:-5434}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-magiccar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-magiccar_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-MagicCarRepairDb}
+    volumes:
+      - magiccarrepair_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+volumes:
+  magiccarrepair_pgdata:

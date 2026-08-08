@@ -35,7 +35,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Upd
 
         public async Task<UpdateWorkOrderStatusResponse> Handle(UpdateWorkOrderStatusCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // WorkOrder'ı bul
             var workOrder = await _workOrderRepository.GetByIdAsync(request.WorkOrderId);

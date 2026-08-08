@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Income.Comma
 
         public async Task<DeleteIncomeResponse> Handle(DeleteIncomeCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Geliri bul
             var income = await _incomeRepository.GetByIdAsync(request.Id);

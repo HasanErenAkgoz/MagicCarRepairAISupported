@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Features.Appointments.Commands.C
 
         public async Task<CancelAppointmentResponse> Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId);
             if (appointment == null || appointment.ClientId != clientId)

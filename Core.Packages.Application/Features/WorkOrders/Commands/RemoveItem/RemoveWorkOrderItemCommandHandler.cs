@@ -30,7 +30,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Rem
 
         public async Task<RemoveWorkOrderItemResponse> Handle(RemoveWorkOrderItemCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // WorkOrder kontrolü
             var workOrder = await _workOrderRepository.GetByIdAsync(request.WorkOrderId);

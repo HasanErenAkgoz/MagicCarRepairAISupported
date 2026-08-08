@@ -1,4 +1,8 @@
+using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Common.Services.Stock;
+using MagicCarRepairAISupported.Domain.Entities;
+using MagicCarRepairAISupported.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -45,22 +49,37 @@ namespace MagicCarRepairAISupported.Persistence.Startup.HostedServices
 
         private async Task CheckStocksAsync(CancellationToken cancellationToken)
         {
-            using (var scope = _serviceProvider.CreateScope())
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<BaseDbContext>();
+            var tenantService = scope.ServiceProvider.GetRequiredService<ITenantService>();
+            var stockAlertService = scope.ServiceProvider.GetRequiredService<IStockAlertService>();
+
+            var clientIds = await context.Clients.AsNoTracking()
+                .Select(c => c.Id)
+                .ToListAsync(cancellationToken);
+
+            if (clientIds.Count == 0)
             {
-                var stockAlertService = scope.ServiceProvider.GetRequiredService<IStockAlertService>();
+                _logger.LogDebug("No clients in database; skipping stock check.");
+                return;
+            }
 
-                _logger.LogInformation("Starting stock check...");
+            _logger.LogInformation("Starting stock check for {ClientCount} client(s)...", clientIds.Count);
 
-                var alerts = await stockAlertService.CheckAllStocksAsync(cancellationToken);
+            var allAlerts = new List<StockAlert>();
+            foreach (var clientId in clientIds)
+            {
+                tenantService.SetCurrentClientId(clientId);
+                allAlerts.AddRange(await stockAlertService.CheckAllStocksAsync(cancellationToken));
+            }
 
-                if (alerts.Any())
-                {
-                    _logger.LogWarning($"Found {alerts.Count} stock alerts");
-                }
-                else
-                {
-                    _logger.LogInformation("No stock alerts found");
-                }
+            if (allAlerts.Count > 0)
+            {
+                _logger.LogWarning("Found {AlertCount} stock alerts", allAlerts.Count);
+            }
+            else
+            {
+                _logger.LogInformation("No stock alerts found");
             }
         }
     }

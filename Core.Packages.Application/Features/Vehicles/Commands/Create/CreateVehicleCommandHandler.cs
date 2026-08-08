@@ -4,6 +4,7 @@ using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Exceptions;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
+using MagicCarRepairAISupported.Domain.Utils;
 using MediatR;
 
 namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Create
@@ -29,7 +30,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Creat
 
         public async Task<CreateVehicleResponse> Handle(CreateVehicleCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Müşteri kontrolü
             var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
@@ -43,22 +44,27 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Creat
                 throw new DomainException("CUSTOMER_NOT_BELONG_TO_CLIENT", new { CustomerId = request.CustomerId });
             }
 
+            var licensePlate = RequiredStringDefaults.ResolveForProperty("LicensePlate", request.LicensePlate, 20);
+            var brand = RequiredStringDefaults.Coalesce(request.Brand);
+            var model = RequiredStringDefaults.Coalesce(request.Model);
+            var color = RequiredStringDefaults.Coalesce(request.Color);
+
             // Business Rule: Plaka benzersiz olmalı (ClientId ile birlikte)
-            var existingVehicle = await _vehicleRepository.GetByLicensePlateAsync(request.LicensePlate, cancellationToken);
+            var existingVehicle = await _vehicleRepository.GetByLicensePlateAsync(licensePlate, cancellationToken);
             if (existingVehicle != null && existingVehicle.ClientId == clientId)
             {
-                throw new DomainException("VEHICLE_LICENSE_PLATE_EXISTS", new { LicensePlate = request.LicensePlate, ExistingVehicleId = existingVehicle.Id });
+                throw new DomainException("VEHICLE_LICENSE_PLATE_EXISTS", new { LicensePlate = licensePlate, ExistingVehicleId = existingVehicle.Id });
             }
 
             // Entity oluştur
             var vehicle = new Vehicle
             {
                 CustomerId = request.CustomerId,
-                LicensePlate = request.LicensePlate,
-                Brand = request.Brand,
-                Model = request.Model,
+                LicensePlate = licensePlate,
+                Brand = brand,
+                Model = model,
                 Year = request.Year,
-                Color = request.Color,
+                Color = color,
                 Status = request.Status,
                 VehicleType = request.VehicleType,
                 FuelType = request.FuelType,

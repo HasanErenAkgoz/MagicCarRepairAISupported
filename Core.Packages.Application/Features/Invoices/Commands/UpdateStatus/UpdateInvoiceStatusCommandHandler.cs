@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.Invoices.Commands.Updat
 
         public async Task<UpdateInvoiceStatusResponse> Handle(UpdateInvoiceStatusCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetCurrentClientId() ?? throw new DomainException("CLIENT_ID_REQUIRED");
 
             // Faturayı bul
             var invoice = await _invoiceRepository.GetByIdAsync(request.InvoiceId);

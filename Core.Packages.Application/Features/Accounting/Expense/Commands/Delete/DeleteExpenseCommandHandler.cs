@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Features.Accounting.Expense.Comm
 
         public async Task<DeleteExpenseResponse> Handle(DeleteExpenseCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Gideri bul
             var expense = await _expenseRepository.GetByIdAsync(request.Id);

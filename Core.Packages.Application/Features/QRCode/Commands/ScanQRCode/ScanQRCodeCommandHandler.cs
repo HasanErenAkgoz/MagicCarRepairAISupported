@@ -30,7 +30,7 @@ namespace MagicCarRepairAISupported.Application.Features.QRCode.Commands.ScanQRC
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 // QR kod verisini parse et
                 QRCodeData? qrData;

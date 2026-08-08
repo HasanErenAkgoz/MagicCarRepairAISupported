@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.AddPhoto
 
         public async Task<AddPartPhotoResponse> Handle(AddPartPhotoCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var part = await _partRepository.GetByIdAsync(request.PartId);
             if (part == null)

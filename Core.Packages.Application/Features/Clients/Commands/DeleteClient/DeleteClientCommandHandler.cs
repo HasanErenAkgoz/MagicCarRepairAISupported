@@ -39,7 +39,10 @@ namespace MagicCarRepairAISupported.Application.Features.Clients.Commands.Delete
 
             var userIds = users.Select(u => u.Id).ToList();
 
-            // Delete Identity users first (removes UserRoles, UserClaims, etc.)
+            // Clear Restrict FKs to AspNetUsers (chat, reminders, customer/employee portal links) before Identity delete
+            await _clientRepository.PrepareForClientUserDeletionAsync(request.ClientId, userIds, cancellationToken);
+
+            // Delete Identity users (removes UserRoles, UserClaims, cascaded UserSessions, etc.)
             foreach (var user in users)
             {
                 var result = await _userManager.DeleteAsync(user);

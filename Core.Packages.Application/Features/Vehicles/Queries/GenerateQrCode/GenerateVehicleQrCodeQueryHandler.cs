@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Queries.Genera
 
         public async Task<byte[]> Handle(GenerateVehicleQrCodeQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var vehicle = await _vehicleRepository.GetByIdAsync(request.VehicleId);
             if (vehicle == null || vehicle.ClientId != clientId)

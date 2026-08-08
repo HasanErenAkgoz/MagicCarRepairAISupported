@@ -68,7 +68,13 @@ namespace MagicCarRepairAISupported.Domain.Entities
         public UrgencyLevel UrgencyLevel { get; set; } = UrgencyLevel.Normal;
 
         /// <summary>
-        /// Teklif son tarihi
+        /// AI teşhis akışından oluşturuldu mu?
+        /// true ise QuoteDeadline ve QuoteResponse.ValidUntilDate 1 gündür.
+        /// </summary>
+        public bool IsAiGenerated { get; set; } = false;
+
+        /// <summary>
+        /// Teklif son tarihi (AI-generated: +1 gün, normal: +7 gün)
         /// </summary>
         public DateTime QuoteDeadline { get; set; } = DateTime.UtcNow.AddDays(7);
 
@@ -81,6 +87,16 @@ namespace MagicCarRepairAISupported.Domain.Entities
         /// AI tahmini maliyet (opsiyonel)
         /// </summary>
         public decimal? EstimatedCost { get; set; }
+
+        /// <summary>
+        /// AI tahmini minimum maliyet (aralık alt ucu)
+        /// </summary>
+        public decimal? EstimatedCostMin { get; set; }
+
+        /// <summary>
+        /// AI tahmini maksimum maliyet (aralık üst ucu)
+        /// </summary>
+        public decimal? EstimatedCostMax { get; set; }
 
         /// <summary>
         /// AI tahmin açıklaması

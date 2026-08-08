@@ -1,19 +1,17 @@
 using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Common.Exceptions;
 using MagicCarRepairAISupported.Domain.Exceptions;
+using MagicCarRepairAISupported.Infrastructure.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace MagicCarRepairAISupported.Infrastructure.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
-        private static readonly Regex ErrorCodeLikeMessage = new("^[A-Z][A-Z0-9_]{2,63}$", RegexOptions.CultureInvariant | RegexOptions.Compiled);
-
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
         private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
@@ -27,7 +25,11 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
             _logger = logger;
         }
 
-        public async Task InvokeAsync(HttpContext context, IErrorMessageService errorMessageService, ITenantService tenantService)
+        public async Task InvokeAsync(
+            HttpContext context,
+            IErrorMessageService errorMessageService,
+            ITenantService tenantService,
+            IDomainErrorResponseWriter domainErrorResponseWriter)
         {
             try
             {
@@ -35,8 +37,7 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
             }
             catch (DomainException ex)
             {
-                // Domain exception with localized message support
-                await HandleDomainExceptionAsync(context, ex, errorMessageService, tenantService);
+                await HandleDomainExceptionAsync(context, ex, errorMessageService, domainErrorResponseWriter);
             }
             catch (CustomException ex)
             {
@@ -65,26 +66,21 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
             }
         }
 
-        private async Task HandleDomainExceptionAsync(HttpContext context, DomainException ex, IErrorMessageService errorMessageService, ITenantService tenantService)
+        private async Task HandleDomainExceptionAsync(
+            HttpContext context,
+            DomainException ex,
+            IErrorMessageService errorMessageService,
+            IDomainErrorResponseWriter domainErrorResponseWriter)
         {
-            var resolvedCode = ResolveDomainExceptionErrorCode(ex);
-            _logger.LogError(ex, "Domain exception occurred: {ErrorCode}", resolvedCode);
-            
-            var language = tenantService.GetCurrentLanguage();
-            var localizedMessage = await errorMessageService.GetMessageAsync(resolvedCode ?? "UNKNOWN_ERROR", language, ex.Details);
+            var resolvedCode = DomainErrorResponseWriter.ResolveDomainExceptionErrorCode(ex) ?? "UNKNOWN_ERROR";
+            var details = ex.Details ?? ex.Parameters;
 
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            if (DomainErrorResponseWriter.IsNotFound(resolvedCode))
+                _logger.LogWarning("Domain not found: {ErrorCode}", resolvedCode);
+            else
+                _logger.LogError(ex, "Domain exception occurred: {ErrorCode}", resolvedCode);
 
-            var result = JsonSerializer.Serialize(new
-            {
-                success = false,
-                errorCode = resolvedCode,
-                message = localizedMessage,
-                details = ex.Details ?? ex.Parameters
-            }, _jsonOptions);
-            
-            await context.Response.WriteAsync(result);
+            await domainErrorResponseWriter.WriteAsync(context, resolvedCode, details);
         }
 
         private async Task HandleCustomExceptionAsync(HttpContext context, CustomException ex, IErrorMessageService errorMessageService, ITenantService tenantService)
@@ -213,23 +209,5 @@ namespace MagicCarRepairAISupported.Infrastructure.Middlewares
             await context.Response.WriteAsync(result);
         }
 
-        /// <summary>
-        /// DomainException tek parametreli (message) kurucuda ErrorCode null kalabiliyor; mesajdan veya "Translation key: ..." biçiminden kod çıkarılır.
-        /// </summary>
-        private static string? ResolveDomainExceptionErrorCode(DomainException ex)
-        {
-            if (!string.IsNullOrEmpty(ex.ErrorCode))
-                return ex.ErrorCode;
-
-            var msg = ex.Message;
-            if (string.IsNullOrEmpty(msg))
-                return null;
-
-            const string prefix = "Translation key: ";
-            if (msg.StartsWith(prefix, StringComparison.Ordinal))
-                return msg[prefix.Length..].Trim();
-
-            return ErrorCodeLikeMessage.IsMatch(msg) ? msg : null;
-        }
     }
 }

@@ -9,6 +9,7 @@ using MagicCarRepairAISupported.Domain.Repositories.EntityFrameworkCore;
 using MagicCarRepairAISupported.Domain.UnitOfWork;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using UserEntity = MagicCarRepairAISupported.Domain.Entities.User;
 
 namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
@@ -22,6 +23,7 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
         private readonly IMediator _mediator;
         private readonly IEntityRepository<Customer, int> _customerRepository;
         private readonly IVehicleRepository _vehicleRepository;
+        private readonly ILogger<RegisterShopCommandHandler> _logger;
 
         public RegisterShopCommandHandler(
             UserManager<UserEntity> userManager,
@@ -30,7 +32,8 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
             IUnitOfWork unitOfWork,
             IMediator mediator,
             IEntityRepository<Customer, int> customerRepository,
-            IVehicleRepository vehicleRepository)
+            IVehicleRepository vehicleRepository,
+            ILogger<RegisterShopCommandHandler> logger)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -39,20 +42,36 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
             _mediator = mediator;
             _customerRepository = customerRepository;
             _vehicleRepository = vehicleRepository;
+            _logger = logger;
         }
 
         public async Task<IDataResult<RegisterShopResponse>> Handle(RegisterShopCommand request, CancellationToken cancellationToken)
         {
+            // NOTE: Never log passwords or other secrets.
+            _logger.LogInformation(
+                "RegisterShop started. OwnerEmail={OwnerEmail}, ShopCode={ShopCode}, ShopName={ShopName}",
+                request.OwnerEmail,
+                request.ShopCode,
+                request.ShopName);
+
             // 1. Email kontrolü
             var existingUser = await _userManager.FindByEmailAsync(request.OwnerEmail);
             if (existingUser != null)
             {
+                _logger.LogWarning(
+                    "RegisterShop blocked: owner email already exists. OwnerEmail={OwnerEmail}, ExistingUserId={UserId}",
+                    request.OwnerEmail,
+                    existingUser.Id);
                 return new ErrorDataResult<RegisterShopResponse>("Bu email adresi zaten kullanılıyor.");
             }
 
             // 2. Şifre kontrolü
             if (request.OwnerPassword != request.OwnerConfirmPassword)
             {
+                _logger.LogWarning(
+                    "RegisterShop blocked: passwords do not match. OwnerEmail={OwnerEmail}, ShopCode={ShopCode}",
+                    request.OwnerEmail,
+                    request.ShopCode);
                 return new ErrorDataResult<RegisterShopResponse>("Şifreler eşleşmiyor.");
             }
 
@@ -60,6 +79,10 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
             var isCodeUnique = await _clientRepository.IsCodeUniqueAsync(request.ShopCode);
             if (!isCodeUnique)
             {
+                _logger.LogWarning(
+                    "RegisterShop blocked: shop code already exists. ShopCode={ShopCode}, OwnerEmail={OwnerEmail}",
+                    request.ShopCode,
+                    request.OwnerEmail);
                 return new ErrorDataResult<RegisterShopResponse>($"'{request.ShopCode}' kodu zaten kullanılıyor. Lütfen farklı bir kod seçin.");
             }
 
@@ -83,6 +106,11 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
 
             await _clientRepository.AddAsync(client, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation(
+                "RegisterShop client created. ClientId={ClientId}, ShopCode={ShopCode}, OwnerEmail={OwnerEmail}",
+                client.Id,
+                client.Code,
+                request.OwnerEmail);
 
             // 5. Owner User oluştur
             var ownerUser = new UserEntity
@@ -106,8 +134,18 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 
                 var errors = string.Join(", ", createUserResult.Errors.Select(e => e.Description));
+                _logger.LogWarning(
+                    "RegisterShop failed: user create failed. OwnerEmail={OwnerEmail}, ShopCode={ShopCode}, Errors={Errors}",
+                    request.OwnerEmail,
+                    request.ShopCode,
+                    errors);
                 return new ErrorDataResult<RegisterShopResponse>($"Kullanıcı oluşturulamadı: {errors}");
             }
+            _logger.LogInformation(
+                "RegisterShop owner user created. OwnerUserId={OwnerUserId}, OwnerEmail={OwnerEmail}, ClientId={ClientId}",
+                ownerUser.Id,
+                ownerUser.Email,
+                client.Id);
 
             // 6. Manager rolünü kontrol et ve yoksa oluştur
             var managerRoleName = "Manager";
@@ -128,6 +166,10 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
                     _clientRepository.Delete(client);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
                     
+                    _logger.LogWarning(
+                        "RegisterShop failed: manager role could not be created. OwnerEmail={OwnerEmail}, ClientId={ClientId}",
+                        request.OwnerEmail,
+                        client.Id);
                     return new ErrorDataResult<RegisterShopResponse>("Manager rolü oluşturulamadı.");
                 }
             }
@@ -140,8 +182,18 @@ namespace MagicCarRepairAISupported.Application.Features.Auth.Register.Commands
                 _clientRepository.Delete(client);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 
+                var roleErrors = string.Join(", ", addToRoleResult.Errors.Select(e => e.Description));
+                _logger.LogWarning(
+                    "RegisterShop failed: could not assign Manager role. OwnerEmail={OwnerEmail}, OwnerUserId={OwnerUserId}, Errors={Errors}",
+                    request.OwnerEmail,
+                    ownerUser.Id,
+                    roleErrors);
                 return new ErrorDataResult<RegisterShopResponse>("Kullanıcıya rol atanamadı.");
             }
+            _logger.LogInformation(
+                "RegisterShop completed: role assigned. OwnerUserId={OwnerUserId}, ClientId={ClientId}",
+                ownerUser.Id,
+                client.Id);
 
             // 8. Vehicle data varsa, önce Customer oluştur sonra Vehicle oluştur
             if (!string.IsNullOrWhiteSpace(request.VehicleLicensePlate) && 

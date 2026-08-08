@@ -11,6 +11,11 @@ namespace MagicCarRepairAISupported.Application.Common.Services.Cache
         Task SetCacheValueAsync(string key, string value);
 
         /// <summary>
+        /// Set cache value with expiry TTL
+        /// </summary>
+        Task SetCacheValueAsync(string key, string value, TimeSpan expiry);
+
+        /// <summary>
         /// Get cache value
         /// </summary>
         Task<string?> GetCacheValueAsync(string key);

@@ -12,17 +12,20 @@ namespace MagicCarRepairAISupported.Application.Features.Users.Commands.DeleteUs
         private readonly UserManager<User> _userManager;
         private readonly ICustomerRepository _customerRepository;
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IChatMessageRepository _chatMessageRepository;
         private readonly ILogger<DeleteUserCommandHandler> _logger;
 
         public DeleteUserCommandHandler(
             UserManager<User> userManager,
             ICustomerRepository customerRepository,
             IEmployeeRepository employeeRepository,
+            IChatMessageRepository chatMessageRepository,
             ILogger<DeleteUserCommandHandler> logger)
         {
             _userManager = userManager;
             _customerRepository = customerRepository;
             _employeeRepository = employeeRepository;
+            _chatMessageRepository = chatMessageRepository;
             _logger = logger;
         }
 
@@ -59,6 +62,9 @@ namespace MagicCarRepairAISupported.Application.Features.Users.Commands.DeleteUs
 
             if (employees.Any())
                 await _employeeRepository.SaveChangesAsync();
+
+            // ChatMessages: SenderId / ReceiverId FK — kullanıcı silinmeden önce ilgili mesajlar kaldırılmalı
+            await _chatMessageRepository.DeleteAllInvolvingUserAsync(request.UserId, cancellationToken);
 
             // Kullanıcıyı sil
             var deleteResult = await _userManager.DeleteAsync(user);

@@ -39,8 +39,8 @@ namespace MagicCarRepairAISupported.Application.Features.CustomerPortal.Queries.
             if (!clientId.HasValue)
                 throw new UnauthorizedAccessException("Client ID not found");
 
-            var customers = await _customerRepository.GetListAsync(cancellationToken, c => c.UserId == userId && c.ClientId == clientId.Value);
-            var currentCustomer = customers.FirstOrDefault();
+            var currentCustomer = await _customerRepository.GetByUserIdForTenantAsync(
+                userId, clientId.Value, cancellationToken);
 
             if (currentCustomer == null)
                 return new List<GetMyWorkOrdersResponse>();

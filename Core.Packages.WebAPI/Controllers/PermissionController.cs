@@ -1,11 +1,12 @@
 using MagicCarRepairAISupported.Application.Features.Permission.Queries.GetAll;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Controllers;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.SystemAdminOnly)]
     [Route("api/[controller]")]
     [ApiController]
     public class PermissionController : BaseApiController

@@ -19,6 +19,8 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.G
         public DateTime? DesiredEndDate { get; set; }
         public QuoteStatus Status { get; set; }
         public string StatusName { get; set; } = string.Empty;
+        public decimal? EstimatedCostMin { get; set; }
+        public decimal? EstimatedCostMax { get; set; }
         public DateTime QuoteDeadline { get; set; }
         public DateTime? CreatedDate { get; set; }
         public List<QuoteResponseDto> QuoteResponses { get; set; } = new();
@@ -29,7 +31,9 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.G
     {
         public int Id { get; set; }
         public string? QuoteNumber { get; set; }
+        public int ClientId { get; set; }
         public string ClientName { get; set; } = string.Empty;
+        public string? ClientLogoUrl { get; set; }
         public string? Description { get; set; }
         public int? EstimatedDays { get; set; }
         public decimal QuoteAmount { get; set; }
@@ -39,6 +43,18 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.G
         public string StatusName { get; set; } = string.Empty;
         public DateTime QuoteDate { get; set; }
         public DateTime? ValidUntilDate { get; set; }
+
+        // ── Sprint 4: Trust + Ranking ──────────────────────────────────────
+        /// <summary>0–100 güven puanı.</summary>
+        public double TrustScore { get; set; }
+        /// <summary>FinalScore = price rank + trust + speed (düşük daha iyi).</summary>
+        public double FinalScore { get; set; }
+        /// <summary>Sıralama (1 = en iyi).</summary>
+        public int Rank { get; set; }
+        public double AverageRating { get; set; }
+        public int ReviewCount { get; set; }
+        public double CompletionRate { get; set; }
+        public double? AvgQuoteResponseHours { get; set; }
     }
 
     public class QuoteRequestPhotoDto

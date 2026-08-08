@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Features.Ratings.Queries.GetRati
 
         public async Task<GetRatingStatisticsResponse> Handle(GetRatingStatisticsQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var query = _ratingRepository.Query()
                 .Where(r => r.ClientId == clientId);

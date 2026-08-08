@@ -17,9 +17,10 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
         public async Task<Subscription?> GetActiveSubscriptionAsync(int clientId)
         {
             return await Context.Subscriptions
+                .IgnoreQueryFilters()
                 .Include(s => s.Client)
                 .Include(s => s.Payments)
-                .Where(s => s.ClientId == clientId && 
+                .Where(s => s.ClientId == clientId &&
                            s.Status == SubscriptionStatus.Active &&
                            s.StartDate <= DateTime.UtcNow &&
                            s.EndDate >= DateTime.UtcNow)

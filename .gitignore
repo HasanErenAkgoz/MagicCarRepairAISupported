@@ -392,3 +392,5 @@ google-services.json
 appsettings.Production.json
 appsettings.Secrets.json
 *.p12
+
+testsprite_tests\tmp\config.json

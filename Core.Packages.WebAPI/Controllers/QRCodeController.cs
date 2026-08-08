@@ -2,13 +2,15 @@ using MagicCarRepairAISupported.Application.Features.QRCode.Commands.GenerateQRC
 using MagicCarRepairAISupported.Application.Features.QRCode.Commands.ScanQRCode;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/qr-code")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class QRCodeController : ControllerBase
     {
         private readonly IMediator _mediator;

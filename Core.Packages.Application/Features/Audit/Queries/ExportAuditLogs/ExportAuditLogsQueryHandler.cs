@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Features.Audit.Queries.ExportAud
 
         public async Task<byte[]> Handle(ExportAuditLogsQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var query = _auditLogRepository.Query()
                 .Where(a => a.ClientId == clientId);

@@ -24,6 +24,12 @@ namespace MagicCarRepairAISupported.Application.Features.Parts.Commands.UpdatePa
         public int? WarrantyMonths { get; set; }
         public string? Notes { get; set; }
         public string? StockLocation { get; set; }
+
+        public string[]? CompatibleVehicleBrands { get; set; }
+        public string[]? CompatibleVehicleModels { get; set; }
+        public int? CompatibleYearFrom { get; set; }
+        public int? CompatibleYearTo { get; set; }
+        public string[]? AdditionalOemCodes { get; set; }
     }
 }
 

@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Commands.Updat
 
         public async Task<UpdateVehicleResponse> Handle(UpdateVehicleCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Aracı bul
             var vehicle = await _vehicleRepository.GetByIdAsync(request.Id);

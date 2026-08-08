@@ -19,7 +19,7 @@ namespace MagicCarRepairAISupported.Application.Features.Appointments.Queries.Ge
 
         public async Task<List<GetAllAppointmentsResponse>> Handle(GetAllAppointmentsQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var appointments = await _appointmentRepository.GetListAsync(cancellationToken, 
                 a => a.ClientId == clientId);

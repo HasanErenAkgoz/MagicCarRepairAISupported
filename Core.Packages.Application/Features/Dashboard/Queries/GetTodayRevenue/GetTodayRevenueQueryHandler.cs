@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetTo
 
         public async Task<GetTodayRevenueResponse> Handle(GetTodayRevenueQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
             
             var today = DateTime.UtcNow.Date;
             var tomorrow = today.AddDays(1);

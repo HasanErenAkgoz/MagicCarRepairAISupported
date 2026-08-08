@@ -13,17 +13,20 @@ using MagicCarRepairAISupported.Application.Features.Parts.Queries.GetLowStockPa
 using MagicCarRepairAISupported.Application.Features.Parts.Queries.GetPartById;
 using MagicCarRepairAISupported.Application.Features.Parts.Queries.GenerateQrCode;
 using MagicCarRepairAISupported.Application.Features.Parts.Commands.Barcode;
+using MagicCarRepairAISupported.Application.Features.Parts.Commands.BulkDeleteParts;
 using MagicCarRepairAISupported.Application.Features.Parts.Queries.Barcode;
 using MagicCarRepairAISupported.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class PartsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -102,6 +105,17 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var command = new DeletePartCommand { Id = id };
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Parçaları toplu sil (soft delete).
+        /// Aynı business rule geçerli: aktif iş emirlerinde kullanılan parçalar silinmez.
+        /// </summary>
+        [HttpPost("bulk-delete")]
+        public async Task<IActionResult> BulkDelete([FromBody] BulkDeletePartsCommand command)
+        {
             var result = await _mediator.Send(command);
             return Ok(result);
         }

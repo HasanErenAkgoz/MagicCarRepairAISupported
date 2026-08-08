@@ -53,8 +53,8 @@ namespace MagicCarRepairAISupported.Application.Features.CustomerPortal.Commands
                 return new ErrorResult("USER_NOT_AUTHENTICATED");
             }
 
-            var customers = await _customerRepository.GetListAsync(cancellationToken, c => c.UserId == userId && c.ClientId == clientId);
-            var currentCustomer = customers.FirstOrDefault();
+            var currentCustomer = await _customerRepository.GetByUserIdForTenantAsync(
+                userId, clientId, cancellationToken);
             if (currentCustomer == null)
             {
                 return new ErrorResult("CUSTOMER_NOT_FOUND");

@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetTo
 
         public async Task<List<GetTopCustomersResponse>> Handle(GetTopCustomersQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
             var startDate = request.StartDate ?? DateTime.UtcNow.AddMonths(-6);
             var endDate = request.EndDate ?? DateTime.UtcNow;
 

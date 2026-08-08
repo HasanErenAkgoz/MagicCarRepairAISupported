@@ -1,4 +1,4 @@
-﻿using Azure;
+using Azure;
 using Azure.AI.OpenAI;
 using MagicCarRepairAISupported.Application.Common.Services.AI;
 using MagicCarRepairAISupported.Application.Common.Services.AI.Dtos;
@@ -55,8 +55,9 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
                 }
                 else if (_aiOptions.Provider == "OpenAI" && !string.IsNullOrEmpty(_aiOptions.ApiKey))
                 {
-                    var endpoint = new Uri(NormalizeOpenAIBaseUrl(_aiOptions.BaseUrl));
-                    _openAIClient = new OpenAIClient(endpoint, new AzureKeyCredential(_aiOptions.ApiKey), CreateOpenAIClientOptions());
+                    // Standard OpenAI: use the string-key constructor so the SDK sends
+                    // "Authorization: Bearer <key>" instead of "api-key: <key>" (Azure-only header).
+                    _openAIClient = new OpenAIClient(_aiOptions.ApiKey, CreateOpenAIClientOptions());
                 }
                 else
                 {
@@ -80,15 +81,24 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
 
             try
             {
+                complaint = SanitizeOpenAiUserText(complaint);
+
                 _logger.LogInformation("AI Diagnosis: Analyzing complaint text. VehicleId: {VehicleId}, Photos: {PhotoCount}", vehicleId, photoUrls?.Count ?? 0);
 
                 // Get vehicle context if available
                 string vehicleContext = string.Empty;
                 string workOrderHistory = string.Empty;
+                Vehicle? vehicleForPartMatch = null;
 
                 if (vehicleId.HasValue)
                 {
-                    var vehicle = await _vehicleRepository.GetByIdAsync(vehicleId.Value);
+                    // Araç ve iş emirleri birbirinden bağımsız → tek round-trip yerine paralel okuma
+                    var vehicleTask = _vehicleRepository.GetByIdAsync(vehicleId.Value, cancellationToken);
+                    var workOrdersTask = _workOrderRepository.GetByVehicleIdAsync(vehicleId.Value, cancellationToken);
+                    await Task.WhenAll(vehicleTask, workOrdersTask);
+
+                    var vehicle = await vehicleTask;
+                    vehicleForPartMatch = vehicle;
                     if (vehicle != null)
                     {
                         var parts = new List<string>
@@ -107,19 +117,20 @@ namespace MagicCarRepairAISupported.Infrastructure.Services.AI
                             parts.Add($"- Versiyon: {vehicle.Trim}");
                         if (!string.IsNullOrEmpty(vehicle.Vin))
                             parts.Add($"- VIN: {vehicle.Vin}");
-                        vehicleContext = "Araç Bilgileri:\n" + string.Join("\n", parts) + "\n";
+                        var vehicleLabel = language == "en" ? "Vehicle Info:" : "Araç Bilgileri:";
+                        vehicleContext = vehicleLabel + "\n" + string.Join("\n", parts) + "\n";
+                    }
 
-                        // Get work order history for this vehicle
-                        var workOrders = await _workOrderRepository.GetByVehicleIdAsync(vehicleId.Value, cancellationToken);
-                        if (workOrders.Any())
-                        {
-                            var history = workOrders
-                                .OrderByDescending(wo => wo.EntryDate)
-                                .Take(3)
-                                .Select(wo => $"- {wo.EntryDate:yyyy-MM-dd}: {wo.CustomerComplaints ?? "N/A"} (Durum: {wo.Status})");
-                            
-                            workOrderHistory = "\nGeçmiş İş Emirleri:\n" + string.Join("\n", history);
-                        }
+                    var workOrders = await workOrdersTask;
+                    if (vehicle != null && workOrders.Any())
+                    {
+                        var history = workOrders
+                            .OrderByDescending(wo => wo.EntryDate)
+                            .Take(3)
+                            .Select(wo => $"- {wo.EntryDate:yyyy-MM-dd}: {wo.CustomerComplaints ?? "N/A"} (Durum: {wo.Status})");
+
+                        var historyLabel = language == "en" ? "Service History:" : "Geçmiş İş Emirleri:";
+                        workOrderHistory = "\n" + historyLabel + "\n" + string.Join("\n", history);
                     }
                 }
 
@@ -161,7 +172,10 @@ PHOTO ANALYSIS (if photos are provided):
 - Distinguish body/paint damage from mechanical issues.
 - DETECT THE CAMERA ANGLE: front / rear / left side / right side / three-quarter / interior.
 - ONLY DESCRIBE WHAT IS VISIBLE: Do not add parts to damagedParts that are not clearly visible (e.g. hood/front bumper if not in frame).
-- If damage is clearly from the side, do not assume front parts; for invisible areas use criticalChecks only.
+- LEFT/RIGHT = VEHICLE orientation: always the car's left/right as if you sit in the driver's seat looking forward — never camera-left/camera-right.
+- SIDE-PROFILE / SIDE-VIEW: If one full side of the vehicle is visible, scan along that side from front to rear in order: front fender (wing) → front door → rear door → rear quarter panel → rocker/sill/side skirt. Include EVERY panel on that side that shows clear damage in damagedParts — do not skip the front-of-side panels (e.g. in a right-side photo, include ""right front fender"" if damaged, not only rear door/quarter).
+- OUT-OF-FRAME SILENCE: Do not name, discuss, or disclaim parts that are not in the image (no ""hood not in frame"", ""front bumper not visible"", etc.) in sceneDescription, mobileDisplayMarkdown, possibleIssues, or recommendations. Simply omit them.
+- criticalChecks: only for plausible hidden risks suggested by VISIBLE deformation (e.g. heavy side impact → B-pillar/sill check). Do not use criticalChecks to talk about unrelated areas outside the frame.
 - If complaint is generic (""body damage"") with no photo evidence, give only general advice.
 
 CORE RULE: Only suggest faults and parts DIRECTLY related to the customer's complaint.
@@ -200,6 +214,14 @@ Probability score rules:
 
 Only include parts with probabilityScore >= 55.
 
+STRICT RULE — text fields (description, notes, warning, recommendations):
+- NEVER write phrases like ""tahmin yapılamıyor"", ""cannot estimate"", ""impossible to assess"", ""fotoğraftan tahmin edilemez"", ""bilgi yetersiz"", or any statement about AI limitations.
+- If you cannot provide a value for a numeric field (estimatedPrice, estimatedCostMin, etc.), use null — never a string.
+- The ""recommendations"" field must contain ONLY actionable technician advice (e.g. ""Inspect brake pads"", ""Check chassis alignment""). If there is nothing specific to recommend, omit the field (null).
+- The ""description"" and ""notes"" fields must contain factual observations only — no disclaimers, no ""I cannot"" statements.
+
+LANGUAGE RULE — ALL text values in the JSON response MUST be written in {outputLanguage}. This applies to every string field: issueName, description, partName, laborName, category, recommendations, notes, warning, sceneDescription, and mobileDisplayMarkdown. Do not mix languages.
+
 Return ONLY as JSON (no extra text):
 {{
   ""possibleIssues"": [
@@ -225,37 +247,39 @@ Return ONLY as JSON (no extra text):
 ACCIDENT/DAMAGE ANALYSIS MODE (this complaint involves accident/damage):
 Analyze the vehicle accident damage in detail. The following additional fields are MANDATORY in the JSON response.
 
-SCENE FIRST (REQUIRED): In ""sceneDescription"" write 3-5 sentences:
+SCENE FIRST (REQUIRED): In ""sceneDescription"" write 3-5 short sentences that ONLY describe what the camera actually shows:
 - Camera angle: front / rear / left side / right side / diagonal (which?)
-- Body areas CLEARLY VISIBLE in frame (e.g. left front door + left front fender)
-- Areas NOT VISIBLE or NOT CLEAR in frame
+- Which major body regions appear in frame (e.g. ""full right side profile from front wheel to rear bumper corner"")
+- Do NOT list parts or areas that are outside the frame. No ""X is not visible"" or ""Y kadrajda yok"" sentences.
 Do not populate damagedParts before completing this field.
 
-CRITICAL RULE (no hallucination):
+CRITICAL RULE (no hallucination + complete side coverage):
 - Only add visually CONFIRMED parts to damagedParts.
-- If hood/front bumper are NOT IN FRAME in a side shot, NEVER add them to damagedParts.
-- Front damage can only be written if front bumper/hood/lights are clearly in frame.
-- For hidden risks use only criticalChecks (e.g. ""check radiator if front impact suspected"").
+- If hood/front bumper/headlights/grille are NOT IN FRAME, never add them to damagedParts and do not mention them anywhere in text fields.
+- Front-end damage may only be reported if bumper/hood/lights/grille are clearly visible in the photo.
+- On a side shot with multiple damaged panels along that side, damagedParts MUST list each visibly damaged panel (fender, each door, quarter, rocker as applicable) — incomplete lists are incorrect.
+- For hidden risks use only criticalChecks tied to visible damage patterns (e.g. heavy door crush → structural check). Do not invent front-end mechanical checks when the front is not shown.
+- COST CONSISTENCY: Whenever damagedParts include estimatedCostMin and estimatedCostMax per panel, estimatedRepairRange.min MUST equal the SUM of all panel mins and estimatedRepairRange.max MUST equal the SUM of all panel maxes. mobileDisplayMarkdown money figures MUST match those same totals (no separate invented bands like ""32-100K"" unless they equal the summed ranges).
 
-SCHEMA EXAMPLE (part names in example are for format only -- use real observations):
+ADDITIONAL JSON FIELDS — merge these into the SAME JSON object returned earlier:
 ""diagnosisType"": 1,
-""sceneDescription"": ""Left side view; left front door and left front fender visible. Hood and front bumper NOT in frame."",
+""sceneDescription"": ""<3-5 sentences — camera angle + only what is visible in frame; never list off-frame parts>"",
 ""damagedParts"": [
   {{
-    ""partName"": ""Left front fender"",
+    ""partName"": ""<panel name>"",
     ""damageLevel"": 2,
     ""recommendedAction"": 2,
     ""confidencePercent"": 85,
     ""estimatedCostMin"": 8000,
     ""estimatedCostMax"": 25000,
-    ""notes"": ""Dent/scratch visible in frame""
+    ""notes"": ""<short observation>""
   }}
 ],
 ""criticalChecks"": [
   {{
-    ""componentName"": ""Chassis/Sill (inspection)"",
+    ""componentName"": ""<component>"",
     ""riskLevel"": 2,
-    ""warning"": ""Side impact severity warrants chassis measurement (no definitive conclusion from photo)"",
+    ""warning"": ""<risk description>"",
     ""requiresImmediateInspection"": true
   }}
 ],
@@ -264,7 +288,7 @@ SCHEMA EXAMPLE (part names in example are for format only -- use real observatio
   ""max"": 25000,
   ""currency"": ""TRY""
 }},
-""mobileDisplayMarkdown"": ""...(fill with MOBILE TEMPLATE below, single string; use \\n for line breaks)...""
+""mobileDisplayMarkdown"": ""<ONLY the markdown text — see MOBILE DISPLAY section below — NO JSON here>""
 
 DamageLevel: None=0, Light=1, Medium=2, Heavy=3, Critical=4
 RepairAction: None=0, Paint=1, Repair=2, Replace=3
@@ -273,34 +297,21 @@ RiskLevel: Low=0, Medium=1, High=2, Critical=3
 Panel selection: ONLY evaluate panels visible in frame (bumper, hood, fender, door, light, glass etc.).
 Hidden risks go to criticalChecks: radiator, chassis, airbag system etc.
 
-MOBILE DISPLAY (REQUIRED): Fill mobileDisplayMarkdown with a single Markdown string following this template. Use \n for line breaks. Content in {outputLanguage}.
+MOBILE DISPLAY — mobileDisplayMarkdown field:
+IMPORTANT: The value of mobileDisplayMarkdown must be a PLAIN TEXT MARKDOWN STRING — NOT JSON, NOT a schema, NOT field names.
+Write it as a human-readable summary for the mobile app. Use \n for line breaks. Content in {outputLanguage}.
 
-[emoji] **Damage Summary**
-- Part: short status -> repair/replace/estimate
+EXAMPLE VALUE in {outputLanguage} (write something similar for each diagnosis — all text in {outputLanguage}):
+{(language == "en"
+    ? @"""🔧 **Damage Summary**\n- Right front fender: medium damage → repair\n- Right front door: heavy damage → replace\n\n⚠️ **Critical Check**\n- Chassis/sill measurement\n\n---\n\n💰 **Estimated Cost (2026)**\n- Fender + door: **20-50K** TRY\n\n👉 **TOTAL:**\n- **Minimum:** ~20K TRY\n- **Average:** 35K TRY\n\n---\n\n🚨 **Assessment**\nHigh-energy side impact — panel replacement + chassis inspection required."""
+    : @"""🔧 **Hasar Özeti**\n- Sağ ön çamurluk: orta hasar → onarım\n- Sağ ön kapı: ağır hasar → değişim\n\n⚠️ **Kritik Kontrol**\n- Şasi/eşik ölçümü\n\n---\n\n💰 **Tahmini Maliyet (2026)**\n- Ön çamurluk + kapı: **20-50K** TL\n\n👉 **TOPLAM:**\n- **Minimum:** ~20K TL\n- **Ortalama:** 35K TL\n\n---\n\n🚨 **Değerlendirme**\nYan darbe yüksek enerji, panel değişimi + şasi kontrolü şart.""")}
 
-⚠️ **Critical Check (most important)**
-- Component names (matching criticalChecks)
-
-[emoji] If these are damaged, total cost increases significantly
-
----
-
-[emoji] **Estimated Cost (2026 TR)**
-- Main items with **range** (use K shorthand e.g. **15-25K** TL)
-
-[emoji] **TOTAL:**
-- **Minimum:** ~XK TL
-- **Average:** range
-- **If chassis/radiator involved:** upper band note
-
----
-
-[emoji] **Assessment (honest)**
-Short paragraph: damage severity, chassis/inspection need.";
+Use this format as guidance — replace with real values from your analysis.";
                 }
 
+                var complaintLabel = language == "en" ? "Customer Complaint:" : "Müşteri Şikayeti:";
                 var userPrompt = new StringBuilder();
-                userPrompt.AppendLine("Müşteri Şikayeti:");
+                userPrompt.AppendLine(complaintLabel);
                 userPrompt.AppendLine(complaint);
                 userPrompt.AppendLine();
                 
@@ -317,7 +328,10 @@ Short paragraph: damage severity, chassis/inspection need.";
                 if (hasPhotos && diagnosisType == DiagnosisType.Accident)
                 {
                     userPrompt.AppendLine();
-                    userPrompt.AppendLine("Fotoğraf notu: Önce sceneDescription ile kamera açısını ve kadrajda görünen bölgeleri yaz. Kadrajda görünmeyen kaput/ön tampon/far gibi parçaları damagedParts listesine ekleme; gerekirse sadece criticalChecks altında belirt.");
+                    var photoNote = language == "en"
+                        ? "Photo note (mandatory): For side-profile shots, list ALL damaged panels on that side from front to rear (e.g. right front fender, right front door, right rear door, right rear quarter panel, rocker). Do NOT mention hood, front bumper, headlights, or grille anywhere unless they are clearly visible in frame. Left/right always refers to the vehicle's orientation (driver's perspective looking forward)."
+                        : "Fotoğraf notu (zorunlu): Yan profil/yan çekim ise aracın o tarafında önden arkaya tüm hasarlı panelleri eksiksiz yaz (ör. sağ ön çamurluk, sağ ön kapı, sağ arka kapı, sağ arka çamurluk, eşik). Kadrajda görünmeyen kaput, ön tampon, far, ızgarayı hiçbir alanda anma (açıklama, sceneDescription, markdown, öneri yok). Sol/sağ her zaman aracın solu/sağı (sürücü koltuğundan ileri bakış).";
+                    userPrompt.AppendLine(photoNote);
                 }
 
                 // Use vision model when photos are present
@@ -325,10 +339,8 @@ Short paragraph: damage severity, chassis/inspection need.";
                     ? _aiOptions.VisionModel
                     : _aiOptions.Model;
 
-                // Accident mode: use Auto detail level for better damage detection
-                var imageDetailLevel = diagnosisType == DiagnosisType.Accident
-                    ? ChatMessageImageDetailLevel.Auto
-                    : ChatMessageImageDetailLevel.Low;
+                // Low = daha az vision token ve daha hızlı yanıt (Auto daha ağır). Kaza kalitesi kritikse Auto denenebilir.
+                var imageDetailLevel = ChatMessageImageDetailLevel.Low;
 
                 var deploymentName = ResolveDeploymentName(
                     _aiOptions.Provider == "AzureOpenAI"
@@ -339,47 +351,15 @@ Short paragraph: damage severity, chassis/inspection need.";
                 ChatRequestUserMessage userMessage;
                 if (hasPhotos)
                 {
-                    var contentItems = new List<ChatMessageContentItem>();
-                    contentItems.Add(new ChatMessageTextContentItem(userPrompt.ToString()));
+                    var contentItems = new List<ChatMessageContentItem> { new ChatMessageTextContentItem(userPrompt.ToString()) };
 
-                    foreach (var photoUrl in photoUrls!)
-                    {
-                        try
-                        {
-                            if (photoUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-                            {
-                                // Public URL (production)
-                                // Low: daha az vision token, genelde daha hızlı (Auto’dan düşük gecikme)
-                                contentItems.Add(new ChatMessageImageContentItem(new Uri(photoUrl), imageDetailLevel));
-                                _logger.LogInformation("AI Vision: Added remote photo {Url}", photoUrl);
-                            }
-                            else
-                            {
-                                // Relative path → read from disk as base64 (works on localhost too)
-                                var diskPath = Path.Combine(
-                                    _webRootPath,
-                                    photoUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                    var indexedPhotoTasks = photoUrls!
+                        .Select((photoUrl, index) => TryBuildVisionImageItemAsync(index, photoUrl, imageDetailLevel, cancellationToken))
+                        .ToArray();
+                    var photoResults = await Task.WhenAll(indexedPhotoTasks);
+                    foreach (var item in photoResults.OrderBy(r => r.index).Select(r => r.item).Where(i => i != null))
+                        contentItems.Add(item!);
 
-                                if (File.Exists(diskPath))
-                                {
-                                    var bytes = await File.ReadAllBytesAsync(diskPath, cancellationToken);
-                                    var ext = Path.GetExtension(diskPath).ToLowerInvariant();
-                                    var mime = ext == ".png" ? "image/png" : "image/jpeg";
-                                    contentItems.Add(new ChatMessageImageContentItem(
-                                        BinaryData.FromBytes(bytes), mime, imageDetailLevel));
-                                    _logger.LogInformation("AI Vision: Added local photo from disk {Path}", diskPath);
-                                }
-                                else
-                                {
-                                    _logger.LogWarning("AI Vision: Photo file not found on disk {Path}", diskPath);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogWarning(ex, "AI Vision: Skipping photo {Url}", photoUrl);
-                        }
-                    }
                     userMessage = new ChatRequestUserMessage(contentItems);
                 }
                 else
@@ -397,12 +377,14 @@ Short paragraph: damage severity, chassis/inspection need.";
                     },
                     // Vision + kaza: düşük sıcaklık, örnek JSON’a yapışmayı azaltır
                     Temperature = (hasPhotos && diagnosisType == DiagnosisType.Accident) ? 0.08f : 0.2f,
-                    // Accident mode: panel analizi + mobil Markdown özeti için daha fazla token
-                    MaxTokens = diagnosisType == DiagnosisType.Accident ? 3200 : 1400
+                    // Kaza: mobil Markdown sunucuda yeniden üretildiği için çıktı tokenını düşürmek uçtan uca süreyi kısaltır
+                    MaxTokens = diagnosisType == DiagnosisType.Accident ? 2400 : 1400
                 };
 
-                // For OpenAI, use non-Azure format
-                if (_aiOptions.Provider == "OpenAI")
+                // OpenAI: response_format json_object + multimodal (images) can make Azure.AI.OpenAI beta SDK
+                // emit a request body OpenAI rejects with 400 "could not parse the JSON body".
+                // Text-only: keep strict JSON mode. Vision: rely on system prompt + parse (strip ``` if needed).
+                if (_aiOptions.Provider == "OpenAI" && !hasPhotos)
                 {
                     chatCompletionsOptions.ResponseFormat = ChatCompletionsResponseFormat.JsonObject;
                 }
@@ -413,13 +395,33 @@ Short paragraph: damage severity, chassis/inspection need.";
                 _logger.LogInformation("AI Diagnosis: Received response from OpenAI");
 
                 // Parse JSON response
-                var result = ParseDiagnosisResponse(content);
+                var result = ParseDiagnosisResponse(ExtractJsonFromAssistantContent(content));
 
                 if (result.DiagnosisType == DiagnosisType.Accident && !string.IsNullOrWhiteSpace(result.SceneDescription))
                     _logger.LogInformation("AI Diagnosis: sceneDescription={Scene}", result.SceneDescription);
 
-                // DB eşleştirme: AI'ın önerdiği parçaları envanter DB'siyle karşılaştır
-                await MatchPartsWithDatabaseAsync(result, cancellationToken);
+                // DB eşleştirme: AI'ın önerdiği parçaları envanter DB'siyle karşılaştır (araç bağlamıyla)
+                await MatchPartsWithDatabaseAsync(
+                    result,
+                    vehicleForPartMatch?.Brand,
+                    vehicleForPartMatch?.Model,
+                    vehicleForPartMatch?.Year,
+                    cancellationToken);
+
+                if (AccidentCostNormalizer.TryAlignTotalsFromDamagedParts(result))
+                    _logger.LogInformation(
+                        "AI Diagnosis: Normalized accident totals from damagedParts line ranges (hero/markdown/analysis consistent).");
+
+                // Sanitize: if AI returned raw JSON as the markdown field, discard it
+                if (!string.IsNullOrWhiteSpace(result.MobileDisplayMarkdown))
+                {
+                    var mdTrimmed = result.MobileDisplayMarkdown.TrimStart();
+                    if (mdTrimmed.StartsWith('{') || mdTrimmed.StartsWith('['))
+                    {
+                        _logger.LogWarning("AI returned JSON string in mobileDisplayMarkdown — discarding and using fallback.");
+                        result.MobileDisplayMarkdown = null;
+                    }
+                }
 
                 if (result.DiagnosisType == DiagnosisType.Accident && string.IsNullOrWhiteSpace(result.MobileDisplayMarkdown))
                     result.MobileDisplayMarkdown = AccidentMobileMarkdownFormatter.BuildFallback(result);
@@ -428,8 +430,8 @@ Short paragraph: damage severity, chassis/inspection need.";
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in AI diagnosis. Falling back to mock result.");
-                return await GetMockResultAsync(complaint, vehicleId, cancellationToken);
+                _logger.LogError(ex, "AI diagnosis failed: {Error}", ex.Message);
+                throw;
             }
         }
 
@@ -655,19 +657,28 @@ Short paragraph: damage severity, chassis/inspection need.";
             return url;
         }
 
-        private async Task MatchPartsWithDatabaseAsync(DiagnosisResultDto result, CancellationToken cancellationToken)
+        private async Task MatchPartsWithDatabaseAsync(
+            DiagnosisResultDto result,
+            string? vehicleBrand,
+            string? vehicleModel,
+            int? vehicleYear,
+            CancellationToken cancellationToken)
         {
             if (result.RecommendedParts.Count == 0) return;
 
             // Önceden sıralı N arama → LLM sonrası ek gecikme; paralel + sınırlı eşzamanlılık
             const int maxConcurrent = 4;
             using var semaphore = new SemaphoreSlim(maxConcurrent, maxConcurrent);
-            var tasks = result.RecommendedParts.Select(part => MatchOnePartWithDatabaseAsync(part, semaphore, cancellationToken));
+            var tasks = result.RecommendedParts.Select(part =>
+                MatchOnePartWithDatabaseAsync(part, vehicleBrand, vehicleModel, vehicleYear, semaphore, cancellationToken));
             await Task.WhenAll(tasks);
         }
 
         private async Task MatchOnePartWithDatabaseAsync(
             RecommendedPartDto part,
+            string? vehicleBrand,
+            string? vehicleModel,
+            int? vehicleYear,
             SemaphoreSlim semaphore,
             CancellationToken cancellationToken)
         {
@@ -675,12 +686,12 @@ Short paragraph: damage severity, chassis/inspection need.";
             try
             {
                 var matches = await _partRepository.SearchAsync(part.PartName, cancellationToken);
-                var best = FindBestMatch(part.PartName, matches);
+                var best = FindBestMatch(part.PartName, matches, vehicleBrand, vehicleModel, vehicleYear);
 
                 if (best != null)
                 {
-                    var withStock = await _partRepository.GetWithStockAsync(best.Id, cancellationToken);
-                    var stockQty = withStock?.Stock?.Quantity ?? 0;
+                    // SearchAsync already includes Stock — no need for a second DB call
+                    var stockQty = best.Stock?.Quantity ?? 0;
 
                     part.PartId = best.Id;
                     part.RealPrice = best.SalePrice;
@@ -706,12 +717,19 @@ Short paragraph: damage severity, chassis/inspection need.";
             }
         }
 
-        private static Part? FindBestMatch(string aiPartName, List<Part> candidates)
+        private static Part? FindBestMatch(
+            string aiPartName,
+            List<Part> candidates,
+            string? vehicleBrand = null,
+            string? vehicleModel = null,
+            int? vehicleYear = null)
         {
             if (candidates.Count == 0) return null;
 
-            var normalized = NormalizeToken(aiPartName);
-            var aiTokens = normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var normalized  = NormalizeToken(aiPartName);
+            var aiTokens    = normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var brandNorm   = vehicleBrand != null ? NormalizeToken(vehicleBrand) : null;
+            var modelNorm   = vehicleModel != null ? NormalizeToken(vehicleModel) : null;
 
             Part? best = null;
             int bestScore = 0;
@@ -722,13 +740,9 @@ Short paragraph: damage severity, chassis/inspection need.";
                 int score;
 
                 if (dbNorm == normalized)
-                {
                     score = 100;
-                }
                 else if (dbNorm.Contains(normalized) || normalized.Contains(dbNorm))
-                {
                     score = 80;
-                }
                 else
                 {
                     var dbTokens = dbNorm.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -736,7 +750,22 @@ Short paragraph: damage severity, chassis/inspection need.";
                     score = common > 0 ? (common * 60) / Math.Max(aiTokens.Length, dbTokens.Length) : 0;
                 }
 
-                if (score > bestScore && score >= 50)
+                if (score < 50) continue;
+
+                // Araç uyumluluğu bonusu: eşit isim skoru olan adaylar arasında doğru aracın parçası öne geçer
+                if (brandNorm != null || modelNorm != null || vehicleYear.HasValue)
+                {
+                    var brandMatch = brandNorm != null && IsVehicleListMatch(candidate.CompatibleVehicleBrands, brandNorm);
+                    var modelMatch = modelNorm != null && IsVehicleListMatch(candidate.CompatibleVehicleModels, modelNorm);
+                    var yearOk     = (!candidate.CompatibleYearFrom.HasValue || vehicleYear >= candidate.CompatibleYearFrom.Value) &&
+                                     (!candidate.CompatibleYearTo.HasValue   || vehicleYear <= candidate.CompatibleYearTo.Value);
+
+                    if      (brandMatch && modelMatch && yearOk) score += 30;
+                    else if (brandMatch && modelMatch)           score += 20;
+                    else if (brandMatch || modelMatch)           score += 10;
+                }
+
+                if (score > bestScore)
                 {
                     bestScore = score;
                     best = candidate;
@@ -744,6 +773,17 @@ Short paragraph: damage severity, chassis/inspection need.";
             }
 
             return best;
+        }
+
+        private static bool IsVehicleListMatch(string? json, string valueLower)
+        {
+            if (string.IsNullOrWhiteSpace(json)) return false;
+            try
+            {
+                var list = System.Text.Json.JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
+                return list.Any(v => v.ToLower().Contains(valueLower) || valueLower.Contains(v.ToLower()));
+            }
+            catch { return false; }
         }
 
         private static DiagnosisType DetectDiagnosisType(string complaint, bool hasPhotos = false)
@@ -784,6 +824,81 @@ Short paragraph: damage severity, chassis/inspection need.";
                  .Replace("ş", "s").Replace("ö", "o").Replace("ç", "c")
                  .Trim();
 
+        /// <summary>
+        /// Disk veya URL fotoğraflarını paralel okur; çoklu görselde uçtan uca gecikmeyi azaltır.
+        /// </summary>
+        private async Task<(int index, ChatMessageImageContentItem? item)> TryBuildVisionImageItemAsync(
+            int index,
+            string photoUrl,
+            ChatMessageImageDetailLevel imageDetailLevel,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (photoUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.LogInformation("AI Vision: Added remote photo {Url}", photoUrl);
+                    return (index, new ChatMessageImageContentItem(new Uri(photoUrl), imageDetailLevel));
+                }
+
+                var diskPath = Path.Combine(
+                    _webRootPath,
+                    photoUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+
+                if (!File.Exists(diskPath))
+                {
+                    _logger.LogWarning("AI Vision: Photo file not found on disk {Path}", diskPath);
+                    return (index, null);
+                }
+
+                var bytes = await File.ReadAllBytesAsync(diskPath, cancellationToken);
+                var ext = Path.GetExtension(diskPath).ToLowerInvariant();
+                var mime = ext == ".png" ? "image/png" : "image/jpeg";
+                _logger.LogInformation("AI Vision: Added local photo from disk {Path}", diskPath);
+                return (index, new ChatMessageImageContentItem(
+                    BinaryData.FromBytes(bytes), mime, imageDetailLevel));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "AI Vision: Skipping photo {Url}", photoUrl);
+                return (index, null);
+            }
+        }
+
+        /// <summary>
+        /// Strips NUL and other C0 control characters (except CR/LF/Tab) so the outbound chat JSON stays valid.
+        /// </summary>
+        private static string SanitizeOpenAiUserText(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            var sb = new StringBuilder(text.Length);
+            foreach (var c in text)
+            {
+                if (c == '\0') continue;
+                if (char.IsControl(c) && c is not ('\n' or '\r' or '\t')) continue;
+                sb.Append(c);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Removes optional markdown code fence when json_object mode is not used (e.g. vision requests).
+        /// </summary>
+        private static string ExtractJsonFromAssistantContent(string content)
+        {
+            var t = content.Trim();
+            if (!t.StartsWith("```", StringComparison.Ordinal)) return t;
+
+            var firstLineBreak = t.IndexOf('\n');
+            if (firstLineBreak < 0) return t;
+
+            t = t[(firstLineBreak + 1)..].TrimStart();
+            var closing = t.LastIndexOf("```", StringComparison.Ordinal);
+            if (closing >= 0)
+                t = t[..closing];
+            return t.Trim();
+        }
+
         private DiagnosisResultDto ParseDiagnosisResponse(string jsonContent)
         {
             try
@@ -808,7 +923,7 @@ Short paragraph: damage severity, chassis/inspection need.";
                             {
                                 PartName = part.GetProperty("partName").GetString() ?? "",
                                 Category = part.TryGetProperty("category", out var cat) ? cat.GetString() : null,
-                                EstimatedPrice = part.TryGetProperty("estimatedPrice", out var price) ? price.GetDecimal() : null,
+                                EstimatedPrice = part.TryGetProperty("estimatedPrice", out var price) && price.ValueKind == JsonValueKind.Number ? price.GetDecimal() : null,
                                 Quantity = part.TryGetProperty("quantity", out var qty) ? qty.GetInt32() : 1,
                                 ProbabilityScore = part.TryGetProperty("probabilityScore", out var prob) ? prob.GetInt32() : 50
                             }).ToList()
@@ -820,15 +935,15 @@ Short paragraph: damage severity, chassis/inspection need.";
                             {
                                 LaborName = labor.GetProperty("laborName").GetString() ?? "",
                                 Description = labor.TryGetProperty("description", out var desc) ? desc.GetString() : null,
-                                EstimatedPrice = labor.TryGetProperty("estimatedPrice", out var price) ? price.GetDecimal() : null,
-                                EstimatedHours = labor.TryGetProperty("estimatedHours", out var hours) ? hours.GetDecimal() : null,
+                                EstimatedPrice = labor.TryGetProperty("estimatedPrice", out var price) && price.ValueKind == JsonValueKind.Number ? price.GetDecimal() : null,
+                                EstimatedHours = labor.TryGetProperty("estimatedHours", out var hours) && hours.ValueKind == JsonValueKind.Number ? hours.GetDecimal() : null,
                                 ProbabilityScore = labor.TryGetProperty("probabilityScore", out var prob) ? prob.GetInt32() : 50
                             }).ToList()
                         : new List<RecommendedLaborDto>(),
 
-                    EstimatedDays = root.TryGetProperty("estimatedDays", out var days) ? days.GetInt32() : null,
-                    EstimatedCost = root.TryGetProperty("estimatedCost", out var cost) ? cost.GetDecimal() : null,
-                    ConfidenceScore = root.TryGetProperty("confidenceScore", out var conf) ? conf.GetInt32() : 75,
+                    EstimatedDays = root.TryGetProperty("estimatedDays", out var days) && days.ValueKind == JsonValueKind.Number ? days.GetInt32() : null,
+                    EstimatedCost = root.TryGetProperty("estimatedCost", out var cost) && cost.ValueKind == JsonValueKind.Number ? cost.GetDecimal() : null,
+                    ConfidenceScore = root.TryGetProperty("confidenceScore", out var conf) && conf.ValueKind == JsonValueKind.Number ? conf.GetInt32() : 75,
                     Recommendations = root.TryGetProperty("recommendations", out var rec) ? rec.GetString() : null
                 };
 

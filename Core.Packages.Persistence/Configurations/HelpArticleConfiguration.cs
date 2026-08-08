@@ -18,7 +18,7 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
 
             builder.Property(h => h.Content)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                .HasColumnType("text");
 
             builder.Property(h => h.Category)
                 .IsRequired()

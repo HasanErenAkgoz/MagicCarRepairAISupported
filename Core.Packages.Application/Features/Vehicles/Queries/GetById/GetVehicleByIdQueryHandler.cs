@@ -30,7 +30,7 @@ namespace MagicCarRepairAISupported.Application.Features.Vehicles.Queries.GetByI
 
         public async Task<GetVehicleByIdResponse> Handle(GetVehicleByIdQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Aracı bul (Customer ve Photos dahil)
             var vehicle = await _vehicleRepository.Query()

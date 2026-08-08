@@ -4,13 +4,15 @@ using MagicCarRepairAISupported.Application.Features.Reports.Queries.PartUsageRe
 using MagicCarRepairAISupported.Application.Features.Reports.Queries.WorkOrderStatistics;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class ReportsController : ControllerBase
     {
         private readonly IMediator _mediator;

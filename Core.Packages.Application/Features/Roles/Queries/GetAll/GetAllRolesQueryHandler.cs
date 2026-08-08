@@ -28,7 +28,7 @@ namespace MagicCarRepairAISupported.Application.Features.Roles.Queries.GetAll
         public async Task<IDataResult<List<GetAllRolesResponse>>> Handle(
             GetAllRolesQuery request, CancellationToken cancellationToken)
         {
-            var clientId = request.ClientId ?? _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = request.ClientId ?? _tenantService.GetRequiredClientId();
 
             var roles = await _roleRepository.Query()
                 .Include(r => r.RolePermissions)

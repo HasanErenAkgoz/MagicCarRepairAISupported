@@ -28,7 +28,7 @@ namespace MagicCarRepairAISupported.Application.Features.RolePermissions.Create
             try
             {
                 // Get current ClientId (default to 1 if not set, for system operations)
-                var clientId = request.ClientId ?? _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = request.ClientId ?? _tenantService.GetRequiredClientId();
                 
                 // Verify role exists and belongs to current client (security check)
                 var role = await _roleManager.FindByIdAsync(request.RoleId.ToString());

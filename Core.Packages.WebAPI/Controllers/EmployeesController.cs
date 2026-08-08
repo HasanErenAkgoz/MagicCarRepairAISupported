@@ -1,5 +1,7 @@
 using MagicCarRepairAISupported.Application.Features.Employees.Commands.CreateEmployee;
+using MagicCarRepairAISupported.Application.Features.Employees.Commands.DeleteAllEmployees;
 using MagicCarRepairAISupported.Application.Features.Employees.Commands.DeleteEmployee;
+using MagicCarRepairAISupported.Application.Features.Employees.Commands.DeleteEmployeePermanently;
 using MagicCarRepairAISupported.Application.Features.Employees.Commands.UpdateEmployee;
 using MagicCarRepairAISupported.Application.Features.Employees.Queries.GetAllEmployees;
 using MagicCarRepairAISupported.Application.Features.Employees.Queries.GetEmployeeById;
@@ -8,13 +10,15 @@ using MagicCarRepairAISupported.Application.Features.Employees.Queries.GenerateQ
 using MagicCarRepairAISupported.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class EmployeesController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -90,12 +94,41 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         }
 
         /// <summary>
+        /// Tüm çalışanları kalıcı olarak sil — Sadece SystemAdmin
+        /// </summary>
+        [HttpDelete("all")]
+        public async Task<IActionResult> DeleteAll([FromQuery] int clientId)
+        {
+            var userTypeClaim = User.FindFirst("UserType")?.Value;
+            if (userTypeClaim != "1")
+                return Forbid();
+
+            var result = await _mediator.Send(new DeleteAllEmployeesCommand { ClientId = clientId });
+            return Ok(result);
+        }
+
+        /// <summary>
         /// Personeli sil (Soft Delete)
         /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var command = new DeleteEmployeeCommand { Id = id };
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Personeli kalıcı olarak sil (Hard Delete) — SystemAdmin ve Manager
+        /// </summary>
+        [HttpDelete("{id}/permanent")]
+        public async Task<IActionResult> DeletePermanent(int id)
+        {
+            var userTypeClaim = User.FindFirst("UserType")?.Value;
+            if (userTypeClaim != "1" && userTypeClaim != "2")
+                return Forbid();
+
+            var command = new DeleteEmployeePermanentlyCommand { Id = id };
             var result = await _mediator.Send(command);
             return Ok(result);
         }

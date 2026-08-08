@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.QRCode.Commands.Generat
         {
             try
             {
-                var clientId = _tenantService.GetCurrentClientId() ?? 1;
+                var clientId = _tenantService.GetRequiredClientId();
 
                 // QR kod verisini oluştur
                 var qrData = new

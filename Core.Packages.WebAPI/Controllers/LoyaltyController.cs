@@ -4,6 +4,7 @@ using MagicCarRepairAISupported.Application.Features.Loyalty.Queries.GetCustomer
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 
 namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
@@ -23,6 +24,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Müşteriye puan ekler
         /// </summary>
         [HttpPost("earn")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> EarnPoints([FromBody] EarnPointsCommand command)
         {
             var result = await _mediator.Send(command);
@@ -37,6 +39,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Puan kullanarak ödül talep eder
         /// </summary>
         [HttpPost("redeem")]
+        [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
         public async Task<IActionResult> RedeemPoints([FromBody] RedeemPointsCommand command)
         {
             var result = await _mediator.Send(command);
@@ -51,6 +54,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Müşterinin puan bilgilerini getirir
         /// </summary>
         [HttpGet("customer/{customerId}")]
+        [Authorize(Policy = AuthPolicyNames.CustomerOrSystemAdmin)]
         public async Task<IActionResult> GetCustomerPoints(int customerId)
         {
             var query = new GetCustomerPointsQuery { CustomerId = customerId };

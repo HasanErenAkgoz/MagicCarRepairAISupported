@@ -1,3 +1,4 @@
+using MagicCarRepairAISupported.Application.Features.Auth.SetEmployeePassword;
 using MagicCarRepairAISupported.Application.Features.Auth.Commands.ImpersonateUser;
 using MagicCarRepairAISupported.Application.Features.Auth.Commands.ImpersonateClient;
 using MagicCarRepairAISupported.Application.Features.Auth.ForgotPassword.Commands;
@@ -13,6 +14,7 @@ using MagicCarRepairAISupported.Application.Features.Email.SendEmail;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using MagicCarRepairAISupported.Application.Common.Services.Web;
 using System.Security.Claims;
 using WebAPI.Controllers;
 
@@ -22,6 +24,13 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
     [ApiController]
     public class AuthController : BaseApiController
     {
+        private readonly IHtmlTemplateRenderer _htmlTemplateRenderer;
+
+        public AuthController(IHtmlTemplateRenderer htmlTemplateRenderer)
+        {
+            _htmlTemplateRenderer = htmlTemplateRenderer;
+        }
+
         [HttpPost("login")]
         [AllowAnonymous]
         [EnableRateLimiting("auth")]
@@ -225,6 +234,32 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
 
             var result = await Mediator.Send(command);
             return GetResponse(result);
+        }
+
+        /// <summary>
+        /// Davet emailindeki link üzerinden çalışan şifresini belirler
+        /// </summary>
+        [HttpPost("set-employee-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SetEmployeePassword([FromBody] SetEmployeePasswordCommand command)
+        {
+            var result = await Mediator.Send(command);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        /// <summary>
+        /// Email clients often block custom schemes. This endpoint renders a small HTML page that
+        /// redirects to the app deep link and shows the link as fallback.
+        /// </summary>
+        [HttpGet("set-password")]
+        [AllowAnonymous]
+        public IActionResult SetPasswordRedirect([FromQuery] string email, [FromQuery] string token)
+        {
+            var encodedEmail = Uri.EscapeDataString(email ?? string.Empty);
+            var encodedToken = Uri.EscapeDataString(token ?? string.Empty);
+            var appLink = $"magiccarrepair://set-password?email={encodedEmail}&token={encodedToken}";
+            var html = _htmlTemplateRenderer.RenderSetPasswordRedirect(appLink, email ?? string.Empty, token ?? string.Empty);
+            return Content(html, "text/html");
         }
 
         [HttpPost("refresh-token")]

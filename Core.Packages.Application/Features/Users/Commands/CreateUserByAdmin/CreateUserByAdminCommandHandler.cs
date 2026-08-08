@@ -1,6 +1,7 @@
 using MagicCarRepairAISupported.Application.Shared.Result;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
+using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -11,15 +12,18 @@ namespace MagicCarRepairAISupported.Application.Features.Users.Commands.CreateUs
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
+        private readonly IClientRepository _clientRepository;
         private readonly ILogger<CreateUserByAdminCommandHandler> _logger;
 
         public CreateUserByAdminCommandHandler(
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
+            IClientRepository clientRepository,
             ILogger<CreateUserByAdminCommandHandler> logger)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _clientRepository = clientRepository;
             _logger = logger;
         }
 
@@ -27,6 +31,13 @@ namespace MagicCarRepairAISupported.Application.Features.Users.Commands.CreateUs
         {
             if (!Enum.IsDefined(typeof(UserType), request.UserType))
                 return new ErrorResult("Geçersiz kullanıcı tipi. (2=Manager, 3=Employee)");
+
+            if (request.ClientId <= 0)
+                return new ErrorResult("Geçersiz servis (ClientId). Pozitif bir değer gerekli.");
+
+            var client = await _clientRepository.GetByIdAsync(request.ClientId, cancellationToken);
+            if (client == null)
+                return new ErrorResult("Belirtilen servis (client) bulunamadı. Var olan bir ClientId kullanın.");
 
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
             if (existingUser != null)

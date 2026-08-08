@@ -16,7 +16,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Cre
     {
         private readonly IWorkOrderRepository _workOrderRepository;
         private readonly IEntityRepository<Vehicle, int> _vehicleRepository;
-        private readonly IEntityRepository<Customer, int> _customerRepository;
+        private readonly ICustomerRepository _customerRepository;
         private readonly IEntityRepository<Employee, int> _employeeRepository;
         private readonly IInsurancePolicyRepository _insurancePolicyRepository;
         private readonly IMapper _mapper;
@@ -27,7 +27,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Cre
         public CreateWorkOrderCommandHandler(
             IWorkOrderRepository workOrderRepository,
             IEntityRepository<Vehicle, int> vehicleRepository,
-            IEntityRepository<Customer, int> customerRepository,
+            ICustomerRepository customerRepository,
             IEntityRepository<Employee, int> employeeRepository,
             IInsurancePolicyRepository insurancePolicyRepository,
             IMapper mapper,
@@ -48,7 +48,7 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Cre
 
         public async Task<CreateWorkOrderResponse> Handle(CreateWorkOrderCommand request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             // Vehicle kontrolü
             var vehicle = await _vehicleRepository.GetByIdAsync(request.VehicleId);
@@ -57,9 +57,8 @@ namespace MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.Cre
                 throw new DomainException("VEHICLE_NOT_FOUND", new { VehicleId = request.VehicleId });
             }
 
-            // Customer kontrolü
-            var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
-            if (customer == null || customer.ClientId != clientId)
+            var customer = await _customerRepository.GetByIdAsync(request.CustomerId, cancellationToken);
+            if (customer == null)
             {
                 throw new DomainException("CUSTOMER_NOT_FOUND", new { CustomerId = request.CustomerId });
             }

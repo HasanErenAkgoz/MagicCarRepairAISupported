@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Features.Employees.Queries.Gener
 
         public async Task<byte[]> Handle(GenerateEmployeeQrCodeQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId);
             if (employee == null || employee.ClientId != clientId)

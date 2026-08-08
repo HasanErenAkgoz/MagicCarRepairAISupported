@@ -38,6 +38,14 @@ namespace MagicCarRepairAISupported.Persistence.Seeds
                 // Client messages
                 CreateMessage(id++, "CLIENT_CODE_EXISTS", "tr", "{Code} koduna sahip müşteri zaten mevcut."),
                 CreateMessage(id++, "CLIENT_NOT_FOUND", "tr", "Müşteri bulunamadı."),
+
+                // Customer (CRM) messages
+                CreateMessage(id++, "CUSTOMER_NOT_FOUND", "tr", "Müşteri bulunamadı (Id: {Id}, CustomerId: {CustomerId})."),
+                CreateMessage(id++, "CUSTOMER_NOT_BELONG_TO_CLIENT", "tr", "Bu müşteri kaydına erişim yetkiniz yok."),
+                CreateMessage(id++, "CUSTOMER_EMAIL_EXISTS", "tr", "{Email} e-posta adresi ile kayıtlı müşteri zaten mevcut."),
+                CreateMessage(id++, "CUSTOMER_IDENTITY_NO_EXISTS", "tr", "{IdentityNo} kimlik numarası ile kayıtlı müşteri zaten mevcut."),
+                CreateMessage(id++, "CUSTOMER_NAME_REQUIRED", "tr", "Müşteri adı zorunludur."),
+                CreateMessage(id++, "CUSTOMER_PHONE_REQUIRED", "tr", "Müşteri telefonu zorunludur."),
                 
                 // Vehicle messages
                 CreateMessage(id++, "VEHICLE_KM_LOWER_THAN_CURRENT", "tr", "{LicensePlate} plakalı araç için yeni kilometre ({NewKilometers}) mevcut kilometreden ({CurrentKilometers}) düşük olamaz."),
@@ -46,6 +54,20 @@ namespace MagicCarRepairAISupported.Persistence.Seeds
                 // Employee messages
                 CreateMessage(id++, "EMPLOYEE_NO_EXISTS", "tr", "{EmployeeNo} numaralı personel zaten mevcut."),
                 CreateMessage(id++, "EMPLOYEE_NOT_FOUND", "tr", "Personel bulunamadı."),
+
+                // Invoice messages
+                CreateMessage(id++, "INVOICE_NOT_FOUND", "tr", "Fatura bulunamadı."),
+                CreateMessage(id++, "INVOICE_NOT_BELONG_TO_CLIENT", "tr", "Bu faturaya erişim yetkiniz yok."),
+
+                // Part (inventory) messages
+                CreateMessage(id++, "PART_NOT_FOUND", "tr", "Parça bulunamadı (Id: {Id}, PartId: {PartId})."),
+                CreateMessage(id++, "PART_NOT_BELONG_TO_CLIENT", "tr", "Bu parça kaydına erişim yetkiniz yok."),
+                CreateMessage(id++, "PART_CODE_EXISTS", "tr", "{PartCode} kodlu parça zaten mevcut."),
+                CreateMessage(id++, "PART_NOT_FOUND_BY_BARCODE", "tr", "Barkoda ait parça bulunamadı: {Barcode}."),
+                CreateMessage(id++, "PART_ID_REQUIRED", "tr", "Bu kalem türü için parça seçilmelidir ({ItemType})."),
+                CreateMessage(id++, "PART_INSUFFICIENT_STOCK", "tr", "{PartName} için yetersiz stok. İstenen: {RequestedQuantity}, Mevcut: {AvailableQuantity}."),
+                CreateMessage(id++, "PART_USED_IN_ACTIVE_WORKORDERS", "tr", "{PartCode} kodlu parça aktif iş emirlerinde kullanılıyor."),
+                CreateMessage(id++, "PART_NAME_REQUIRED", "tr", "Parça adı zorunludur."),
             });
 
             // English messages
@@ -76,6 +98,14 @@ namespace MagicCarRepairAISupported.Persistence.Seeds
                 // Client messages
                 CreateMessage(id++, "CLIENT_CODE_EXISTS", "en", "A client with code {Code} already exists."),
                 CreateMessage(id++, "CLIENT_NOT_FOUND", "en", "Client not found."),
+
+                // Customer (CRM) messages
+                CreateMessage(id++, "CUSTOMER_NOT_FOUND", "en", "Customer not found (Id: {Id}, CustomerId: {CustomerId})."),
+                CreateMessage(id++, "CUSTOMER_NOT_BELONG_TO_CLIENT", "en", "You do not have access to this customer record."),
+                CreateMessage(id++, "CUSTOMER_EMAIL_EXISTS", "en", "A customer with email {Email} already exists."),
+                CreateMessage(id++, "CUSTOMER_IDENTITY_NO_EXISTS", "en", "A customer with identity number {IdentityNo} already exists."),
+                CreateMessage(id++, "CUSTOMER_NAME_REQUIRED", "en", "Customer name is required."),
+                CreateMessage(id++, "CUSTOMER_PHONE_REQUIRED", "en", "Customer phone number is required."),
                 
                 // Vehicle messages
                 CreateMessage(id++, "VEHICLE_KM_LOWER_THAN_CURRENT", "en", "New kilometers ({NewKilometers}) for vehicle {LicensePlate} cannot be lower than current kilometers ({CurrentKilometers})."),
@@ -84,6 +114,20 @@ namespace MagicCarRepairAISupported.Persistence.Seeds
                 // Employee messages
                 CreateMessage(id++, "EMPLOYEE_NO_EXISTS", "en", "Employee with number {EmployeeNo} already exists."),
                 CreateMessage(id++, "EMPLOYEE_NOT_FOUND", "en", "Employee not found."),
+
+                // Invoice messages
+                CreateMessage(id++, "INVOICE_NOT_FOUND", "en", "Invoice not found."),
+                CreateMessage(id++, "INVOICE_NOT_BELONG_TO_CLIENT", "en", "You are not allowed to access this invoice."),
+
+                // Part (inventory) messages
+                CreateMessage(id++, "PART_NOT_FOUND", "en", "Part not found (Id: {Id}, PartId: {PartId})."),
+                CreateMessage(id++, "PART_NOT_BELONG_TO_CLIENT", "en", "You do not have access to this part record."),
+                CreateMessage(id++, "PART_CODE_EXISTS", "en", "A part with code {PartCode} already exists."),
+                CreateMessage(id++, "PART_NOT_FOUND_BY_BARCODE", "en", "No part found for barcode: {Barcode}."),
+                CreateMessage(id++, "PART_ID_REQUIRED", "en", "A part must be selected for this item type ({ItemType})."),
+                CreateMessage(id++, "PART_INSUFFICIENT_STOCK", "en", "Insufficient stock for {PartName}. Requested: {RequestedQuantity}, Available: {AvailableQuantity}."),
+                CreateMessage(id++, "PART_USED_IN_ACTIVE_WORKORDERS", "en", "Part {PartCode} is used in active work orders."),
+                CreateMessage(id++, "PART_NAME_REQUIRED", "en", "Part name is required."),
             });
 
             // Arabic messages

@@ -48,7 +48,9 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Queries.G
                     UrgencyLevel = qr.UrgencyLevel,
                     QuoteDeadline = qr.QuoteDeadline,
                     CreatedDate = qr.CreatedDate,
-                    DaysRemaining = (int)(qr.QuoteDeadline - DateTime.UtcNow).TotalDays
+                    DaysRemaining = (int)(qr.QuoteDeadline - DateTime.UtcNow).TotalDays,
+                    EstimatedCostMin = qr.EstimatedCostMin,
+                    EstimatedCostMax = qr.EstimatedCostMax,
                 }).ToList();
 
                 return new SuccessDataResult<List<GetOpenQuoteRequestsResponse>>(response);

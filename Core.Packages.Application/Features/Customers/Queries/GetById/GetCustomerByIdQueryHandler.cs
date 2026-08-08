@@ -3,14 +3,15 @@ using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Features.Customers.Queries.GetById;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Enums;
-using MagicCarRepairAISupported.Domain.Exceptions;
+using MagicCarRepairAISupported.Application.Common.Models;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace MagicCarRepairAISupported.Application.Features.Customers.Queries.GetById
 {
-    public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQuery, GetCustomerByIdResponse>
+    public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQuery, QueryResult<GetCustomerByIdResponse>>
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly IWorkOrderRepository _workOrderRepository;
@@ -29,24 +30,17 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Queries.GetBy
             _mapper = mapper;
         }
 
-        public async Task<GetCustomerByIdResponse> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
+        public async Task<QueryResult<GetCustomerByIdResponse>> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
-            // Müşteriyi bul (Vehicle'ları da dahil et)
-            var customer = await _customerRepository.Query()
-                .Include(c => c.Vehicles)
-                .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
+            var customer = await _customerRepository.GetByIdWithVehiclesAsync(request.Id, cancellationToken);
 
-            if (customer == null || customer.Status == Status.Deleted)
+            if (customer == null)
             {
-                throw new DomainException("CUSTOMER_NOT_FOUND", new { Id = request.Id });
-            }
-
-            // ClientId kontrolü
-            if (customer.ClientId != clientId)
-            {
-                throw new DomainException("CUSTOMER_NOT_BELONG_TO_CLIENT", new { CustomerId = request.Id });
+                return QueryResult<GetCustomerByIdResponse>.NotFound(
+                    "CUSTOMER_NOT_FOUND",
+                    new { Id = request.Id, CustomerId = request.Id });
             }
 
             // Response
@@ -57,7 +51,7 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Queries.GetBy
             response.VehicleCount = customer.Vehicles?.Count ?? 0;
 
             // WorkOrders sayımları
-            var activeStatuses = new[]
+            var activeStatuses = new List<WorkOrderStatus>
             {
                 WorkOrderStatus.VehicleEntered,
                 WorkOrderStatus.InProgress,
@@ -91,7 +85,7 @@ namespace MagicCarRepairAISupported.Application.Features.Customers.Queries.GetBy
                 }).ToList();
             }
 
-            return response;
+            return QueryResult<GetCustomerByIdResponse>.Success(response);
         }
     }
 }

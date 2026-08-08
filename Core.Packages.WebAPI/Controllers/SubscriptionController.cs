@@ -5,6 +5,8 @@ using MagicCarRepairAISupported.Application.Features.Subscriptions.Commands.Upgr
 using MagicCarRepairAISupported.Application.Features.Subscriptions.Queries.GetSubscription;
 using MagicCarRepairAISupported.Application.Features.Subscriptions.Queries.GetSubscriptionPlans;
 using Microsoft.AspNetCore.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
+using MagicCarRepairAISupported.WebAPI.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebAPI.Controllers;
@@ -13,7 +15,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
     public class SubscriptionController : BaseApiController
     {
         private readonly ITenantService _tenantService;

@@ -24,7 +24,9 @@ namespace MagicCarRepairAISupported.Application.Features.QuoteRequests.Profiles
                         : $"{src.VehicleBrand} {src.VehicleModel} ({src.VehicleLicensePlate})"))
                 .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.ToString()))
                 .ForMember(dest => dest.RequestTypeName, opt => opt.MapFrom(src => src.RequestType.ToString()))
-                .ForMember(dest => dest.UrgencyLevelName, opt => opt.MapFrom(src => src.UrgencyLevel.ToString()));
+                .ForMember(dest => dest.UrgencyLevelName, opt => opt.MapFrom(src => src.UrgencyLevel.ToString()))
+                // QuoteResponses is manually projected in handler (trust + ranking + cross-tenant data)
+                .ForMember(dest => dest.QuoteResponses, opt => opt.Ignore());
 
             // GetAll
             CreateMap<QuoteRequest, GetAllQuoteRequestsResponse>()

@@ -23,7 +23,7 @@ namespace MagicCarRepairAISupported.Application.Features.Dashboard.Queries.GetIn
 
         public async Task<List<GetIncomeExpenseChartResponse>> Handle(GetIncomeExpenseChartQuery request, CancellationToken cancellationToken)
         {
-            var clientId = _tenantService.GetCurrentClientId() ?? 1;
+            var clientId = _tenantService.GetRequiredClientId();
 
             var incomes = await _incomeRepository.Query()
                 .Where(i => i.ClientId == clientId && 

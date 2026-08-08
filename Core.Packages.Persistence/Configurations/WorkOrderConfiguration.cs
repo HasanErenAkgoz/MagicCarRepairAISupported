@@ -34,10 +34,10 @@ namespace MagicCarRepairAISupported.Persistence.Configurations
                 .HasMaxLength(3); // 0-100
 
             builder.Property(w => w.CustomerComplaints)
-                .HasColumnType("nvarchar(max)"); // JSON
+                .HasColumnType("text"); // JSON
 
             builder.Property(w => w.SpecialRequests)
-                .HasColumnType("nvarchar(max)"); // JSON
+                .HasColumnType("text"); // JSON
 
             builder.Property(w => w.SubTotal)
                 .IsRequired()

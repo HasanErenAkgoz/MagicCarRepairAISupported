@@ -1,0 +1,20 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:5169",
+  "backendAuthType": "basic token",
+  "backendUsername": "admin@magiccar.com",
+  "backendPassword": "Admin123!",
+  "executionArgs": {
+    "projectName": "MagicCarRepairAISupported",
+    "projectPath": "c:\\Projects\\MagicCarRepairAISupported",
+    "testIds": [],
+    "additionalInstruction": "MagicCarRepair .NET API. JWT ONLY from login response.json()['data']['token'] — NEVER accessToken or root-level token. Users.Id is NOT Customers.Id. Customer POST: identityNo (11 chars), firstName, lastName, email, phoneNumber, dateTimeOfBirth, language — use uuid in identityNo/email to avoid duplicates. Work order status: PUT /api/WorkOrders/{id}/status body {\"newStatus\":5,\"description\":\"...\"}. Invoice: POST /api/Invoices/from-workorder/{workOrderId}. Dashboard charts: GET /api/Dashboard/income-expense-chart, /api/Dashboard/weekly-revenue, /api/Dashboard/today-revenue — NOT GET /api/Dashboard alone. Accounting: /api/accounting-reports/cash-flow, income, expense. Portal: POST /api/Auth/register-customer then login; GET /api/customer-portal/profile. Manager RBAC: login manager@magiccar.com / Manager123! POST /api/Auth/impersonate expect 403. TC032: GET /api/Customers/99999999 expect 404. TC036: POST /api/Sync/data {\"changes\":[]} accept 200 or 400. TC037: GET /api/client-portal/profile no auth expect 401. requests timeout=120.",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-rgDPqPCHuMv1OnSaN1QVT-fwVI6B-LQgPU4M1wwV71kvsOquouSy9GqShyfLsJYTRWWq8_09IO_pogeno04gvXS-i9uOk8dIPbDtlDD2waASkZnz2e8wQT1voODLPIP5olM"
+    }
+  },
+  "serverPort": 50878
+}
