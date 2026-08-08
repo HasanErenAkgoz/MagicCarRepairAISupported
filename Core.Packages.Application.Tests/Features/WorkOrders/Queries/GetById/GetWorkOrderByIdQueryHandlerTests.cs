@@ -23,8 +23,9 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Querie
         {
             _workOrderRepositoryMock = new Mock<IWorkOrderRepository>();
             _tenantServiceMock = new Mock<ITenantService>();
+            _tenantServiceMock.Setup(x => x.GetRequiredClientId()).Returns(1);
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<WorkOrderMappingProfile>();
             });

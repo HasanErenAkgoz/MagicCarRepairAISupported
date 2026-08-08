@@ -20,7 +20,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Queries.Get
         {
             _partRepositoryMock = new Mock<IPartRepository>();
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<PartMappingProfile>();
             });
@@ -105,5 +105,4 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Queries.Get
         }
     }
 }
-
 

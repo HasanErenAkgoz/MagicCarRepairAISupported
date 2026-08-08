@@ -25,7 +25,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Tax.Co
             _taxRepositoryMock = new Mock<ITaxRepository>();
             _tenantServiceMock = new Mock<ITenantService>();
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<TaxMappingProfile>();
             });
@@ -113,6 +113,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Tax.Co
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
+            _tenantServiceMock.Setup(x => x.GetRequiredClientId()).Returns(clientId);
             TaxEntity? addedTax = null;
             _taxRepositoryMock.Setup(x => x.AddAsync(It.IsAny<TaxEntity>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((TaxEntity tax, CancellationToken ct) => { addedTax = tax; return tax; });

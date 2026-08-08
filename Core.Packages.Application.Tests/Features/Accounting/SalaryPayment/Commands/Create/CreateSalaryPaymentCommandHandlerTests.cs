@@ -31,7 +31,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Salary
             _mediatorMock = new Mock<IMediator>();
             _tenantServiceMock = new Mock<ITenantService>();
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<SalaryPaymentMappingProfile>();
             });
@@ -94,6 +94,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Salary
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
+            _tenantServiceMock.Setup(x => x.GetRequiredClientId()).Returns(clientId);
             _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(employee);
 
@@ -135,6 +136,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Salary
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
+            _tenantServiceMock.Setup(x => x.GetRequiredClientId()).Returns(clientId);
             _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(employee);
             _salaryPaymentRepositoryMock.Setup(x => x.GetByEmployeeAndPeriodAsync(1, 2024, 1, It.IsAny<CancellationToken>()))
@@ -209,6 +211,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Salary
             };
 
             _tenantServiceMock.Setup(x => x.GetCurrentClientId()).Returns(clientId);
+            _tenantServiceMock.Setup(x => x.GetRequiredClientId()).Returns(clientId);
             _employeeRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(employee);
             _salaryPaymentRepositoryMock.Setup(x => x.GetByEmployeeAndPeriodAsync(1, 2024, 1, It.IsAny<CancellationToken>()))
@@ -240,4 +243,3 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Accounting.Salary
         }
     }
 }
-

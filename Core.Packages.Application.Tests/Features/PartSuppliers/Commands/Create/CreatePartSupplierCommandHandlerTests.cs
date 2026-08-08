@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Com
             _partSupplierRepositoryMock = new Mock<IPartSupplierRepository>();
             _tenantServiceMock = new Mock<ITenantService>();
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<PartSupplierMappingProfile>();
             });
@@ -126,5 +126,4 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Com
         }
     }
 }
-
 

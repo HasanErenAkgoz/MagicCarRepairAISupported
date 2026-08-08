@@ -21,7 +21,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Que
         {
             _partSupplierRepositoryMock = new Mock<IPartSupplierRepository>();
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<PartSupplierMappingProfile>();
             });
@@ -104,5 +104,4 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Que
         }
     }
 }
-
 

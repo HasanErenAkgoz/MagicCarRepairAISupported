@@ -29,8 +29,9 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             _employeeRepositoryMock = new Mock<IEntityRepository<Employee, int>>();
             _signalRNotificationServiceMock = new Mock<ISignalRNotificationService>();
             _tenantServiceMock = new Mock<ITenantService>();
+            _tenantServiceMock.Setup(x => x.GetRequiredClientId()).Returns(1);
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<WorkOrderMappingProfile>();
             });
@@ -262,4 +263,3 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
         }
     }
 }
-

@@ -12,7 +12,7 @@ public class InvoiceMappingProfileTests
     [Fact]
     public void GenerateInvoiceFromWorkOrder_maps_entity_id_to_invoice_id()
     {
-        var configuration = new MapperConfiguration(cfg => cfg.AddProfile<InvoiceMappingProfile>());
+        var configuration = TestSupport.AutoMapperConfigurationFactory.Create(cfg => cfg.AddProfile<InvoiceMappingProfile>());
         var mapper = configuration.CreateMapper();
 
         var invoice = new InvoiceEntity

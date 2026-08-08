@@ -36,10 +36,11 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
             _employeeRepositoryMock = new Mock<IEntityRepository<Employee, int>>();
             _insurancePolicyRepositoryMock = new Mock<IInsurancePolicyRepository>();
             _tenantServiceMock = new Mock<ITenantService>();
+            _tenantServiceMock.Setup(x => x.GetRequiredClientId()).Returns(1);
             _loggerMock = new Mock<ILogger<CreateWorkOrderCommandHandler>>();
             _signalRNotificationServiceMock = new Mock<ISignalRNotificationService>();
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<WorkOrderMappingProfile>();
             });
@@ -330,4 +331,3 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.WorkOrders.Comman
         }
     }
 }
-

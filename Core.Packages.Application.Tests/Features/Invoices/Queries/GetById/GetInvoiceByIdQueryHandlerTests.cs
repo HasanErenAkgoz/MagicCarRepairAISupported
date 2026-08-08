@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Linq;
 using Xunit;
+using MagicCarRepairAISupported.Application.Tests.TestSupport;
 
 namespace MagicCarRepairAISupported.Application.Tests.Features.Invoices.Queries.GetById
 {
@@ -26,7 +27,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Invoices.Queries.
             _invoiceRepositoryMock = new Mock<IInvoiceRepository>();
             _tenantServiceMock = new Mock<ITenantService>();
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<InvoiceMappingProfile>();
             });
@@ -49,7 +50,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Invoices.Queries.
 
             var mockQueryable = new List<Invoice>().AsQueryable();
             _invoiceRepositoryMock.Setup(x => x.Query())
-                .Returns(mockQueryable);
+                .Returns(mockQueryable.AsAsyncQueryable());
 
             // Act & Assert
             await Assert.ThrowsAsync<DomainException>(() => _handler.Handle(query, CancellationToken.None));
@@ -76,7 +77,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Invoices.Queries.
 
             var mockQueryable = new List<Invoice> { invoice }.AsQueryable();
             _invoiceRepositoryMock.Setup(x => x.Query())
-                .Returns(mockQueryable);
+                .Returns(mockQueryable.AsAsyncQueryable());
 
             // Act & Assert
             await Assert.ThrowsAsync<DomainException>(() => _handler.Handle(query, CancellationToken.None));
@@ -139,7 +140,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Invoices.Queries.
 
             var mockQueryable = new List<Invoice> { invoice }.AsQueryable();
             _invoiceRepositoryMock.Setup(x => x.Query())
-                .Returns(mockQueryable);
+                .Returns(mockQueryable.AsAsyncQueryable());
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -179,7 +180,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Invoices.Queries.
 
             var mockQueryable = new List<Invoice> { invoice }.AsQueryable();
             _invoiceRepositoryMock.Setup(x => x.Query())
-                .Returns(mockQueryable);
+                .Returns(mockQueryable.AsAsyncQueryable());
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);

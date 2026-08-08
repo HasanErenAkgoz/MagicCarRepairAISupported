@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [main, develop]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -13,6 +20,7 @@ env:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:16-alpine
@@ -59,6 +67,7 @@ jobs:
 
   api-module-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     needs: build-test
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     services:
@@ -107,6 +116,12 @@ jobs:
         run: |
           ./api-publish/MagicCarRepairAISupported.WebAPI &
           echo $! > api.pid
+          cleanup() {
+            if [ -f api.pid ]; then
+              kill "$(cat api.pid)" 2>/dev/null || true
+            fi
+          }
+          trap cleanup EXIT
           for i in $(seq 1 60); do
             if curl -sf http://localhost:5169/health | grep -q Healthy; then
               echo "API ready"
@@ -115,6 +130,48 @@ jobs:
             sleep 2
           done
           curl -sf http://localhost:5169/health | grep -q Healthy
+          PGPASSWORD=magiccar_dev psql -h localhost -p 5432 -U magiccar -d MagicCarRepairDb -tAc \
+            "SELECT 1 FROM \"__EFMigrationsHistory\" WHERE \"MigrationId\" = '20260808120000_AddAiDiagnosisMediaAssets'" | grep -qx 1
           pip install -r testsprite_tests/requirements.txt
           cd testsprite_tests && python run_all_modules.py
-          kill $(cat ../api.pid) || true
+
+  configuration-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate production configuration template
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("Core.Packages.WebAPI/appsettings.Example.json")
+          config = json.loads(path.read_text(encoding="utf-8"))
+          required_sections = {
+              "ConnectionStrings", "Cors", "TokenOptions", "AIOptions",
+              "Redis", "EmailSettings", "Iyzico", "SuperPassword",
+          }
+          missing = sorted(required_sections - set(config))
+          if missing:
+              raise SystemExit(f"Missing required configuration sections: {', '.join(missing)}")
+          if config["SuperPassword"].get("Enabled") is not False:
+              raise SystemExit("SuperPassword must be disabled in the committed template")
+          if not config["ConnectionStrings"].get("DefaultConnection"):
+              raise SystemExit("DefaultConnection must be documented in the template")
+          if "Include Error Detail=true" in config["ConnectionStrings"]["DefaultConnection"]:
+              raise SystemExit("Production template must not enable PostgreSQL error detail")
+          if not config["TokenOptions"].get("SecurityKey"):
+              raise SystemExit("TokenOptions:SecurityKey must be documented in the template")
+          print("Configuration template contract is valid.")
+          PY
+
+  production-readiness-source-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify protected AI routes and untracked runtime uploads
+        run: python3 scripts/verify_production_readiness.py

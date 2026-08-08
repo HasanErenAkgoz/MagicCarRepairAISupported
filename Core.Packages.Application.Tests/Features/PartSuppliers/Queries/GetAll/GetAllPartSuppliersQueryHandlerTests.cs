@@ -8,6 +8,7 @@ using MagicCarRepairAISupported.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
+using MagicCarRepairAISupported.Application.Tests.TestSupport;
 
 namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Queries.GetAll
 {
@@ -21,7 +22,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Que
         {
             _partSupplierRepositoryMock = new Mock<IPartSupplierRepository>();
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<PartSupplierMappingProfile>();
             });
@@ -48,7 +49,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Que
             mockSet.As<IQueryable<PartSupplier>>().Setup(m => m.GetEnumerator()).Returns(suppliers.GetEnumerator());
 
             _partSupplierRepositoryMock.Setup(x => x.Query())
-                .Returns(mockSet.Object);
+                .Returns(suppliers.AsAsyncQueryable());
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -102,7 +103,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Que
             mockSet.As<IQueryable<PartSupplier>>().Setup(m => m.GetEnumerator()).Returns(suppliers.GetEnumerator());
 
             _partSupplierRepositoryMock.Setup(x => x.Query())
-                .Returns(mockSet.Object);
+                .Returns(suppliers.AsAsyncQueryable());
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -153,7 +154,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Que
             mockSet.As<IQueryable<PartSupplier>>().Setup(m => m.GetEnumerator()).Returns(suppliers.GetEnumerator());
 
             _partSupplierRepositoryMock.Setup(x => x.Query())
-                .Returns(mockSet.Object);
+                .Returns(suppliers.AsAsyncQueryable());
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -164,4 +165,3 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.PartSuppliers.Que
         }
     }
 }
-

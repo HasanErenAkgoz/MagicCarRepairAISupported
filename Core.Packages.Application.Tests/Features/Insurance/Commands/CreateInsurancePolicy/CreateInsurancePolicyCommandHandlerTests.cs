@@ -30,7 +30,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Insurance.Command
             _customerRepositoryMock = new Mock<ICustomerRepository>();
             _tenantServiceMock = new Mock<ITenantService>();
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<InsuranceMappingProfile>();
             });
@@ -300,4 +300,3 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Insurance.Command
         }
     }
 }
-

@@ -26,7 +26,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Up
             _partSupplierRepositoryMock = new Mock<IPartSupplierRepository>();
             _cacheInvalidationServiceMock = new Mock<ICacheInvalidationService>();
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<PartMappingProfile>();
             });
@@ -138,6 +138,8 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Up
 
             _partRepositoryMock.Setup(x => x.GetWithStockAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(part);
+            _partRepositoryMock.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(part);
 
             _partRepositoryMock.Setup(x => x.GetByPartCodeAsync("PART-001-UPDATED", It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Part?)null);
@@ -197,6 +199,4 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Commands.Up
         }
     }
 }
-
-
 

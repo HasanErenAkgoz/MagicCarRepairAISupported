@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Linq.Expressions;
 using Xunit;
+using MagicCarRepairAISupported.Application.Tests.TestSupport;
 
 namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Queries.GetAllParts
 {
@@ -39,7 +40,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Queries.Get
             mockSet.As<IQueryable<Part>>().Setup(m => m.GetEnumerator()).Returns(parts.GetEnumerator());
 
             _partRepositoryMock.Setup(x => x.Query())
-                .Returns(mockSet.Object);
+                .Returns(parts.AsAsyncQueryable());
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -91,7 +92,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Queries.Get
             mockSet.As<IQueryable<Part>>().Setup(m => m.GetEnumerator()).Returns(parts.GetEnumerator());
 
             _partRepositoryMock.Setup(x => x.Query())
-                .Returns(mockSet.Object);
+                .Returns(parts.AsAsyncQueryable());
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -144,7 +145,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Queries.Get
             mockSet.As<IQueryable<Part>>().Setup(m => m.GetEnumerator()).Returns(parts.GetEnumerator());
 
             _partRepositoryMock.Setup(x => x.Query())
-                .Returns(mockSet.Object);
+                .Returns(parts.AsAsyncQueryable());
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -155,4 +156,3 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Parts.Queries.Get
         }
     }
 }
-

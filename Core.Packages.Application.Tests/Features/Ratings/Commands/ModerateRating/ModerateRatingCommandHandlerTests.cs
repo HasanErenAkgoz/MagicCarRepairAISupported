@@ -24,7 +24,7 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Ratings.Commands.
             _serviceRatingRepositoryMock = new Mock<IServiceRatingRepository>();
             _tenantServiceMock = new Mock<ITenantService>();
 
-            var mapperConfig = new MapperConfiguration(cfg =>
+            var mapperConfig = TestSupport.AutoMapperConfigurationFactory.Create(cfg =>
             {
                 cfg.AddProfile<RatingMappingProfile>();
             });
@@ -185,4 +185,3 @@ namespace MagicCarRepairAISupported.Application.Tests.Features.Ratings.Commands.
         }
     }
 }
-
