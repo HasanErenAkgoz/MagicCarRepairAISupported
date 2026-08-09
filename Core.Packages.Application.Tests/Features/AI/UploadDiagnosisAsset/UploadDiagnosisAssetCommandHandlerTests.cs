@@ -15,7 +15,7 @@ public class UploadDiagnosisAssetCommandHandlerTests
     public async Task RejectsUnsupportedContentTypeBeforeStorageIsCalled()
     {
         var assets = new Mock<IEntityRepository<MediaAsset, int>>();
-        var storage = new Mock<IFileStorageService>();
+        var storage = new Mock<IPrivateMediaStorage>();
         var tenants = new Mock<ITenantService>();
         var http = new Mock<IHttpContextAccessor>();
         var handler = new UploadDiagnosisAssetCommandHandler(assets.Object, storage.Object, tenants.Object, http.Object);
@@ -26,21 +26,21 @@ public class UploadDiagnosisAssetCommandHandlerTests
         var result = await handler.Handle(new UploadDiagnosisAssetCommand { File = file.Object }, CancellationToken.None);
 
         Assert.False(result.Success);
-        storage.Verify(x => x.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        storage.Verify(x => x.StoreAsync(It.IsAny<IFormFile>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
     public async Task ValidUpload_PersistsThePurposeRequiredByDiagnoseValidation()
     {
         var assets = new Mock<IEntityRepository<MediaAsset, int>>();
-        var storage = new Mock<IFileStorageService>();
+        var storage = new Mock<IPrivateMediaStorage>();
         var tenants = new Mock<ITenantService>();
         var http = new Mock<IHttpContextAccessor>();
         MediaAsset? captured = null;
         var context = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, "7")], "test")) };
         http.SetupGet(x => x.HttpContext).Returns(context);
         tenants.Setup(x => x.GetRequiredClientId()).Returns(3);
-        storage.Setup(x => x.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync("/uploads/ai-drafts/3/7/a.jpg");
+        storage.Setup(x => x.StoreAsync(It.IsAny<IFormFile>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync("private-media/ai-drafts/3/7/a.jpg");
         assets.Setup(x => x.AddAsync(It.IsAny<MediaAsset>(), It.IsAny<CancellationToken>())).Callback<MediaAsset, CancellationToken>((a, _) => captured = a).ReturnsAsync((MediaAsset a, CancellationToken _) => a);
         var file = new Mock<IFormFile>(); file.SetupGet(x => x.Length).Returns(10); file.SetupGet(x => x.ContentType).Returns("image/jpeg");
         var handler = new UploadDiagnosisAssetCommandHandler(assets.Object, storage.Object, tenants.Object, http.Object);
@@ -50,5 +50,7 @@ public class UploadDiagnosisAssetCommandHandlerTests
         Assert.True(result.Success);
         Assert.NotNull(captured);
         Assert.Equal(UploadDiagnosisAssetCommandHandler.Purpose, captured!.Purpose);
+        Assert.StartsWith("private-media/", captured.StorageKey, StringComparison.Ordinal);
+        Assert.DoesNotContain("/uploads/", captured.StorageKey, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -63,7 +63,9 @@
 | 2026-08-09 | Frontend + QA | WorkOrderEdit parça satırı tam, tipli `WorkOrderPartItem` bileşenine ayrıldı | Form state ve değişiklik/silme callback'leri ekran sahipliğinde kaldı; 17/17 Jest suite, lint ve `tsc --noEmit` geçti. |
 | 2026-08-09 | Frontend + QA | WorkOrderEdit iş gücü satırı tam, tipli `WorkOrderLaborItem` bileşenine ayrıldı | Form state ve değişiklik/silme callback'leri ekran sahipliğinde kaldı; 17/17 Jest suite, lint ve `tsc --noEmit` geçti. |
 | 2026-08-09 | Frontend + QA | WorkOrderDetail fotoğraf türü seçim sheet'i tam, tipli `WorkOrderPhotoTypeSheet` bileşenine ayrıldı | Görünürlük, bekleyen dosya ve upload callback'i ekran sahipliğinde kaldı; `npm run test:ci`: 17/17 suite, 81/81 test geçti; lint 0 error. `tsc --noEmit` geçti. |
+| 2026-08-09 | Frontend + QA | WorkOrderEdit'ten kullanılmayan `SummaryRow` ve `summaryStyles` kaldırıldı | Referans bulunmadığı doğrulandı; 17/17 Jest suite, lint ve `tsc --noEmit` geçti. |
 | 2026-08-09 | Backend + AppSec + QA | V1 WorkOrderParticipant chat yetki dilimi uygulandı ve gerçek PostgreSQL ile doğrulandı | Explicit ServiceAdvisor grant/revoke, tenant/aktif hesap/aktif personel/atanmış teknisyen/müşteri doğrulaması her istekte DB'den yapılır; removal anında erişimi keser. Yönetim yalnız Manager ve terminal olmayan iş emirlerinde. EF migration + snapshot üretildi; WebAPI ve Application.Tests derlemeleri 0 hata. PostgreSQL HTTP entegrasyon testleri 2/2 geçti; cross-tenant, non-manager, terminal, revoke, active/inactive employee ve Manager izin senaryolarını kapsar. |
+| 2026-08-09 | Backend + AppSec | AI MediaAsset için private storage temeli eklendi | `IPrivateMediaStorage`, varsayılan olarak `App_Data/private-media` altında (wwwroot dışında) opaque key üretir; traversal/root kontrolü ile URL üretmez. AI upload/diagnose/retention bu store'a geçirildi; legacy resource-specific media akışları değişmedi. Odaklı 7 test geçti. |
 
 ## Açık riskler ve kararlar
 

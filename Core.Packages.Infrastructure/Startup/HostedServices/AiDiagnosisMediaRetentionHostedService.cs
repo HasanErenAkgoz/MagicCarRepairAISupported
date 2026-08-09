@@ -29,11 +29,11 @@ public sealed class AiDiagnosisMediaRetentionHostedService : BackgroundService
     {
         using var scope = _services.CreateScope();
         var assets = scope.ServiceProvider.GetRequiredService<IEntityRepository<MediaAsset, int>>();
-        var storage = scope.ServiceProvider.GetRequiredService<IFileStorageService>();
+        var storage = scope.ServiceProvider.GetRequiredService<IPrivateMediaStorage>();
         var expired = await assets.Query().Where(a => a.Purpose == "AiDiagnosisDraft" && a.ExpiresAt <= DateTime.UtcNow).ToListAsync(ct);
         foreach (var asset in expired)
         {
-            if (!TryParseStorageKey(asset.StorageKey, out var container, out var file))
+            if (!IsPrivateStorageKey(asset.StorageKey))
             {
                 _logger.LogWarning("Expired AI asset {AssetId} has invalid storage key", asset.Id);
                 continue;
@@ -41,7 +41,7 @@ public sealed class AiDiagnosisMediaRetentionHostedService : BackgroundService
             try
             {
                 // Delete storage first: retaining the DB row makes a failed storage cleanup retryable.
-                await storage.DeleteFileAsync(file, container, ct);
+                await storage.DeleteAsync(asset.StorageKey, ct);
                 assets.Delete(asset);
             }
             catch (Exception ex) { _logger.LogError(ex, "Could not remove expired AI asset {AssetId}", asset.Id); }
@@ -49,12 +49,6 @@ public sealed class AiDiagnosisMediaRetentionHostedService : BackgroundService
         await assets.SaveChangesAsync();
     }
 
-    private static bool TryParseStorageKey(string? key, out string container, out string file)
-    {
-        container = file = string.Empty;
-        var parts = key?.TrimStart('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (parts is null || parts.Length < 3 || !string.Equals(parts[0], "uploads", StringComparison.OrdinalIgnoreCase)) return false;
-        container = string.Join('/', parts.Skip(1).Take(parts.Length - 2)); file = parts[^1];
-        return true;
-    }
+    private static bool IsPrivateStorageKey(string? key) =>
+        PrivateMediaStorageKey.IsValid(key) && key!.StartsWith("private-media/ai-drafts/", StringComparison.Ordinal);
 }

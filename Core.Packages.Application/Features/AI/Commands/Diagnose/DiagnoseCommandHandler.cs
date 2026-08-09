@@ -19,9 +19,9 @@ namespace MagicCarRepairAISupported.Application.Features.AI.Commands.Diagnose
         private readonly IEntityRepository<MediaAsset, int> _assets;
         private readonly ITenantService _tenants;
         private readonly IHttpContextAccessor _http;
-        private readonly IFileStorageService _storage;
+        private readonly IPrivateMediaStorage _storage;
 
-        public DiagnoseCommandHandler(IAIDiagnosisService aiDiagnosisService, IEntityRepository<MediaAsset, int> assets, ITenantService tenants, IHttpContextAccessor http, IFileStorageService storage)
+        public DiagnoseCommandHandler(IAIDiagnosisService aiDiagnosisService, IEntityRepository<MediaAsset, int> assets, ITenantService tenants, IHttpContextAccessor http, IPrivateMediaStorage storage)
         {
             _aiDiagnosisService = aiDiagnosisService;
             _assets = assets; _tenants = tenants; _http = http; _storage = storage;
@@ -60,8 +60,8 @@ namespace MagicCarRepairAISupported.Application.Features.AI.Commands.Diagnose
                     images = new();
                     foreach (var asset in assets)
                     {
-                        if (!TryParseStorageKey(asset.StorageKey, out var container, out var name) || asset.Length > 10 * 1024 * 1024) return new ErrorDataResult<DiagnosisResultDto>("Invalid diagnosis asset.");
-                        await using var stream = await _storage.GetFileAsync(name, container);
+                        if (!IsPrivateStorageKey(asset.StorageKey) || asset.Length > 10 * 1024 * 1024) return new ErrorDataResult<DiagnosisResultDto>("Invalid diagnosis asset.");
+                        await using var stream = await _storage.OpenReadAsync(asset.StorageKey, cancellationToken);
                         if (stream is null) return new ErrorDataResult<DiagnosisResultDto>("Diagnosis asset is unavailable.");
                         using var memory = new MemoryStream(); await stream.CopyToAsync(memory, cancellationToken);
                         if (memory.Length != asset.Length) return new ErrorDataResult<DiagnosisResultDto>("Diagnosis asset size mismatch.");
@@ -76,11 +76,7 @@ namespace MagicCarRepairAISupported.Application.Features.AI.Commands.Diagnose
             return new SuccessDataResult<DiagnosisResultDto>(result, "Arıza tespiti başarıyla tamamlandı");
         }
 
-        private static bool TryParseStorageKey(string? key, out string container, out string file)
-        {
-            container = file = string.Empty; var p = key?.TrimStart('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
-            if (p is null || p.Length < 3 || !string.Equals(p[0], "uploads", StringComparison.OrdinalIgnoreCase)) return false;
-            container = string.Join('/', p.Skip(1).Take(p.Length - 2)); file = p[^1]; return true;
-        }
+        private static bool IsPrivateStorageKey(string? key) =>
+            PrivateMediaStorageKey.IsValid(key) && key!.StartsWith("private-media/ai-drafts/", StringComparison.Ordinal);
     }
 }

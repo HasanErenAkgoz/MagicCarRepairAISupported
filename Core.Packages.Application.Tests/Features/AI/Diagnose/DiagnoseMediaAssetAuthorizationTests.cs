@@ -23,7 +23,7 @@ public class DiagnoseMediaAssetAuthorizationTests
         var (handler, _, storage) = CreateHandler(asset, currentClient);
         var result = await handler.Handle(new DiagnoseCommand { Complaint = "hasar", MediaAssetIds = [1] }, CancellationToken.None);
         Assert.False(result.Success);
-        storage.Verify(x => x.GetFileAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        storage.Verify(x => x.OpenReadAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -32,24 +32,37 @@ public class DiagnoseMediaAssetAuthorizationTests
         var (handler, _, storage) = CreateHandler(NewAsset(1, 7, DateTime.UtcNow.AddMinutes(-1)), 1);
         var result = await handler.Handle(new DiagnoseCommand { Complaint = "hasar", MediaAssetIds = [1] }, CancellationToken.None);
         Assert.False(result.Success);
-        storage.Verify(x => x.GetFileAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        storage.Verify(x => x.OpenReadAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task RejectsLegacyOrTraversalStorageKeyBeforeStorageIsRead()
+    {
+        var asset = NewAsset(1, 7, DateTime.UtcNow.AddHours(1));
+        asset.StorageKey = "private-media/ai-drafts/1/7/../../other.jpg";
+        var (handler, _, storage) = CreateHandler(asset, 1);
+
+        var result = await handler.Handle(new DiagnoseCommand { Complaint = "hasar", MediaAssetIds = [1] }, CancellationToken.None);
+
+        Assert.False(result.Success);
+        storage.Verify(x => x.OpenReadAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
     public async Task ValidOwnerAsset_IsReadAndPassedAsBinaryImage()
     {
         var (handler, ai, storage) = CreateHandler(NewAsset(1, 7, DateTime.UtcNow.AddHours(1)), 1);
-        storage.Setup(x => x.GetFileAsync("a.jpg", "ai-drafts/1/7")).ReturnsAsync(new MemoryStream([1, 2, 3]));
+        storage.Setup(x => x.OpenReadAsync("private-media/ai-drafts/1/7/a.jpg", It.IsAny<CancellationToken>())).ReturnsAsync(new MemoryStream([1, 2, 3]));
         ai.Setup(x => x.DiagnoseFromTextAsync(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<List<DiagnosisImage>>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(new DiagnosisResultDto());
         var result = await handler.Handle(new DiagnoseCommand { Complaint = "hasar", MediaAssetIds = [1] }, CancellationToken.None);
         Assert.True(result.Success);
         ai.Verify(x => x.DiagnoseFromTextAsync(It.IsAny<string>(), It.IsAny<int?>(), It.Is<List<DiagnosisImage>>(i => i.Count == 1 && i[0].Bytes.Length == 3), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    private static MediaAsset NewAsset(int clientId, int ownerId, DateTime expiry) => new() { Id = 1, ClientId = clientId, OwnerUserId = ownerId, Purpose = UploadDiagnosisAssetCommandHandler.Purpose, StorageKey = "/uploads/ai-drafts/1/7/a.jpg", ContentType = "image/jpeg", Length = 3, ExpiresAt = expiry };
-    private static (DiagnoseCommandHandler handler, Mock<IAIDiagnosisService> ai, Mock<IFileStorageService> storage) CreateHandler(MediaAsset asset, int clientId)
+    private static MediaAsset NewAsset(int clientId, int ownerId, DateTime expiry) => new() { Id = 1, ClientId = clientId, OwnerUserId = ownerId, Purpose = UploadDiagnosisAssetCommandHandler.Purpose, StorageKey = "private-media/ai-drafts/1/7/a.jpg", ContentType = "image/jpeg", Length = 3, ExpiresAt = expiry };
+    private static (DiagnoseCommandHandler handler, Mock<IAIDiagnosisService> ai, Mock<IPrivateMediaStorage> storage) CreateHandler(MediaAsset asset, int clientId)
     {
-        var ai = new Mock<IAIDiagnosisService>(); var assets = new Mock<IEntityRepository<MediaAsset, int>>(); var tenants = new Mock<ITenantService>(); var storage = new Mock<IFileStorageService>(); var http = new Mock<IHttpContextAccessor>();
+        var ai = new Mock<IAIDiagnosisService>(); var assets = new Mock<IEntityRepository<MediaAsset, int>>(); var tenants = new Mock<ITenantService>(); var storage = new Mock<IPrivateMediaStorage>(); var http = new Mock<IHttpContextAccessor>();
         assets.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(asset); tenants.Setup(x => x.GetRequiredClientId()).Returns(clientId);
         http.SetupGet(x => x.HttpContext).Returns(new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, "7")], "test")) });
         return (new DiagnoseCommandHandler(ai.Object, assets.Object, tenants.Object, http.Object, storage.Object), ai, storage);

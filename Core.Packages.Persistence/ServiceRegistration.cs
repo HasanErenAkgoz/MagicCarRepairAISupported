@@ -39,6 +39,7 @@ namespace MagicCarRepairAISupported.Persistence
             services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
             services.AddScoped<ITranslationRepository, TranslationRepository>();
             services.AddScoped<IFileStorageService, LocalFileStorageService>();
+            services.AddScoped<IPrivateMediaStorage, LocalPrivateMediaStorage>();
             services.AddScoped<IUploadedFileRepository, UploadedFileRepository>();
             
             // Multi-tenant repositories

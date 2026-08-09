@@ -20,7 +20,7 @@ Part photos use `GET /api/media/parts/{partId}/photos/{photoId}` under ShopStaff
 
 AI damage-photo analysis is production-disabled (`410 Gone`) until an authorized MediaAsset ID flow exists. The legacy `PhotoPaths` command no longer dereferences URLs or local filesystem paths in any environment. A future implementation must authorize each asset against the requesting customer/tenant, limit MIME type and size, and use a bounded server-side stream.
 
-AI diagnosis drafts use `POST /api/AI/diagnosis-assets` (multipart `file`) and return an `assetId` with a 24-hour expiry. `POST /api/AI/diagnose` accepts `mediaAssetIds`, never URLs or file paths. Assets are scoped to the authenticated user and tenant with purpose `AiDiagnosisDraft`; a scheduled retention worker must delete expired rows and their storage keys. This first schema migration does not alter legacy uploads.
+AI diagnosis drafts use `POST /api/AI/diagnosis-assets` (multipart `file`) and return an `assetId` with a 24-hour expiry. `POST /api/AI/diagnose` accepts `mediaAssetIds`, never URLs or file paths. Assets are scoped to the authenticated user and tenant with purpose `AiDiagnosisDraft`; a scheduled retention worker must delete expired rows and their storage keys. AI drafts are stored through `IPrivateMediaStorage`: its keys begin with `private-media/`, are never returned by the API, and resolve under `App_Data/private-media` (outside `wwwroot`) by default. The optional `PrivateMedia:RootPath` must also be outside the web root. The caller validates MIME type and size before storage; the store uses generated names and rejects traversal in both scope and key. This does not alter legacy uploads.
 
 ## Target contract
 
