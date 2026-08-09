@@ -73,6 +73,10 @@ public class DomainErrorResponseWriter : IDomainErrorResponseWriter
             errorCode.Contains("_BELONG_TO_CLIENT", StringComparison.Ordinal))
             return (int)HttpStatusCode.Conflict;
 
+        if (errorCode.EndsWith("_ACCESS_DENIED", StringComparison.Ordinal) ||
+            errorCode.EndsWith("_MANAGEMENT_DENIED", StringComparison.Ordinal))
+            return (int)HttpStatusCode.Forbidden;
+
         return (int)HttpStatusCode.BadRequest;
     }
 

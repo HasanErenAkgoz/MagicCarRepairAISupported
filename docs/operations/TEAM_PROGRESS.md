@@ -61,6 +61,9 @@
 | 2026-08-09 | Frontend + QA | WorkOrderEdit maliyet özeti tam, tipli `WorkOrderCostSummary` sunum bileşenine ayrıldı | Toplamlar ve KDV state/callback'i ekran sahipliğinde kaldı; 17/17 Jest suite, lint ve `tsc --noEmit` geçti. |
 | 2026-08-09 | Frontend + QA | WorkOrderEdit teknisyen seçici tam, tipli `WorkOrderTechnicianSelector` bileşenine ayrıldı | Picker state ve seçim callback'leri ekran sahipliğinde kaldı; 17/17 Jest suite, lint ve `tsc --noEmit` geçti. |
 | 2026-08-09 | Frontend + QA | WorkOrderEdit parça satırı tam, tipli `WorkOrderPartItem` bileşenine ayrıldı | Form state ve değişiklik/silme callback'leri ekran sahipliğinde kaldı; 17/17 Jest suite, lint ve `tsc --noEmit` geçti. |
+| 2026-08-09 | Frontend + QA | WorkOrderEdit iş gücü satırı tam, tipli `WorkOrderLaborItem` bileşenine ayrıldı | Form state ve değişiklik/silme callback'leri ekran sahipliğinde kaldı; 17/17 Jest suite, lint ve `tsc --noEmit` geçti. |
+| 2026-08-09 | Frontend + QA | WorkOrderDetail fotoğraf türü seçim sheet'i tam, tipli `WorkOrderPhotoTypeSheet` bileşenine ayrıldı | Görünürlük, bekleyen dosya ve upload callback'i ekran sahipliğinde kaldı; `npm run test:ci`: 17/17 suite, 81/81 test geçti; lint 0 error. `tsc --noEmit` geçti. |
+| 2026-08-09 | Backend + AppSec + QA | V1 WorkOrderParticipant chat yetki dilimi uygulandı ve gerçek PostgreSQL ile doğrulandı | Explicit ServiceAdvisor grant/revoke, tenant/aktif hesap/aktif personel/atanmış teknisyen/müşteri doğrulaması her istekte DB'den yapılır; removal anında erişimi keser. Yönetim yalnız Manager ve terminal olmayan iş emirlerinde. EF migration + snapshot üretildi; WebAPI ve Application.Tests derlemeleri 0 hata. PostgreSQL HTTP entegrasyon testleri 2/2 geçti; cross-tenant, non-manager, terminal, revoke, active/inactive employee ve Manager izin senaryolarını kapsar. |
 
 ## Açık riskler ve kararlar
 
@@ -68,7 +71,7 @@
 2. **P1 kapalı:** AI görsel teşhisi yalnız owner/tenant doğrulanmış MediaAsset byte'larıyla çalışıyor; 24 saatlik retention job uygulandı. CI E2E kanıtı yine de gereklidir.
 3. **P1:** Chat ekleri; message-owned asset, katılımcı yetkisi, expiry ve indirme kontrolü olmadan açılmayacak.
 4. **P1:** Tam test kanıtı yoktur; .NET 10 SDK ve temiz Node bağımlılıkları ile CI'da yeşil sonuç zorunludur.
-5. **P1:** Temizlenmiş Git geçmişinin remote'a force-push edilmesi ve ekiplerin yeniden clone alması gerekir.
+5. **P1 kapalı:** Temizlenmiş Git geçmişi `origin/master`a force-with-lease ile yayınlandı; ekip clone'ları temiz geçmişe göre yeniden kurulmalıdır.
 
 ## Agent güncelleme kuralı
 

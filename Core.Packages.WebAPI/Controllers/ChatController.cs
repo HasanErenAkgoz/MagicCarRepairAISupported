@@ -12,7 +12,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Policy = AuthPolicyNames.ShopStaff)]
+    [Authorize]
     public class ChatController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -37,6 +37,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// İki kullanıcı arasındaki konuşmayı getir
         /// </summary>
         [HttpGet("conversation/{otherUserId}")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> GetConversation(int otherUserId, [FromQuery] int? skip, [FromQuery] int? take)
         {
             var query = new GetConversationQuery
@@ -65,10 +66,24 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
             return Ok(result);
         }
 
+        [HttpPost("workorder/{workOrderId}/participants")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
+        public async Task<IActionResult> AddParticipant(int workOrderId, [FromBody] MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.AddParticipant.AddWorkOrderParticipantCommand command)
+        {
+            command.WorkOrderId = workOrderId;
+            return Ok(await _mediator.Send(command));
+        }
+
+        [HttpDelete("workorder/{workOrderId}/participants/{userId}")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
+        public async Task<IActionResult> RemoveParticipant(int workOrderId, int userId)
+            => Ok(await _mediator.Send(new MagicCarRepairAISupported.Application.Features.WorkOrders.Commands.RemoveParticipant.RemoveWorkOrderParticipantCommand { WorkOrderId = workOrderId, UserId = userId }));
+
         /// <summary>
         /// Okunmamış mesaj sayısını getir
         /// </summary>
         [HttpGet("unread-count")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> GetUnreadCount()
         {
             var query = new GetUnreadMessageCountQuery();
@@ -80,6 +95,7 @@ namespace MagicCarRepairAISupported.WebAPI.Controllers
         /// Mesajları okundu olarak işaretle
         /// </summary>
         [HttpPost("mark-as-read")]
+        [Authorize(Policy = AuthPolicyNames.ShopStaff)]
         public async Task<IActionResult> MarkAsRead([FromBody] MarkMessagesAsReadCommand command)
         {
             var result = await _mediator.Send(command);

@@ -11,10 +11,14 @@ public static class JwtTestTokenFactory
     public const string Issuer = "MagicCarRepair";
     public const string Audience = "MagicCarRepair.API";
 
+    public static string SecurityKey => Environment.GetEnvironmentVariable("TokenOptions__SecurityKey") ?? TestSecurityKey;
+    public static string TokenIssuer => Environment.GetEnvironmentVariable("TokenOptions__Issuer") ?? Issuer;
+    public static string TokenAudience => Environment.GetEnvironmentVariable("TokenOptions__Audience") ?? Audience;
+
     public static string CreateToken(int userType, int clientId = 1, int userId = 1)
     {
         var credentials = new SigningCredentials(
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(TestSecurityKey)),
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecurityKey)),
             SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -27,8 +31,8 @@ public static class JwtTestTokenFactory
         };
 
         var token = new JwtSecurityToken(
-            Issuer,
-            Audience,
+            TokenIssuer,
+            TokenAudience,
             claims,
             expires: DateTime.UtcNow.AddHours(1),
             signingCredentials: credentials);

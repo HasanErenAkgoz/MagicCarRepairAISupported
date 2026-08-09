@@ -50,6 +50,7 @@ namespace MagicCarRepairAISupported.Persistence.Context
         public DbSet<WorkOrderLabor> WorkOrderLabors { get; set; }
         public DbSet<WorkOrderTimeline> WorkOrderTimelines { get; set; }
         public DbSet<WorkOrderPhoto> WorkOrderPhotos { get; set; }
+        public DbSet<WorkOrderParticipant> WorkOrderParticipants { get; set; }
         public DbSet<QuoteRequest> QuoteRequests { get; set; }
         public DbSet<QuoteResponse> QuoteResponses { get; set; }
         public DbSet<QuoteRequestPhoto> QuoteRequestPhotos { get; set; }

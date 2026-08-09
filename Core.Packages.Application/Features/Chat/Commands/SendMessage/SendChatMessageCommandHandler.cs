@@ -1,5 +1,6 @@
 using MagicCarRepairAISupported.Application.Common.Services;
 using MagicCarRepairAISupported.Application.Common.Services.Notification;
+using MagicCarRepairAISupported.Application.Common.Services.WorkOrders;
 using MagicCarRepairAISupported.Domain.Entities;
 using MagicCarRepairAISupported.Domain.Exceptions;
 using MagicCarRepairAISupported.Domain.Repositories;
@@ -17,19 +18,22 @@ namespace MagicCarRepairAISupported.Application.Features.Chat.Commands.SendMessa
         private readonly IUserRepository _userRepository;
         private readonly ISignalRNotificationService _signalRService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IWorkOrderParticipantAuthorizationService _participantAuthorization;
 
         public SendChatMessageCommandHandler(
             IChatMessageRepository chatMessageRepository,
             ITenantService tenantService,
             IUserRepository userRepository,
             ISignalRNotificationService signalRService,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IWorkOrderParticipantAuthorizationService participantAuthorization)
         {
             _chatMessageRepository = chatMessageRepository;
             _tenantService = tenantService;
             _userRepository = userRepository;
             _signalRService = signalRService;
             _httpContextAccessor = httpContextAccessor;
+            _participantAuthorization = participantAuthorization;
         }
 
         public async Task<SendChatMessageResponse> Handle(SendChatMessageCommand request, CancellationToken cancellationToken)
@@ -42,6 +46,13 @@ namespace MagicCarRepairAISupported.Application.Features.Chat.Commands.SendMessa
             {
                 throw new DomainException("USER_ID_REQUIRED");
             }
+
+            if (!request.WorkOrderId.HasValue)
+                throw new DomainException("WORK_ORDER_CHAT_REQUIRED");
+            if (request.MessageType != Domain.Enums.ChatMessageType.Text || request.FilePath is not null || request.FileName is not null || request.FileSize is not null)
+                throw new DomainException("CHAT_ATTACHMENTS_NOT_SUPPORTED");
+            await _participantAuthorization.EnsureCanAccessChatAsync(request.WorkOrderId.Value, cancellationToken);
+            await _participantAuthorization.EnsureUserCanAccessChatAsync(request.WorkOrderId.Value, request.ReceiverId, cancellationToken);
 
             // Alıcıyı kontrol et (receiver kontrolü opsiyonel - mesaj göndermek için yeterli)
             var receiver = await _userRepository.GetByIdAsync(request.ReceiverId);
@@ -58,10 +69,11 @@ namespace MagicCarRepairAISupported.Application.Features.Chat.Commands.SendMessa
                 Message = request.Message,
                 MessageType = request.MessageType,
                 WorkOrderId = request.WorkOrderId,
-                CustomerId = request.CustomerId,
-                FilePath = request.FilePath,
-                FileName = request.FileName,
-                FileSize = request.FileSize,
+                // The work order is the source of truth; never accept a caller supplied customer link.
+                CustomerId = null,
+                FilePath = null,
+                FileName = null,
+                FileSize = null,
                 SentDate = DateTime.UtcNow,
                 ClientId = clientId
             };

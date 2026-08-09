@@ -36,3 +36,16 @@ Reuse `MagicCarRepairWebApplicationFactory` and `JwtTestTokenFactory`:
 5. Keep ShopStaff/SystemAdmin cases explicit, rather than widening the customer policy.
 
 The current factory intentionally does not relax production authorization or health checks; tests require a live disposable PostgreSQL instance, as demonstrated by the 23/23 WebAPI test run.
+
+Use the same disposable fixture values as CI:
+
+```bash
+docker run --rm -d --name magiccarrepair-webapi-test-db \
+  -e POSTGRES_USER=magiccar -e POSTGRES_PASSWORD=magiccar_dev \
+  -e POSTGRES_DB=MagicCarRepairDb -p 55432:5432 postgres:16-alpine
+ConnectionStrings__DefaultConnection='Host=localhost;Port=55432;Database=MagicCarRepairDb;Username=magiccar;Password=magiccar_dev' \
+TokenOptions__SecurityKey='TestSigningKeyForIntegrationTests_MustBe32Chars!!' \
+TokenOptions__Issuer='MagicCarRepair' TokenOptions__Audience='MagicCarRepair.API' \
+dotnet test Core.Packages.WebAPI.Tests/MagicCarRepairAISupported.WebAPI.Tests.csproj
+docker stop magiccarrepair-webapi-test-db
+```

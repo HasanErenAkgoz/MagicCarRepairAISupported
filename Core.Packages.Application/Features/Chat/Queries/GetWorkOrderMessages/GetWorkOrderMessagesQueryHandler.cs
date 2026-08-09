@@ -1,4 +1,5 @@
 using MagicCarRepairAISupported.Application.Common.Services;
+using MagicCarRepairAISupported.Application.Common.Services.WorkOrders;
 using MagicCarRepairAISupported.Domain.Exceptions;
 using MagicCarRepairAISupported.Domain.Repositories;
 using MediatR;
@@ -10,18 +11,22 @@ namespace MagicCarRepairAISupported.Application.Features.Chat.Queries.GetWorkOrd
     {
         private readonly IChatMessageRepository _chatMessageRepository;
         private readonly ITenantService _tenantService;
+        private readonly IWorkOrderParticipantAuthorizationService _participantAuthorization;
 
         public GetWorkOrderMessagesQueryHandler(
             IChatMessageRepository chatMessageRepository,
-            ITenantService tenantService)
+            ITenantService tenantService,
+            IWorkOrderParticipantAuthorizationService participantAuthorization)
         {
             _chatMessageRepository = chatMessageRepository;
             _tenantService = tenantService;
+            _participantAuthorization = participantAuthorization;
         }
 
         public async Task<GetWorkOrderMessagesResponse> Handle(GetWorkOrderMessagesQuery request, CancellationToken cancellationToken)
         {
             var clientId = _tenantService.GetCurrentClientId() ?? throw new DomainException("CLIENT_ID_REQUIRED");
+            await _participantAuthorization.EnsureCanAccessChatAsync(request.WorkOrderId, cancellationToken);
 
             var skip = Math.Max(request.Skip ?? 0, 0);
             var take = Math.Clamp(request.Take ?? 50, 1, 100);

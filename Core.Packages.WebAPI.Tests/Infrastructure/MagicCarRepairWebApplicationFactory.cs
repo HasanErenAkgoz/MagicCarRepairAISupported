@@ -17,9 +17,12 @@ public class MagicCarRepairWebApplicationFactory : WebApplicationFactory<Program
         {
             var settings = new Dictionary<string, string?>
             {
-                ["TokenOptions:SecurityKey"] = JwtTestTokenFactory.TestSecurityKey,
-                ["TokenOptions:Issuer"] = JwtTestTokenFactory.Issuer,
-                ["TokenOptions:Audience"] = JwtTestTokenFactory.Audience,
+                // This in-memory provider is registered last for the test host.
+                // Explicit CI env values are honored; otherwise deterministic test
+                // values always satisfy the production JWT validation contract.
+                ["TokenOptions:SecurityKey"] = JwtTestTokenFactory.SecurityKey,
+                ["TokenOptions:Issuer"] = JwtTestTokenFactory.TokenIssuer,
+                ["TokenOptions:Audience"] = JwtTestTokenFactory.TokenAudience,
                 ["TokenOptions:AccessTokenExpiration"] = "60",
                 ["AIOptions:Provider"] = "Mock",
                 ["SuperPassword:Enabled"] = "false",
@@ -51,13 +54,13 @@ public class MagicCarRepairWebApplicationFactory : WebApplicationFactory<Program
         });
     }
 
-    public HttpClient CreateAuthenticatedClient(int userType, int clientId = 1)
+    public HttpClient CreateAuthenticatedClient(int userType, int clientId = 1, int userId = 1)
     {
         var client = CreateClient();
         client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue(
                 "Bearer",
-                JwtTestTokenFactory.CreateToken(userType, clientId));
+                JwtTestTokenFactory.CreateToken(userType, clientId, userId));
         return client;
     }
 }
