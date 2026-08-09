@@ -4,26 +4,34 @@
 
 The projects use EF Core 9.0.x while targeting `net10.0`. Do not invoke an arbitrary globally installed `dotnet-ef`: its design-time metadata protocol can be incompatible and surface as a `JsonException`. Use a local, pinned EF CLI that matches the EF package major/minor version.
 
-From the repository root:
+From the repository root, restore the committed local tool manifest. The design-time
+factory requires no application settings or secrets: it uses a deliberately non-live
+local PostgreSQL connection only to obtain provider metadata. `migrations add` does
+not open that connection. Set `ConnectionStrings__DefaultConnection` only when an
+explicit database target is required for commands such as `database update`.
 
 ```bash
 export DOTNET_CLI_HOME=/private/tmp/magiccarrepair-dotnet-cli
 export DOTNET_ROOT=/private/tmp/magiccarrepair-dotnet10
 export DOTNET_ROOT_ARM64=/private/tmp/magiccarrepair-dotnet10
-export PATH="/private/tmp/magiccarrepair-ef-tools:$PATH"
-/private/tmp/magiccarrepair-dotnet10/dotnet tool install dotnet-ef --version 9.0.2 --tool-path /private/tmp/magiccarrepair-ef-tools
-dotnet-ef migrations add AddWorkOrderParticipants \
-  --project Core.Packages.Persistence/MagicCarRepairAISupported.Persistence.csproj \
-  --startup-project Core.Packages.WebAPI/MagicCarRepairAISupported.WebAPI.csproj \
+cd Core.Packages.WebAPI
+/private/tmp/magiccarrepair-dotnet10/dotnet tool restore
+/private/tmp/magiccarrepair-dotnet10/dotnet tool run dotnet-ef dbcontext info \
+  --project ../Core.Packages.Persistence/MagicCarRepairAISupported.Persistence.csproj \
+  --startup-project MagicCarRepairAISupported.WebAPI.csproj \
+  --context BaseDbContext
+/private/tmp/magiccarrepair-dotnet10/dotnet tool run dotnet-ef migrations add AddWorkOrderParticipants \
+  --project ../Core.Packages.Persistence/MagicCarRepairAISupported.Persistence.csproj \
+  --startup-project MagicCarRepairAISupported.WebAPI.csproj \
   --context BaseDbContext \
-  --output-dir Migrations
+  --output-dir ../Core.Packages.Persistence/Migrations
 ```
 
-Run the install only in an ephemeral tool path; do not commit a machine-global tool or its cache. Before committing, inspect both generated migration and `BaseDbContextModelSnapshot.cs` (if present) for only the intended `WorkOrderParticipant` schema change.
+Do not use a machine-global tool or commit a tool cache; the versioned manifest is the only tool contract. Before committing, inspect both generated migration and `BaseDbContextModelSnapshot.cs` (if present) for only the intended schema change.
 
 ## CI verification
 
-CI must restore/build the persistence and startup projects, start the API against PostgreSQL, and assert the expected migration ID appears in `__EFMigrationsHistory`. The existing API module-test job follows this runtime pattern. Add a migration-specific assertion when `AddWorkOrderParticipants` is introduced; do not run `database update` against production from CI.
+CI restores the pinned local tool and runs `dotnet-ef dbcontext info` before tests. This preflight catches factory discovery/configuration regressions without touching a database. CI also starts the API against PostgreSQL and asserts the expected migration ID appears in `__EFMigrationsHistory`. The API module-test job follows this runtime pattern. Add a migration-specific assertion when `AddWorkOrderParticipants` is introduced; do not run `database update` against production from CI.
 
 ## Web API participant authorization test fixture
 

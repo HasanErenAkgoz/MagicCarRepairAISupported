@@ -55,6 +55,15 @@ jobs:
           dotnet build Core.Packages.Application.Tests/MagicCarRepairAISupported.Application.Tests.csproj -c Release --no-restore
           dotnet build Core.Packages.WebAPI.Tests/MagicCarRepairAISupported.WebAPI.Tests.csproj -c Release --no-restore
 
+      - name: Verify EF design-time factory
+        working-directory: Core.Packages.WebAPI
+        run: |
+          dotnet tool restore
+          dotnet tool run dotnet-ef dbcontext info \
+            --project ../Core.Packages.Persistence/MagicCarRepairAISupported.Persistence.csproj \
+            --startup-project MagicCarRepairAISupported.WebAPI.csproj \
+            --context BaseDbContext
+
       - name: Test
         env:
           ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=MagicCarRepairDb;Username=magiccar;Password=magiccar_dev

@@ -2,25 +2,24 @@ using MagicCarRepairAISupported.Persistence.Database;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
-using System.IO;
 
 namespace MagicCarRepairAISupported.Persistence.Context
 {
     public class BaseDbContextFactory : IDesignTimeDbContextFactory<BaseDbContext>
     {
+        // EF only needs provider metadata while scaffolding a migration; it must not
+        // depend on the WebAPI working directory, appsettings files, or user secrets.
+        private const string DesignTimeConnectionString =
+            "Host=localhost;Port=5432;Database=MagicCarRepairDesignTime;Username=design_time";
+
         public BaseDbContext CreateDbContext(string[] args)
         {
-            var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Core.Packages.WebAPI");
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(basePath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
             var optionsBuilder = new DbContextOptionsBuilder<BaseDbContext>();
-            optionsBuilder.UseMagicCarRepairDatabase(configuration);
+            var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+            optionsBuilder.UseNpgsql(
+                string.IsNullOrWhiteSpace(connectionString) ? DesignTimeConnectionString : connectionString,
+                npgsql => npgsql.MigrationsAssembly(typeof(BaseDbContext).Assembly.GetName().Name));
 
             var mockHttpContextAccessor = new MockHttpContextAccessor();
 
