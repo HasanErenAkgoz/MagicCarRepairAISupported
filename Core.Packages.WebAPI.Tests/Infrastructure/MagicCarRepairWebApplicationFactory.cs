@@ -9,6 +9,18 @@ namespace MagicCarRepairAISupported.WebAPI.Tests.Infrastructure;
 
 public class MagicCarRepairWebApplicationFactory : WebApplicationFactory<Program>
 {
+    // Program validates JWT settings while its service graph is being built,
+    // before ConfigureAppConfiguration runs for minimal-host test factories.
+    // Set process configuration during type initialization so that validation and
+    // the generated test tokens always use the same deterministic values.
+    static MagicCarRepairWebApplicationFactory()
+    {
+        Environment.SetEnvironmentVariable("TokenOptions__SecurityKey", JwtTestTokenFactory.SecurityKey);
+        Environment.SetEnvironmentVariable("TokenOptions__Issuer", JwtTestTokenFactory.TokenIssuer);
+        Environment.SetEnvironmentVariable("TokenOptions__Audience", JwtTestTokenFactory.TokenAudience);
+        Environment.SetEnvironmentVariable("TokenOptions__AccessTokenExpiration", "60");
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");

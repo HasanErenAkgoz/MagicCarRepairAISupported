@@ -5,9 +5,9 @@
 ## Release durumu
 
 - **Karar:** NO-GO
-- **Son güncelleme:** 2026-08-09
+- **Son güncelleme:** 2026-08-12
 - **Release sahibi:** CTO / Yönetici
-- **GO için zorunlu:** GitHub CI'da PostgreSQL servisli tam kanıtın remote üzerinde alınması, chat ekleri için kaynak-özel yetki ve mobilde kalan yüksek önemli bağımlılık bulguları için kabul ya da düzeltme kararı.
+- **GO için zorunlu:** GitHub CI'da PostgreSQL servisli tam kanıtın remote üzerinde alınması ve mobilde kalan yüksek önemli bağımlılık bulguları için kabul ya da düzeltme kararı.
 
 ## Aktif iş tablosu
 
@@ -17,7 +17,7 @@
 | AI draft asset mobil entegrasyonu | Frontend + QA | Tamamlandı | CI'da gerçek backend akışıyla E2E doğrulamak | Temiz lockfile kurulumu, Jest, lint ve TypeScript doğrulaması geçti |
 | Büyük ekran refaktörü | Frontend + QA | Devam ediyor | WorkOrderCreate modal/step bölümlerini, ardından WorkOrderEdit kalem/işçilik alanlarını ayırmak | Yerel test ortamı hazır; davranış korunarak bileşen sınırları tamamlanmalı |
 | Create/Edit ayrıştırma ayrıntısı | Frontend + QA | Devam ediyor | Create: AI Diagnosis modalı, müşteri/araç seçimi. Edit: parça, işçilik, maliyet özeti ve AI modalları | Create ekranında parça/işçilik alanı yok; bu alan yalnız Edit ekranında. Müşteri/araç taslağı entegre edilmeden kaldırıldı; davranış korunacak şekilde yeniden kapsamlanmalı |
-| Chat ekleri | Backend + Security + QA | Tasarım hazır | ADR kabul kriterleriyle tam, atomik vertical slice | ChatAttachment partial implementation güvenlik nedeniyle rollback edildi |
+| Chat ekleri | Backend + Security + QA | Tamamlandı | GitHub CI PostgreSQL ortamında regresyonu doğrulamak | Private draft → atomik message bind → participant-only download; local PostgreSQL HTTP güvenlik testleri 3/3 yeşil |
 | CI / test kanıtı | QA + DevOps | Devam ediyor | GitHub CI'da .NET derleme+test, API başlangıcıyla PostgreSQL migration uygulaması ve `AddAiDiagnosisMediaAssets` geçmiş kaydı; ardından MediaAsset yetki/expiry/retention entegrasyon testleri | Application.Tests 110/110 ve CI eşdeğeri PostgreSQL 16 ile WebAPI.Tests 23/23 yeşil; GitHub CI çalıştırma kanıtı ve MediaAsset E2E kapsamı bekliyor |
 | Git geçmiş temizliği | DevOps / Yönetici | Tamamlandı | Ekip clone'larını temiz geçmişe göre yeniden kurmak | `origin/master` force-with-lease ile güncellendi; upload tarihçesi doğrulamada 0 |
 
@@ -67,12 +67,13 @@
 | 2026-08-09 | Frontend + QA | WorkOrderEdit'ten kullanılmayan `SummaryRow` ve `summaryStyles` kaldırıldı | Referans bulunmadığı doğrulandı; 17/17 Jest suite, lint ve `tsc --noEmit` geçti. |
 | 2026-08-09 | Backend + AppSec + QA | V1 WorkOrderParticipant chat yetki dilimi uygulandı ve gerçek PostgreSQL ile doğrulandı | Explicit ServiceAdvisor grant/revoke, tenant/aktif hesap/aktif personel/atanmış teknisyen/müşteri doğrulaması her istekte DB'den yapılır; removal anında erişimi keser. Yönetim yalnız Manager ve terminal olmayan iş emirlerinde. EF migration + snapshot üretildi; WebAPI ve Application.Tests derlemeleri 0 hata. PostgreSQL HTTP entegrasyon testleri 2/2 geçti; cross-tenant, non-manager, terminal, revoke, active/inactive employee ve Manager izin senaryolarını kapsar. |
 | 2026-08-09 | Backend + AppSec | AI MediaAsset için private storage temeli eklendi | `IPrivateMediaStorage`, varsayılan olarak `App_Data/private-media` altında (wwwroot dışında) opaque key üretir; traversal/root kontrolü ile URL üretmez. AI upload/diagnose/retention bu store'a geçirildi; legacy resource-specific media akışları değişmedi. Odaklı 7 test geçti. |
+| 2026-08-12 | Backend + AppSec + QA | ChatAttachment V1 güvenli dikey akışı tamamlandı | Private draft upload, `attachmentIds` ile transaction içi atomik message bind, bound-only participant download ve unbound draft cleanup eklendi. Gerçek PostgreSQL HTTP testleri 3/3 geçti; anonymous, nonparticipant, cross-tenant, expired, rebind, MIME/traversal retleri ve geçerli upload→send→download akışı kapsandı. |
 
 ## Açık riskler ve kararlar
 
 1. **P0 kapalı:** AI `analyze-damage-photos` endpointi artık URL/dosya yolu okumuyor ve production'da çalıştırılamıyor.
 2. **P1 kapalı:** AI görsel teşhisi yalnız owner/tenant doğrulanmış MediaAsset byte'larıyla çalışıyor; 24 saatlik retention job uygulandı. CI E2E kanıtı yine de gereklidir.
-3. **P1:** Chat ekleri; message-owned asset, katılımcı yetkisi, expiry ve indirme kontrolü olmadan açılmayacak.
+3. **P1 kapalı:** Chat ekleri private message-owned asset, katılımcı yetkisi, expiry cleanup ve bound-only indirme kontrolüyle uygulanmıştır; remote CI regresyonu gereklidir.
 4. **P1:** Tam test kanıtı yoktur; .NET 10 SDK ve temiz Node bağımlılıkları ile CI'da yeşil sonuç zorunludur.
 5. **P1 kapalı:** Temizlenmiş Git geçmişi `origin/master`a force-with-lease ile yayınlandı; ekip clone'ları temiz geçmişe göre yeniden kurulmalıdır.
 

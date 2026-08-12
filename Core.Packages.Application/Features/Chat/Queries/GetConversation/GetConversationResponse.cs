@@ -25,5 +25,15 @@ namespace MagicCarRepairAISupported.Application.Features.Chat.Queries.GetConvers
         public bool IsRead { get; set; }
         public DateTime? ReadDate { get; set; }
         public DateTime SentDate { get; set; }
+        public List<ChatAttachmentDto> Attachments { get; set; } = new();
+    }
+
+    public sealed class ChatAttachmentDto
+    {
+        public int Id { get; set; }
+        public string FileName { get; set; } = string.Empty;
+        public string ContentType { get; set; } = string.Empty;
+        public long Length { get; set; }
+        public string DownloadUrl { get; set; } = string.Empty;
     }
 }

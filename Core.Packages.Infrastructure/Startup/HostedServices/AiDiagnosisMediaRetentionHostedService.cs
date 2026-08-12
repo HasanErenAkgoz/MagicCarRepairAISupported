@@ -47,8 +47,33 @@ public sealed class AiDiagnosisMediaRetentionHostedService : BackgroundService
             catch (Exception ex) { _logger.LogError(ex, "Could not remove expired AI asset {AssetId}", asset.Id); }
         }
         await assets.SaveChangesAsync();
+
+        var chatAttachments = scope.ServiceProvider.GetRequiredService<IEntityRepository<ChatAttachment, int>>();
+        var expiredDrafts = await chatAttachments.Query()
+            .Where(x => x.ChatMessageId == null && x.ExpiresAt <= DateTime.UtcNow)
+            .ToListAsync(ct);
+        foreach (var attachment in expiredDrafts)
+        {
+            if (!IsChatDraftStorageKey(attachment.StorageKey))
+            {
+                _logger.LogWarning("Expired chat attachment {AttachmentId} has invalid storage key", attachment.Id);
+                continue;
+            }
+
+            try
+            {
+                // Delete storage first so failures remain retryable on the next run.
+                await storage.DeleteAsync(attachment.StorageKey, ct);
+                chatAttachments.Delete(attachment);
+            }
+            catch (Exception ex) { _logger.LogError(ex, "Could not remove expired chat attachment {AttachmentId}", attachment.Id); }
+        }
+        await chatAttachments.SaveChangesAsync();
     }
 
     private static bool IsPrivateStorageKey(string? key) =>
         PrivateMediaStorageKey.IsValid(key) && key!.StartsWith("private-media/ai-drafts/", StringComparison.Ordinal);
+
+    private static bool IsChatDraftStorageKey(string? key) =>
+        PrivateMediaStorageKey.IsValid(key) && key!.StartsWith("private-media/chat-drafts/", StringComparison.Ordinal);
 }

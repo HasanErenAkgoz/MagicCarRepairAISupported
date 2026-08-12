@@ -34,6 +34,7 @@ namespace MagicCarRepairAISupported.Application.Features.Chat.Queries.GetWorkOrd
                 .Where(m => m.WorkOrderId == request.WorkOrderId && m.ClientId == clientId)
                 .Include(m => m.Sender)
                 .Include(m => m.Receiver)
+                .Include(m => m.Attachments)
                 .OrderByDescending(m => m.SentDate)
                 .Skip(skip)
                 .Take(take)
@@ -58,7 +59,15 @@ namespace MagicCarRepairAISupported.Application.Features.Chat.Queries.GetWorkOrd
                 FileSize = m.FileSize,
                 IsRead = m.IsRead,
                 ReadDate = m.ReadDate,
-                SentDate = m.SentDate
+                SentDate = m.SentDate,
+                Attachments = m.Attachments.Select(a => new GetConversation.ChatAttachmentDto
+                {
+                    Id = a.Id,
+                    FileName = a.OriginalFileName,
+                    ContentType = a.ContentType,
+                    Length = a.Length,
+                    DownloadUrl = $"/api/Chat/workorder/{request.WorkOrderId}/attachments/{a.Id}/download"
+                }).ToList()
             }).ToList();
 
             return new GetWorkOrderMessagesResponse

@@ -95,5 +95,22 @@ namespace MagicCarRepairAISupported.Persistence.Repositories
                 .Where(m => m.SenderId == userId || m.ReceiverId == userId)
                 .ExecuteDeleteAsync(cancellationToken);
         }
+
+        public async Task CreateWithAttachmentsAsync(ChatMessage message, IReadOnlyCollection<int> attachmentIds, int ownerUserId, DateTime now, CancellationToken cancellationToken = default)
+        {
+            await using var transaction = await Context.Database.BeginTransactionAsync(cancellationToken);
+            var attachments = await Context.Set<ChatAttachment>()
+                .Where(x => attachmentIds.Contains(x.Id) && x.ClientId == message.ClientId && x.WorkOrderId == message.WorkOrderId && x.OwnerUserId == ownerUserId && x.ChatMessageId == null)
+                .ToListAsync(cancellationToken);
+            if (attachments.Count != attachmentIds.Count || attachments.Any(x => x.ExpiresAt <= now))
+                throw new Domain.Exceptions.DomainException("CHAT_ATTACHMENT_ACCESS_DENIED");
+
+            await Context.Set<ChatMessage>().AddAsync(message, cancellationToken);
+            await Context.SaveChangesAsync(cancellationToken);
+            foreach (var attachment in attachments) attachment.ChatMessageId = message.Id;
+            await Context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+
     }
 }

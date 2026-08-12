@@ -21,10 +21,15 @@ public sealed class LocalPrivateMediaStorage : IPrivateMediaStorage
             : Path.GetFullPath(configuredRoot);
         _rootPath = Path.GetFullPath(_rootPath);
 
-        var webRoot = Path.GetFullPath(environment.WebRootPath);
-        var webRootWithSeparator = webRoot.EndsWith(Path.DirectorySeparatorChar) ? webRoot : webRoot + Path.DirectorySeparatorChar;
-        if (_rootPath.StartsWith(webRootWithSeparator, StringComparison.OrdinalIgnoreCase) || string.Equals(_rootPath, webRoot, StringComparison.OrdinalIgnoreCase))
-            throw new InvalidOperationException("Private media storage must be outside the web root.");
+        // WebRootPath is legitimately null in integration hosts with no wwwroot.
+        // Keep the production safety guard whenever a web root is configured.
+        if (!string.IsNullOrWhiteSpace(environment.WebRootPath))
+        {
+            var webRoot = Path.GetFullPath(environment.WebRootPath);
+            var webRootWithSeparator = webRoot.EndsWith(Path.DirectorySeparatorChar) ? webRoot : webRoot + Path.DirectorySeparatorChar;
+            if (_rootPath.StartsWith(webRootWithSeparator, StringComparison.OrdinalIgnoreCase) || string.Equals(_rootPath, webRoot, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Private media storage must be outside the web root.");
+        }
 
         Directory.CreateDirectory(_rootPath);
     }

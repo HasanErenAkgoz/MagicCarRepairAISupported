@@ -57,6 +57,7 @@ namespace MagicCarRepairAISupported.Domain.Entities
         /// Dosya boyutu (bytes)
         /// </summary>
         public long? FileSize { get; set; }
+        public virtual ICollection<ChatAttachment> Attachments { get; set; } = new List<ChatAttachment>();
 
         /// <summary>
         /// Mesaj okundu mu?

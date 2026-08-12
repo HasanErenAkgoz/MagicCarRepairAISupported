@@ -51,6 +51,10 @@ namespace MagicCarRepairAISupported.Application.Features.Chat.Commands.SendMessa
                 throw new DomainException("WORK_ORDER_CHAT_REQUIRED");
             if (request.MessageType != Domain.Enums.ChatMessageType.Text || request.FilePath is not null || request.FileName is not null || request.FileSize is not null)
                 throw new DomainException("CHAT_ATTACHMENTS_NOT_SUPPORTED");
+            if (request.AttachmentIds.Count > 5 || request.AttachmentIds.Any(id => id <= 0) || request.AttachmentIds.Distinct().Count() != request.AttachmentIds.Count)
+                throw new DomainException("INVALID_CHAT_ATTACHMENT");
+            if (string.IsNullOrWhiteSpace(request.Message) && request.AttachmentIds.Count == 0)
+                throw new DomainException("CHAT_MESSAGE_REQUIRED");
             await _participantAuthorization.EnsureCanAccessChatAsync(request.WorkOrderId.Value, cancellationToken);
             await _participantAuthorization.EnsureUserCanAccessChatAsync(request.WorkOrderId.Value, request.ReceiverId, cancellationToken);
 
@@ -78,8 +82,14 @@ namespace MagicCarRepairAISupported.Application.Features.Chat.Commands.SendMessa
                 ClientId = clientId
             };
 
-            await _chatMessageRepository.AddAsync(chatMessage, cancellationToken);
-            await _chatMessageRepository.SaveChangesAsync();
+            // The repository verifies ownership, tenant, work order, expiry and
+            // unbound state in the same transaction that creates the message.
+            await _chatMessageRepository.CreateWithAttachmentsAsync(
+                chatMessage,
+                request.AttachmentIds,
+                senderId,
+                DateTime.UtcNow,
+                cancellationToken);
 
             // Real-time bildirim gönder
             await _signalRService.SendNotificationToUserAsync(

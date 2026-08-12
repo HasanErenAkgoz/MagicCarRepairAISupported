@@ -75,6 +75,7 @@ namespace MagicCarRepairAISupported.Persistence.Context
         public DbSet<ServiceRating> ServiceRatings { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<ChatAttachment> ChatAttachments { get; set; }
         public DbSet<ServicePortfolio> ServicePortfolios { get; set; }
         public DbSet<Certificate> Certificates { get; set; }
         public DbSet<FacilityPhoto> FacilityPhotos { get; set; }

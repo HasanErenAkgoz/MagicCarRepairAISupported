@@ -58,10 +58,10 @@ builder.Services.AddRateLimiter(options =>
 });
 
 var defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+var healthChecks = builder.Services.AddHealthChecks();
 if (!string.IsNullOrWhiteSpace(defaultConnection))
 {
-    builder.Services.AddHealthChecks()
-        .AddNpgSql(defaultConnection, name: "postgresql");
+    healthChecks.AddNpgSql(defaultConnection, name: "postgresql");
 }
 
 ConfigureServices(builder);

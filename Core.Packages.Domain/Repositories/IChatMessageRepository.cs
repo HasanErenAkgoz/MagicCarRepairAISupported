@@ -34,5 +34,6 @@ namespace MagicCarRepairAISupported.Domain.Repositories
         /// Kullanıcı silinmeden önce: gönderen veya alıcı olduğu tüm mesajları kaldırır (FK çakışmasını önler).
         /// </summary>
         Task DeleteAllInvolvingUserAsync(int userId, CancellationToken cancellationToken = default);
+        Task CreateWithAttachmentsAsync(ChatMessage message, IReadOnlyCollection<int> attachmentIds, int ownerUserId, DateTime now, CancellationToken cancellationToken = default);
     }
 }

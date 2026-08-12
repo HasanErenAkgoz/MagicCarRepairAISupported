@@ -86,6 +86,7 @@ namespace MagicCarRepairAISupported.Persistence
             // Generic repositories for entities
             services.AddScoped(typeof(IEntityRepository<Vehicle, int>), typeof(EfEntityRepository<Vehicle, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<MediaAsset, int>), typeof(EfEntityRepository<MediaAsset, BaseDbContext>));
+            services.AddScoped(typeof(IEntityRepository<ChatAttachment, int>), typeof(EfEntityRepository<ChatAttachment, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<Employee, int>), typeof(EfEntityRepository<Employee, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<Part, int>), typeof(EfEntityRepository<Part, BaseDbContext>));
             services.AddScoped(typeof(IEntityRepository<PartStock, int>), typeof(EfEntityRepository<PartStock, BaseDbContext>));

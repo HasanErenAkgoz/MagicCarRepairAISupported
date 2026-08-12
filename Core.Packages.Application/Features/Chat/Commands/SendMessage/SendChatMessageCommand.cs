@@ -13,5 +13,6 @@ namespace MagicCarRepairAISupported.Application.Features.Chat.Commands.SendMessa
         public string? FilePath { get; set; }
         public string? FileName { get; set; }
         public long? FileSize { get; set; }
+        public List<int> AttachmentIds { get; set; } = new();
     }
 }
